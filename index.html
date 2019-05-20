@@ -223,27 +223,45 @@ ajax load:
 <script src="js/functions.js"></script>
 <script src="js/bookmarks2.js"></script>
 <script>
-	if ('ontouchstart' in window){
-		document.body.className = "touch";
-_log( document.body.className );	
-/*
-		var script = document.createElement('script');
-		script.src = "https://getfirebug.com/firebug-lite.js";
-		//document.body.appendChild( script );
-		document.getElementsByTagName('head')[0].appendChild(script);
-		script.onload = function() {
-//alert( "onload " + this.src);
-		};
-		script.onerror = function(e) {
-//alert( "error load script " + this.src);
-		};  
-*/
-	}
+var logMsg;
+
+logMsg = navigator.userAgent;
+_alert( logMsg, "info" );
 		
 //Start webApp
 if( typeof webApp === "object"){
 _runApp();
 }
+
+function _alert( message, level ){
+	switch (level) {
+		case "info":
+			message = "<p class='alert alert-info'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "warning":
+			message = "<p class='alert alert-warning'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "danger":
+		case "error":
+			message = "<p class='alert alert-danger'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "success":
+			message = "<p class='alert alert-success'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		default:
+			_log(message);
+		break;
+	}//end switch
+	
+}//end _alert()		
 
 </script>
 
