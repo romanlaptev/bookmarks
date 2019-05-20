@@ -227,7 +227,15 @@ var logMsg;
 
 logMsg = navigator.userAgent;
 _alert( logMsg, "info" );
-		
+
+//Register service worker
+if( window.location.protocol == "https:"){
+	registerServiceWorker();
+} else {
+	logMsg = "error,  serviceWorker requires 'https:' protocol....";
+_alert( logMsg, "error" );
+}
+
 //Start webApp
 if( typeof webApp === "object"){
 _runApp();
@@ -262,6 +270,50 @@ function _alert( message, level ){
 	}//end switch
 	
 }//end _alert()		
+
+function registerServiceWorker() {
+	if ('serviceWorker' in navigator) {
+	
+		window.addEventListener('load', function() {
+			navigator.serviceWorker.register("service-worker.js").
+			
+				then(function(reg) {
+					logMsg = "ServiceWorker registration successful with scope: " + reg.scope;
+_alert( logMsg, "success" );
+console.log(reg);
+
+					if(reg.installing) {
+logMsg="Service worker installing";
+_alert( logMsg, "info" );
+					}
+					if(reg.waiting) {
+logMsg="Service worker installed";
+_alert( logMsg, "info" );
+					}
+					if(reg.active) {
+logMsg="Service worker active";
+_alert( logMsg, "info" );
+					}
+					
+				}, 
+				
+				function(err) {
+logMsg="ServiceWorker registration failed";
+_alert( logMsg, "error" );
+console.log(err);
+				}).
+				
+				catch(function(err) {
+console.log(err)
+				});
+		});
+		
+	} else {
+logMsg="ServiceWorker is not supported....";
+_alert( logMsg, "error" );
+	}
+	
+}//end registerServiceWorker()
 
 </script>
 

@@ -774,7 +774,7 @@ function runTests(){
 
 function _runApp(){
 	//---------------------------------
-	_log( navigator.userAgent );
+	//_log( navigator.userAgent );
 	var html = runTests();
 	_log( html );
 	
