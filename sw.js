@@ -1,12 +1,11 @@
 "use strict";
 
-const CACHE_NAME = 'static-cache-v1';
+const CACHE_NAME = "cache-and-update-v1";
+
 const FILES_TO_CACHE = [
 "offline.html",
 "css/bootstrap337.min.css"
 ];
-
-console.log('WORKER: executing.');
 
 /* The install event fires when the service worker is first installed.
    You can use this event to prepare the service worker to be able to serve
@@ -16,17 +15,14 @@ self.addEventListener("install", function(event) {
 console.log("WORKER: install event in progress.", event);
 
 	event.waitUntil(	// after install service worker open new cache
-		caches.open(CACHE_NAME)
-			.then(
-				function(cache){// add all caching resource URLs
-					var _cache = cache.addAll(FILES_TO_CACHE);
+		caches.open(CACHE_NAME).then( function(cache){// add all caching resource URLs
+					cache.addAll( FILES_TO_CACHE ).then(function( _cache){
 console.log("[ServiceWorker] Pre-caching offline recources", _cache);
-					return _cache;
-				}
-			)
+						return _cache;
+						self.skipWaiting();//activate SW right now.....
+					});
+				})
 		);
-
-	self.skipWaiting();
 
 });//end event
 
@@ -36,6 +32,7 @@ console.log("[ServiceWorker] Pre-caching offline recources", _cache);
    CSS resources, fonts, any images, etc.
 */
 self.addEventListener("fetch", function(event) {
+/*	
 console.log("WORKER: fetch event in progress.", event.request.url);
 console.log(event, event.request.mode);
 
@@ -51,7 +48,7 @@ console.log(event, event.request.mode);
 			});
 		})
 	);
-
+*/
 });
 
 /* The activate event fires after a service worker has been successfully installed.
@@ -65,7 +62,7 @@ self.addEventListener("activate", function(event) {
      Activation will fail unless the promise is fulfilled.
   */
 console.log("WORKER: activate event in progress.", event);
-
+/*
 	event.waitUntil(
 		caches.keys().then((keyList) => {
 			return Promise.all( keyList.map(
@@ -79,5 +76,5 @@ console.log("WORKER: activate event in progress.", event);
 		})
 	);
 	self.clients.claim();
-
+*/
 });

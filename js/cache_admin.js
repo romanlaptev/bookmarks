@@ -1,60 +1,44 @@
-var func = sharedFunc();
-//console.log("func:", func);
-
 var support=false;
 var cacheSupport=false;
 var swSupport=false;
 
-const FILES_TO_CACHE = [
-"css/bootstrap335.min.css"//,
-//"pages/",
-//"pages/index.html",
-//"pages/style.css",
-//"pages/app.js",
-//"pages/image-list.js",
-//"pages/star-wars-logo.jpg",
-//"pages/gallery/bountyHunters.jpg",
-//"pages/gallery/myLittleVader.jpg",
-//"pages/gallery/snowTroopers.jpg"
-];
-
 var logMsg;
 logMsg = navigator.userAgent;
-func.logAlert(logMsg, "info");
+_alert(logMsg, "info");
 
 //--------------------------
 logMsg = "navigator.onLine: " + navigator.onLine;
 if ( navigator.onLine ) {
-	func.logAlert(logMsg, "success");
+	_alert(logMsg, "success");
 } else {
-	func.logAlert(logMsg, "danger");
+	_alert(logMsg, "danger");
 }
 //--------------------------
 
 var test =  typeof window.Promise !== "undefined";
 logMsg = "window.Promise support: " + test;
 if( test ){
-	func.logAlert(logMsg, "success");
+	_alert(logMsg, "success");
 } else {
-	func.logAlert(logMsg, "error");
+	_alert(logMsg, "error");
 }
 
 test =  "caches" in window;
 logMsg = "CacheStorage API, window.caches support: " + test;
 if (test) {
 	cacheSupport=true;
-	func.logAlert(logMsg, "success");
+	_alert(logMsg, "success");
 } else {
-	func.logAlert(logMsg, "error");
+	_alert(logMsg, "error");
 }
 
 test = "serviceWorker" in navigator;
 logMsg = "navigator.serviceWorker support: " + test;
 if (test) {
 	swSupport=true;
-	func.logAlert(logMsg, "success");
+	_alert(logMsg, "success");
 } else {
-	func.logAlert(logMsg, "error");
+	_alert(logMsg, "error");
 }
 
 if( cacheSupport && swSupport){
@@ -64,13 +48,13 @@ if( cacheSupport && swSupport){
 if( window.location.protocol !== "https:"){
 	logMsg = "error,  serviceWorker requires 'https:' protocol....";
 	logMsg += "but used: " + window.location.protocol;
-	func.logAlert(logMsg, "error");
+	_alert(logMsg, "error");
 	support = false;
 }
 //console.log(support);
 
 if( support ){
-	registerServiceWorker();
+	//registerServiceWorker();
 	
 	var field_swUrl = document.querySelector("#field-sw-url");
 	var btn_swList = document.querySelector("#btn-sw-list");
@@ -84,24 +68,24 @@ if( support ){
 function registerServiceWorker() {
 	
 	logMsg = "-- navigator.serviceWorker registration in progress.";
-	func.logAlert(logMsg, "info");
+	_alert(logMsg, "info");
 	
 	window.addEventListener('load', function() {
 		navigator.serviceWorker.register("sw.js").then(function(reg) {
 			logMsg = "-- navigator.serviceWorker registration succeeded. Scope is " + reg.scope;
-func.logAlert(logMsg, "success");
+_alert(logMsg, "success");
 			
 			if(reg.installing) {
 logMsg="Service worker installing";
-func.logAlert( logMsg, "info" );
+_alert( logMsg, "info" );
 			}
 			if(reg.waiting) {
 logMsg="Service worker waiting";
-func.logAlert( logMsg, "info" );
+_alert( logMsg, "info" );
 			}
 			if(reg.active) {
 logMsg="Service worker active";
-func.logAlert( logMsg, "info" );
+_alert( logMsg, "info" );
 			}
 			
 			support = true;
@@ -110,13 +94,13 @@ func.logAlert( logMsg, "info" );
 
 		function(err) {
 logMsg="ServiceWorker registration failed";
-func.logAlert( logMsg, "error" );
+_alert( logMsg, "error" );
 console.log(err);
 		})
 		
 		.catch( function(error) {
 logMsg = "Registration failed."
-func.logAlert(logMsg, "error");
+_alert(logMsg, "error");
 console.log(error);
 		});
 	 
@@ -128,11 +112,11 @@ function defineEvents(){
 
 	window.addEventListener("offline", function(e) {
 		logMsg = "navigator.onLine: " + navigator.onLine;
-		func.logAlert(logMsg, "danger");
+		_alert(logMsg, "danger");
 	});
 	window.addEventListener("online", function(e) {
 		logMsg = "navigator.onLine: " + navigator.onLine;
-		func.logAlert(logMsg, "success");
+		_alert(logMsg, "success");
 	});
 
 	var btn_clear_log = document.querySelector("#btn-clear-log");
@@ -154,7 +138,7 @@ function defineEvents(){
 //console.log(cacheName);
 		if( !cacheName || cacheName.length===0 ){
 logMsg="<b>Object cache name</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 
@@ -162,7 +146,7 @@ func.logAlert( logMsg, "warning" );
 //console.log(res);	
 			if( !res){
 logMsg="Cache object " +cacheName+ " not found....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 				return false;
 			} else {
 				_getKeys( cacheName );
@@ -184,18 +168,18 @@ func.logAlert( logMsg, "warning" );
 //console.log(cacheName);
 		if( !cacheName || cacheName.length===0 ){
 logMsg="<b>Object cache name</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 		caches.delete( cacheName ).then( function( res ){
 //console.log(res);
 			if(res){
 logMsg="Cache object " +cacheName+ " was removed....";
-func.logAlert( logMsg, "success" );
+_alert( logMsg, "success" );
 				_getListCaches();
 			} else {
 logMsg="Cache object " +cacheName+ " not found....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			}
 		},
 		function(err) {
@@ -214,14 +198,14 @@ console.log(err);
 //console.log(cacheName);
 		if( !cacheName || cacheName.length===0 ){
 logMsg="<b>Object cache name</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 		caches.open(cacheName).then(function( cache ){// add all caching resource URLs
 		
 			cache.addAll( FILES_TO_CACHE ).then(function(){
 logMsg="Pre-caching offline recources: " + FILES_TO_CACHE.toString();
-func.logAlert( logMsg, "success" );
+_alert( logMsg, "success" );
 console.log(FILES_TO_CACHE.toString() );
 				_getKeys( cacheName );
 			});
@@ -240,7 +224,7 @@ console.log(FILES_TO_CACHE.toString() );
 //console.log(cacheName);
 		if( !cacheName || cacheName.length===0 ){
 logMsg="<b>Object cache name</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 		
@@ -249,7 +233,7 @@ func.logAlert( logMsg, "warning" );
 //console.log(cacheKey);
 		if( !cacheKey || cacheKey.length===0 ){
 logMsg="<b>cache key</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 
@@ -257,10 +241,10 @@ func.logAlert( logMsg, "warning" );
 			cache.delete( cacheKey ).then(function( res ){
 				if(res){
 logMsg=cacheKey + " was removed....";
-func.logAlert( logMsg, "success" );
+_alert( logMsg, "success" );
 				} else {
 logMsg=cacheKey + " not found....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 				}
 				
 			});
@@ -277,7 +261,7 @@ func.logAlert( logMsg, "warning" );
 //console.log(cacheName);
 		if( !cacheName || cacheName.length===0 ){
 logMsg="<b>Object cache name</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 		
@@ -285,7 +269,7 @@ func.logAlert( logMsg, "warning" );
 //console.log(cacheKey);
 		if( !cacheKey || cacheKey.length===0 ){
 logMsg="<b>cache key</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 
@@ -294,10 +278,10 @@ func.logAlert( logMsg, "warning" );
 console.log(response);				
 				if( response ){
 logMsg=cacheKey + " was cached...";
-func.logAlert( logMsg, "success" );
+_alert( logMsg, "success" );
 				} else {
 logMsg=cacheKey + " not found in cache....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 				}
 				
 			});
@@ -314,7 +298,7 @@ func.logAlert( logMsg, "warning" );
 //console.log(cacheName);
 		if( !cacheName || cacheName.length===0 ){
 logMsg="<b>Object cache name</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 		
@@ -322,7 +306,7 @@ func.logAlert( logMsg, "warning" );
 //console.log(cacheKey);
 		if( !url || url.length===0 ){
 logMsg="<b>URL</b> is empty (field cache key)....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 
@@ -330,7 +314,7 @@ func.logAlert( logMsg, "warning" );
 			cache.add( url ).then(function( response ) {//https://developer.mozilla.org/ru/docs/Web/API/Cache/add			
 console.log( response );
 logMsg="<b>URL " +url+ "</b> loaded and added to cache " +cacheName;
-func.logAlert( logMsg, "success" );
+_alert( logMsg, "success" );
 			});
 		});
 	}//end event
@@ -345,7 +329,7 @@ func.logAlert( logMsg, "success" );
 //console.log(cacheName);
 		if( !cacheName || cacheName.length===0 ){
 logMsg="<b>Object cache name</b> is empty....";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			return false;
 		}
 		
@@ -387,7 +371,7 @@ console.log( registrations );
 			var url = field_swUrl.value;
 			if( !url || url.length===0 ){
 logMsg="<b>service worker URL</b> is empty...";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 				return false;
 			}
 
@@ -403,10 +387,10 @@ func.logAlert( logMsg, "warning" );
 console.log(res);						
 						if( res){
 logMsg="service worker by URL:<b> "+registration.active.scriptURL+"</b> was unregister...";
-func.logAlert( logMsg, "success" );
+_alert( logMsg, "success" );
 						} else {
 logMsg="service worker by URL:<b> "+registration.active.scriptURL+"</b> was NOT unregister...";
-func.logAlert( logMsg, "error" );
+_alert( logMsg, "error" );
 						}
 						
 					});
@@ -416,7 +400,7 @@ func.logAlert( logMsg, "error" );
 			
 			if(!result){
 logMsg="service worker by URL:<b>"+url+"</b> NOT found...";
-func.logAlert( logMsg, "error" );
+_alert( logMsg, "error" );
 			}
 
 		});
@@ -428,7 +412,7 @@ console.log( registrations );
 			var url = field_swUrl.value;
 			if( !url || url.length===0 ){
 logMsg="<b>service worker URL</b> is empty...";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 				return false;
 			}
 
@@ -443,7 +427,7 @@ func.logAlert( logMsg, "warning" );
 					registration.update().then( function(res) {
 console.log(res);						
 logMsg="service worker by URL:<b> "+registration.active.scriptURL+"</b> was updated...";
-func.logAlert( logMsg, "success" );
+_alert( logMsg, "success" );
 					});
 					break;
 				}
@@ -451,7 +435,7 @@ func.logAlert( logMsg, "success" );
 			
 			if(!result){
 logMsg="service worker by URL:<b>"+url+"</b> NOT found...";
-func.logAlert( logMsg, "error" );
+_alert( logMsg, "error" );
 			}
 
 		})
@@ -482,7 +466,7 @@ func.log(html);
 
 			} else {
 logMsg="not found cache objects...";
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 			}
 			
 		});
@@ -504,7 +488,7 @@ func.log("<h4>Key list, cache object <b>"+cacheName+"</b></h4>");
 func.log(html);
 				} else {
 logMsg="no keys found in object cache " + cacheName;
-func.logAlert( logMsg, "warning" );
+_alert( logMsg, "warning" );
 				}
 			});
 	});
