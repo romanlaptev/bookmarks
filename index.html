@@ -85,18 +85,16 @@ $(window).scroll(function() {
 			</div>
 		</header>
 
-		<div class="log-panel">
-			<span class="pull-right">
-				<a id="btn-toggle-log" href="#?q=toggle-log" title="Toggle log" class="">-</a>
-				<a id="btn-clear-log" href="#?q=clear-log" title="Clear log" class="">x</a>
-			</span>
-	<!--
-			<div class="progress">ajax load:
-				<div id="load-progress-bar" class="progress-bar hide"></div>
+		<div class="log-panel panel">
+			<div class="panel-body">
+				<span class="pull-right">
+					<a id="btn-toggle-log" href="#?q=toggle-log" title="Toggle log" class="btn btn-sm btn-default">-</a>
+					<a id="btn-clear-log" href="#?q=clear-log" title="Clear log" class="btn btn-sm btn-default">x</a>
+				</span>
+				<div id="log" class="panel-body"></div>
 			</div>
-	-->
-			<div id="log" class="panel-body"></div>
 		</div>
+		
 
 		<div class="panel panel-primary">
 			<div class="panel-body" id="insert-json"></div>
@@ -170,7 +168,9 @@ ajax load:
 					<h4 class="modal-title">Specify data file</h4>
 				</div>
 				<div class="modal-body">
-				
+<a href="cache_admin.html" class="btn btn-info" target="_blank">cache admin</a>
+				</div>
+				<div class="modal-body">
 					<div class="form-group">
 					
 						<label>URL:</label>
@@ -223,98 +223,10 @@ ajax load:
 <script src="js/functions.js"></script>
 <script src="js/bookmarks2.js"></script>
 <script>
-var logMsg;
-
-logMsg = navigator.userAgent;
-_alert( logMsg, "info" );
-
-//Register service worker
-if( window.location.protocol == "https:"){
-	registerServiceWorker();
-} else {
-	logMsg = "error,  serviceWorker requires 'https:' protocol....";
-_alert( logMsg, "error" );
-}
-
 //Start webApp
 if( typeof webApp === "object"){
 _runApp();
 }
-
-function _alert( message, level ){
-	switch (level) {
-		case "info":
-			message = "<p class='alert alert-info'>" + message + "</p>";
-			_log(message);
-		break;
-		
-		case "warning":
-			message = "<p class='alert alert-warning'>" + message + "</p>";
-			_log(message);
-		break;
-		
-		case "danger":
-		case "error":
-			message = "<p class='alert alert-danger'>" + message + "</p>";
-			_log(message);
-		break;
-		
-		case "success":
-			message = "<p class='alert alert-success'>" + message + "</p>";
-			_log(message);
-		break;
-		
-		default:
-			_log(message);
-		break;
-	}//end switch
-	
-}//end _alert()		
-
-function registerServiceWorker() {
-	if ('serviceWorker' in navigator) {
-	
-		window.addEventListener('load', function() {
-			navigator.serviceWorker.register("service-worker.js").
-			
-				then(function(reg) {
-					logMsg = "ServiceWorker registration successful with scope: " + reg.scope;
-_alert( logMsg, "success" );
-console.log(reg);
-
-					if(reg.installing) {
-logMsg="Service worker installing";
-_alert( logMsg, "info" );
-					}
-					if(reg.waiting) {
-logMsg="Service worker installed";
-_alert( logMsg, "info" );
-					}
-					if(reg.active) {
-logMsg="Service worker active";
-_alert( logMsg, "info" );
-					}
-					
-				}, 
-				
-				function(err) {
-logMsg="ServiceWorker registration failed";
-_alert( logMsg, "error" );
-console.log(err);
-				}).
-				
-				catch(function(err) {
-console.log(err)
-				});
-		});
-		
-	} else {
-logMsg="ServiceWorker is not supported....";
-_alert( logMsg, "error" );
-	}
-	
-}//end registerServiceWorker()
-
 </script>
 
 </body>

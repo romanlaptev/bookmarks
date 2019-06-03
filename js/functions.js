@@ -108,6 +108,36 @@ function get_attr_to_obj( attr ){
 }//end get_attr_to_obj()
 
 
+function _alert( message, level ){
+	switch (level) {
+		case "info":
+			message = "<p class='alert alert-info'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "warning":
+			message = "<p class='alert alert-warning'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "danger":
+		case "error":
+			message = "<p class='alert alert-danger'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "success":
+			message = "<p class='alert alert-success'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		default:
+			_log(message);
+		break;
+	}//end switch
+	
+}//end _alert()		
+		
 
 /*
 parse XML document to array

@@ -45,8 +45,7 @@ body {
 
 
 .log-panel{
-	background-color: #ffcc99; /*#c9d9c9;*/
-/*background-color:#fff4e1*/;
+	background-color: #b0c4de;/*#ffcc99*/ /*#c9d9c9;*/ /*#fff4e1*/
 margin-top: 5px;
 margin-bottom: 10px;
 /* border:1px solid #ddd; */
@@ -56,34 +55,17 @@ position: fixed;
 bottom: 10px;
 z-index: 9999;
 */
-/*
-right: 10px;
-clear:both;
-width: 80%;
-*/
-/*position: absolute;*/
-	/*position:fixed;*/
+}
+.log-panel .panel-body{
+	padding: 5px;
 }
 
-.close {
-display: block;
-float: right;
-left: 5px;
-position: relative;
-top: -10px;
-}
 
 #log{
 word-break: break-all;	
 font-size: 75%;	
 }
 
-
-#clear-log {
-	position: relative;
-	top: -9px;
-	left: 9px;
-}
 .log-panel span {
 	margin-top: 2px;
 	margin-right: 7px;
@@ -92,6 +74,21 @@ font-size: 75%;
 text-decoration:none;
 outline: none;
 }
+
+#log .alert {
+margin-bottom: 0;
+padding: 10px;
+}
+
+#log p{
+margin: 0;
+}
+.alert-warning {
+	color: #000;
+	background-color: #ffb515;
+}
+
+
 
 #btn-scroll-to-top {
 	/*left: 44%;*/
