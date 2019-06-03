@@ -1,327 +1,62 @@
-var logMsg;
-
-logMsg = navigator.userAgent;
-_alert(logMsg, "info");
-
-window.onload = function(){
-/*
-	var ua = document.getElementById("ua");
-	var tpl = ua.innerHTML;
-	var html = tpl
-	.replace("{{userAgent}}", navigator.userAgent);
-	ua.innerHTML = html;
-//---------------------------------
-
-	var tests = [];
+_vars = {
+	"_vars.logMsg" : "",
 	
-	var test = {
-		"name" : "indexedDB support",
-		"result" : false
-	};
-	window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-	if (!window.indexedDB) {
-		test["msg"] = "IndexedDB not supported";
-	} else {
-		test["result"] = true;
+	"indexedDBsupport" : window.indexedDB ? true : false,
+	//window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
+	
+	"webSQLsupport" : window.openDatabase  ? true : false,
+	"localStorageSupport" : window['localStorage']  ? true : false,
+	"dataStoreType" : _detectDataStore(),
+	
+	"dbName" : "bookmarks"
+	
+}//end vars{}
+
+function _detectDataStore(){
+//console.log(arguments);		
+//console.log( this );		
+	var dataStoreType = false;
+	if( window['localStorage']  ? true : false ){
+		dataStoreType = "localStorage";
 	}
-	tests.push(test);
-//--------------------------------------
-
-	var test = {
-		"name" : "Web SQL database",
-		"result" : false
-	};
-	if (window.openDatabase) {
-		test["result"] = true;
+	if( window.openDatabase  ? true : false ){
+		dataStoreType = "webSQL";
 	}
-	tests.push(test);
-//--------------------------------------
-	var test = {
-		"name" : "is mobile device",
-		"result" : false
-	};
-	if ( navigator.userAgent.match(/Mobi/) ) {
-		test["result"] = true;
-		test["msg"] = "navigator.userAgent.match(/Mobi/) === true";
+	if( window.indexedDB ? true : false ){
+		dataStoreType = "indexedDB";
 	}
-	tests.push(test);
-//--------------------------------------
+	return dataStoreType;
+}//end _detectDataStore()
 
-	var test = {
-		"name" : "touch supported",
-		"result" : false
-	};
-	var supportsTouch = false;
-	if ('ontouchstart' in window) {
-		test["result"] = true;
-		test["msg"] = "'ontouchstart' in window === true //iOS & android";
-	}
-	tests.push(test);
-//--------------------------------------
+console.log( _vars );
 
-	var test = {
-		"name" : "msPointerEnabled",
-		"result" : false
-	};
-	if(window.navigator.msPointerEnabled) {
-		test["result"] = true;
-		test["msg"] = "window.navigator.msPointerEnabled === true //Windows 8";
-	}
-	tests.push(test);
-//--------------------------------------
-
-	var test = {
-		"name" : "detect Microsoft mobile device",
-		"result" : false
-	};
-	if( (navigator.maxTouchPoints > 0) || 
-			(navigator.msMaxTouchPoints > 0) ){
-		test["result"] = true;
-		test["msg"] = "maxTouchPoints > 0 || msMaxTouchPoints > 0";
-	}
-	tests.push(test);
-//--------------------------------------
-
-//console.log(tests);	
-
-	var test_tpl = document.getElementById("test-tpl").innerHTML;
-//console.log( test_tpl);	
-	var tests_out = document.getElementById("tests-out");
-	var html = "";
-	for (var n = 0; n < tests.length; n++){
-		if( tests[n] ){
-			var msg = tests[n]["msg"];
-			if(!msg){
-				var msg = "";
-			}
-			
-			html += test_tpl
-			.replace("{{name}}", tests[n]["name"])
-			.replace("{{result}}", tests[n]["result"])
-			.replace("{{msg}}", msg);
-		}
-	}//next
-	tests_out.innerHTML = html;
-
-	if ( !window.indexedDB ) {
-		var msg = "<h2>Your browser does not have support for indexedDB!!!</h2>";
-		_log( msg );
-	} else {
-		init();
-	};
-*/	
-};//end window.load
-
-
-//var _timer = {};
 var dbInfo = [];
-//dbInfo["import"] = [];
-
-dbInfo["dbname"] = "video";
 //dbInfo["version"] = 0;
 dbInfo["useIndex"] = false;
 
-function init(){
 console.log(dbInfo);
+
+window.onload = function(){
+	_vars.logMsg = navigator.userAgent;
+	_alert( _vars.logMsg, "info" );
 	
-	document.getElementById("dbname").value = dbInfo["dbname"];
+	if( _vars["dataStoreType"] === "indexedDB"){
+		init();
+	} else {
+	_vars.logMsg = "window.indexedDB API NOT supported....";
+	_alert( _vars.logMsg, "error" );
+	}
+	
+};//end window.load
+
+
+function init(){
+	document.getElementById("dbname").value = _vars["dbName"];
 	//document.getElementById("btn-list").click();
 	_listStories();
-	
-	document.getElementById("btn-list").onclick = function(){
-		_listStories();
-	}//end event
-
-	document.getElementById("btn-dropDB").onclick = function(){
-		
-		_dropDB({
-			"dbName" : document.getElementById("dbname").value,
-			"callback" : function( log, runtime ){
-			var msg = "_dropDB(), "+ log +", runtime: " + runtime;
-console.log(msg);
-_log(msg);
-				_listStories();
-				//_log("", "store-list");
-			}
-		});
-	}//end event
-
-	
-	document.getElementById("btn-create").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-		
-		_createStore({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( log, runtime ){
-var msg = "_createStore(), "+ log +", runtime: " + runtime;
-console.log(msg);
-_log(msg);
-				_listStories();
-			}
-		});
-	}//end event
-
-	
-	document.getElementById("btn-delete-store").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-	
-		_deleteStore({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( log, runtime ){
-var msg = "_deleteStore(), "+ log +", runtime: " + runtime;
-console.log(msg);
-_log(msg);
-				_listStories();
-			}
-		});
-	}//end event
-
-	
-	document.getElementById("btn-add-record").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-	
-		_addRecord({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"recordKey" : document.getElementById("record-key").value,
-			"recordValue" : document.getElementById("record-value").value,
-			"callback" : function( runtime ){
-var msg = "_addRecord(), "+ dbName +", "+ storeName +", runtime: " + runtime;
-console.log(msg);
-_log(msg);
-			}
-		});
-	}//end event
-	
-	document.getElementById("btn-add-records").onclick = function(){
-		
-		var storeData = [];
-		storeData.push({"value" : "value1"});
-		storeData.push({"value" : "value2"});
-		storeData.push({"value" : "value3"});
-		
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-
-		_addRecords({
-			"dbName" : document.getElementById("dbname").value,
-			"storeName" : document.getElementById("storename").value,
-			"storeData" : storeData,
-			"callback" : function( runtime ){
-//var msg = "_addRecords(), runtime: " + runtime;				
-//console.log(msg);
-//_log(msg);
-			}
-		});
-	}//end event
+	defineEvents();
 	
 
-	document.getElementById("btn-num-records").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-
-		_numRecords({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( num ){
-				var msg = "_numRecords(), store:" + document.getElementById("storename").value + ", " + num + " records.";
-console.log(msg);
-_log(msg);
-			}
-		});
-	}//end event
-
-
-	document.getElementById("btn-get-records").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-
-		_getRecords({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( data, runtime ){
-//var msg = "_getRecords(), "+ dbName +"."+ storeName + ", " +runtime + " sec, num records: " + data.length;				
-//_log(msg);
-//console.log(msg);
-console.log(data );
-			}
-		});
-	}//end event
-	
-	document.getElementById("btn-get-records-obj").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-
-		_getRecords({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"action" : "get_records_obj",
-			"callback" : function( data, runtime ){
-var msg = "_getRecords(), get storeData as object, "+ dbName +"."+ storeName + ", " +runtime + " sec";				
-_log(msg);
-console.log(msg);
-console.log(data );
-			}
-		});
-	}//end event
-	
-	document.getElementById("btn-get-record").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-		
-		var recordKey = parseInt( document.getElementById("record-key").value );
-//console.log(recordKey);
-		if( isNaN(recordKey) ){
-			var recordKey = document.getElementById("record-key").value;
-		}
-
-		_getRecord({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			//"action" : "get_record",//?
-			"recordKey" : recordKey,
-			"callback" : function( data, runtime ){
-var msg = "_getRecord(), "+ dbName +"."+ storeName + ", " +runtime + " sec";				
-msg += ", success get record with key " + recordKey;
-_log(msg);
-console.log(data);
-				if(data){
-					_log(data );
-				} else {
-					_log(typeof data );
-				}
-				
-			}
-		});
-	}//end event
-	
-	document.getElementById("btn-delete-record").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-		
-		var recordKey = parseInt( document.getElementById("record-key").value );
-//console.log(recordKey);
-		if( isNaN(recordKey) ){
-			var recordKey = document.getElementById("record-key").value;
-		}
-
-		_deleteRecord({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			//"action" : "delete_record",//?
-			"recordKey" : recordKey,
-			"callback" : function( log ){
-var msg = "_deleteRecord(), "+ log;				
-_log(msg);
-			}
-		});
-	}//end event
-	
 	document.getElementById("btn-clear-store").onclick = function(){
 		var dbName = document.getElementById("dbname").value;
 		var storeName = document.getElementById("storename").value;
@@ -3233,3 +2968,445 @@ console.log(msg, e);
 			
 		}//end _run_transaction()
 	}//end iDB()
+	
+	
+function defineEvents(){
+
+	window.addEventListener("offline", function(e) {
+		_vars.logMsg = "navigator.onLine: " + navigator.onLine;
+		_alert(_vars.logMsg, "danger");
+	});
+	window.addEventListener("online", function(e) {
+		_vars.logMsg = "navigator.onLine: " + navigator.onLine;
+		_alert(_vars.logMsg, "success");
+	});
+
+	var btn_clear_log = document.querySelector("#btn-clear-log");
+	btn_clear_log.onclick = function(){
+		log.innerHTML = "";
+	};
+	
+	var dbNameField = document.querySelector("#dbname");
+	var storeNameField = document.querySelector("#storename");
+	var recordKeyField = document.querySelector("#record-key");
+	var recordValueField = document.querySelector("#record-value");
+	
+//----------------------------------	
+	var btn_list = document.querySelector("#btn-list");
+	btn_list.onclick = function(e){
+//console.log(e);
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		_listStories();
+	}//end event
+
+//----------------------------------	
+	var btn_drop_db = document.querySelector("#btn-dropDB");
+	btn_drop_db.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		_dropDB({
+			"dbName" : dbName.value,
+			"callback" : function( log, runtime ){
+_vars.logMsg="_dropDB(), "+ log +", runtime: " + runtime;
+_alert( _vars.logMsg, "warning" );
+console.log( _vars.logMsg );
+				_listStories();
+			}
+		});
+
+	}//end event
+
+
+//----------------------------------	
+	var btn_create = document.querySelector("#btn-create");
+	btn_create.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		_createStore({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"callback" : function( log, runtime ){
+_vars.logMsg="_createStore(), "+ log +", runtime: " + runtime;
+_alert( _vars.logMsg, "success" );
+console.log( _vars.logMsg );
+				_listStories();
+			}
+		});
+		
+	}//end event
+
+
+//----------------------------------	
+	var btn_delete_store = document.querySelector("#btn-delete-store");
+	btn_delete_store.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		_deleteStore({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"callback" : function( log, runtime ){
+_vars.logMsg = "_deleteStore(), "+ log +", runtime: " + runtime;
+_alert( _vars.logMsg, "warning" );
+console.log( _vars.logMsg );
+				_listStories();
+			}
+		});
+
+	}//end event
+
+
+//----------------------------------	
+	var btn_addRecord = document.querySelector("#btn-add-record");
+	btn_addRecord.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		var recordKey = recordKeyField.value;
+		if( !recordKey || recordKey.length===0 ){
+_vars.logMsg="input field <b>record key</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		var recordValue = recordValueField.value;
+		if( !recordValue || recordValue.length===0 ){
+_vars.logMsg="input field <b>record value</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		_addRecord({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"recordKey" : recordKey,
+			"recordValue" : recordValue,
+			"callback" : function( runtime ){
+_vars.logMsg = "_addRecord(), db: "+ dbName +", store: "+ storeName ", key: "+ recordKey+", runtime: " + runtime;
+_alert( _vars.logMsg, "warning" );
+console.log( _vars.logMsg );
+			}
+		});
+
+	}//end event
+
+
+//----------------------------------	
+	var btn_addRecords = document.querySelector("#btn-add-records");
+	btn_addRecords.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		var storeData = [];
+		storeData.push({"value" : "value1"});
+		storeData.push({"value" : "value2"});
+		storeData.push({"value" : "value3"});
+		
+		_addRecords({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"storeData" : storeData,
+			"callback" : function( runtime ){
+_vars.logMsg = "_addRecords(), db: "+ dbName +", store: "+ storeName +", runtime: " + runtime;
+_alert( _vars.logMsg, "warning" );
+console.log( _vars.logMsg );
+			}
+		});
+
+	}//end event
+
+//----------------------------------	
+	var btn_numRecords = document.querySelector("#btn-num-records");
+	btn_numRecords.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		_numRecords({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"callback" : function( num ){
+_vars.logMsg = "_numRecords(), store:" + storeName + ", " + num + " records.";
+_alert( _vars.logMsg, "info" );
+console.log( _vars.logMsg );
+			}
+		});
+
+	}//end event
+
+//----------------------------------	
+	var btn_getRecords = document.querySelector("#btn-get-records");
+	btn_getRecords.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		_getRecords({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"callback" : function( data, runtime ){
+_vars.logMsg = "_getRecords(), db: "+ dbName +", store:"+ storeName + ", " +runtime + " sec, num records: " + data.length;
+_alert( _vars.logMsg, "info" );
+console.log( _vars.logMsg );
+//console.log(data );
+			}
+		});
+
+	}//end event
+
+//----------------------------------	
+	var btn_getRecordsObj = document.querySelector("#btn-get-records-obj");
+	btn_getRecordsObj.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		_getRecords({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"action" : "get_records_obj",
+			"callback" : function( data, runtime ){
+_vars.logMsg = "_getRecords(), get storeData as object, db: "+ dbName +", store:"+ storeName + ", " +runtime + " sec, num records: " + data.length;
+_alert( _vars.logMsg, "info" );
+//console.log( _vars.logMsg );
+console.log(data );
+			}
+		});
+
+	}//end event
+
+//----------------------------------	
+	var btn_getRecord = document.querySelector("#btn-get-record");
+	btn_getRecord.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		var recordKey = recordKeyField.value;
+		if( !recordKey || recordKey.length===0 ){
+_vars.logMsg="input field <b>record key</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+//console.log(recordKey);
+		recordKey = parseInt( recordKeyField.value );
+		if( isNaN( recordKey ) ){
+			recordKey = recordKeyField.value;
+		}
+
+		_getRecord({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			//"action" : "get_record",//?
+			"recordKey" : recordKey,
+			"callback" : function( data, runtime ){
+_vars.logMsg = "_getRecord(), db: "+ dbName +", store:"+ storeName + ", " +runtime + " sec, num records: " + data.length;
+_vars.logMsg += ", success get record with key " + recordKey;
+_alert( _vars.logMsg, "success" );
+console.log(data);
+
+				if(data){
+					_log(data );
+				} else {
+					_log(typeof data );
+				}
+				
+			}
+		});
+
+	}//end event
+
+
+//----------------------------------	
+	var btn_deleteRecord = document.querySelector("#btn-delete-record");
+	btn_deleteRecord.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		var recordKey = recordKeyField.value;
+		if( !recordKey || recordKey.length===0 ){
+_vars.logMsg="input field <b>record key</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+//console.log(recordKey);
+		recordKey = parseInt( recordKeyField.value );
+		if( isNaN( recordKey ) ){
+			recordKey = recordKeyField.value;
+		}
+
+		_deleteRecord({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			//"action" : "delete_record",//?
+			"recordKey" : recordKey,
+			"callback" : function( log ){
+_vars.logMsg = "_deleteRecord(), "+ log;
+_alert( _vars.logMsg, "warning" );
+			}
+		});
+
+	}//end event
+
+}//end defineEvents()
