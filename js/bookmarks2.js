@@ -39,8 +39,13 @@ var webApp = {
 			"tooltip_tpl" : "created: {{dateAdded}}, modified:{{lastModified}}"
 		},
 		"breadcrumbs": {},
-		"imageNotLoad": "img/image_not_load.png"
-	},
+		"imageNotLoad": "img/image_not_load.png",
+		
+		"cacheSupport" : false,
+		"swSupport" : false,
+		"promiseSupport": false
+		
+	},//end vars{}
 	
 	"init" : function( postFunc ){
 console.log("init webapp!");
@@ -694,7 +699,53 @@ console.log( "reader, progress");
 
 //Start tests
 function runTests(){
+
+	_alert( navigator.userAgent, "info" );
+//--------------------------
+	webApp.vars["logMsg"] = "navigator.onLine: " + navigator.onLine;
+	if ( navigator.onLine ) {
+		_alert( webApp.vars["logMsg"], "success");
+	} else {
+		_alert( webApp.vars["logMsg"], "danger");
+	}
 	
+//--------------------------------------
+	if ( typeof window.caches !== "undefined") {
+		webApp.vars["cacheSupport"] = true;
+		webApp.vars["logMsg"] = "CacheStorage API, window.caches support: " + webApp.vars["cacheSupport"];
+		_alert( webApp.vars["logMsg"], "success");
+	} else {
+		webApp.vars["logMsg"] = "<b>window.caches</b> NOT supported...";
+		_alert( webApp.vars["logMsg"], "danger");
+	}
+	
+//--------------------------------------
+	var result = navigator.serviceWorker;
+//alert(result);	
+	if ( result ) {
+		webApp.vars["swSupport"] = true;
+		webApp.vars["logMsg"] = "Service Worker API, <b>navigator.serviceWorker</b> support: " + webApp.vars["swSupport"];
+		_alert( webApp.vars["logMsg"], "success");
+	} else {
+		webApp.vars["logMsg"] = "<b>navigator.serviceWorker</b> NOT supported...";
+		_alert( webApp.vars["logMsg"], "danger");
+		
+		if( window.location.protocol !== "https:"){
+			webApp.vars["logMsg"] = "serviceWorker requires 'https:' protocol., but used: " + window.location.protocol;
+			_alert( webApp.vars["logMsg"], "warning");
+		}
+	}
+//---------------------------------
+	var test =  typeof window.Promise !== "undefined";
+	webApp.vars["logMsg"] = "window.Promise support: " + test;
+	if( test ){
+		webApp.vars["promiseSupport"] = true;
+		_alert( webApp.vars["logMsg"], "success");
+	} else {
+		_alert( webApp.vars["logMsg"], "error");
+	}
+
+//--------------------------------------
 	var tests = [];
 /*	
 	var test = {
@@ -719,22 +770,14 @@ function runTests(){
 	} else {
 		test["msg"] = "typeof JSON :" + typeof JSON;
 		test["msg"] += ", methods JSON.stringify(obj), JSON.parse(json_string) not supported...";
-		
 	}
 	_push( tests, test );
-//--------------------------------------
 
 //console.log(tests);
 	webApp.vars["tests"] = tests;
 	
 	//form HTML
-	var testTpl = '<li class="list-unstyled"><b>{{name}}</b> : <span class="text-info text-uppercase"><b>{{result}}</b></span></li>';
-//	var testTpl = '<li class="panel-group"><b>{{name}}</b> : <span class="text-info text-uppercase"><b>{{result}}</b></span><div class="description"><small>{{msg}}</small></div>{{test_links}}</li>';
-	
-	//var test_links_tpl = "<ul class='relative-links'><b>relative links</b>: {{links}}</ul>";
-//console.log( test_links_tpl );	
-	//var test_links_item_tpl = "<li><a href='{{item-link}}' target='_blank'>{{item-text}}</a></li>";
-//console.log( test_links_item_tpl );	
+	var testTpl = '<li><b>{{name}}</b> : <span class="text-info text-uppercase"><b>{{result}}</b></span></li>';
 	
 	var testHtml = "";
 	for( var n = 0; n < tests.length; n++){
@@ -747,34 +790,59 @@ function runTests(){
 			msg = "";
 		}
 		html = html.replace("{{msg}}", msg );
-		
-		// var test_links = "";
-		// if( tests[n]["links"] ){
-			// var test_links = tests[n]["links"];
-			// if( test_links.length > 0  ){
-				// var html_items = "";
-				// for( var n2 = 0; n2 < test_links.length; n2++){
-					// html_items += test_links_item_tpl
-					// .replace("{{item-link}}", test_links[n2]["link"])
-					// .replace("{{item-text}}", test_links[n2]["text"]);
-				// };//next
-				// test_links = test_links_tpl.replace("{{links}}", html_items);
-// //console.log( test_links );		
-			// }
-		// }
-		// html = html.replace("{{test_links}}", test_links);
-		
 		testHtml += html;
 	}//next
 	
-	return "<ul>" + testHtml + "</ul>";
+	return "<ul class='list-unstyled'>" + testHtml + "</ul>";
 	
 }//end runTests()
 
+function registerServiceWorker() {
+	const SW_NAME = "sw.js";
+	
+	webApp.vars["logMsg"] = "-- navigator.serviceWorker registration in progress.";
+	_alert( webApp.vars["logMsg"], "info");
+	
+	window.addEventListener('load', function() {
+		navigator.serviceWorker.register( SW_NAME ).then(function(reg) {
+			webApp.vars["logMsg"] = "-- navigator.serviceWorker registration succeeded. Scope is " + reg.scope;
+_alert(webApp.vars["logMsg"], "success");
+			
+			if(reg.installing) {
+webApp.vars["logMsg"]="Service worker installing";
+_alert( webApp.vars["logMsg"], "info" );
+			}
+			if(reg.waiting) {
+webApp.vars["logMsg"]="Service worker waiting";
+_alert( webApp.vars["logMsg"], "info" );
+			}
+			if(reg.active) {
+webApp.vars["logMsg"]="Service worker active";
+_alert( webApp.vars["logMsg"], "info" );
+			}
+			support = true;
+			//_getListCaches();
+		}, 
+
+		function(err) {
+webApp.vars["logMsg"]="ServiceWorker registration failed";
+_alert( webApp.vars["logMsg"], "error" );
+console.log(err);
+		})
+		
+		.catch( function(error) {
+webApp.vars["logMsg"] = "Registration failed."
+_alert(webApp.vars["logMsg"], "error");
+console.log(error);
+		});
+	 
+	});//end event
+	
+}//end registerServiceWorker()
+
 
 function _runApp(){
-	//---------------------------------
-	_alert( navigator.userAgent, "info" );
+
 	var html = runTests();
 	_log( html );
 	
@@ -790,13 +858,19 @@ function _runApp(){
 		}
 	}//next
 	
+	if( webApp.vars["swSupport"] && 
+			webApp.vars["cacheSupport"] && 
+				webApp.vars["promiseSupport"] ){
+		registerServiceWorker();
+	}
+	
 	if( !webApp.vars["isRunApp"] ){
 		webApp.vars["logMsg"] = "error, webApplication is not running in this browser....";
-		_log("<div class='alert alert-danger'>" + webApp.vars["logMsg"] + "</div>");
+		_alert(webApp.vars["logMsg"], "error");
 console.log( webApp.vars["logMsg"] );
 		return false;
 	}
-	//---------------------------------
+	
 	
 	//webApp.app.loadTemplates(function(){
 //console.log("Load templates end...", webApp.draw.vars["templates"] );		

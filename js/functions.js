@@ -745,8 +745,8 @@ console.log("loaded: " + e.loaded);
 
 if( typeof window.jQuery === "function"){
 	$(document).ready(function(){
-var msg = "<p>You are running jQuery version: " + jQuery.fn.jquery +"<p>";
-console.log("<div class='alert alert-info'>" + msg + "</div>");
+var msg = "You are running jQuery version: " + jQuery.fn.jquery;
+console.log( msg );
 		
 		//------------------------- scroll to top
 		// $("#scroll-to-top").click(function(e) {

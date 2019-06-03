@@ -189,32 +189,6 @@ console.log(err);
 	}//end event
 
 
-	var btn_add_all_cache = document.querySelector("#btn-add-all-cache");
-	btn_add_all_cache.onclick = function(e){
-		if(!support){
-			return false;
-		}
-		var cacheName = cacheNameField.value;
-//console.log(cacheName);
-		if( !cacheName || cacheName.length===0 ){
-logMsg="<b>Object cache name</b> is empty....";
-_alert( logMsg, "warning" );
-			return false;
-		}
-		caches.open(cacheName).then(function( cache ){// add all caching resource URLs
-		
-			cache.addAll( FILES_TO_CACHE ).then(function(){
-logMsg="Pre-caching offline recources: " + FILES_TO_CACHE.toString();
-_alert( logMsg, "success" );
-console.log(FILES_TO_CACHE.toString() );
-				_getKeys( cacheName );
-			});
-			//return _cache;
-		});
-		
-	}//end event
-
-
 	var btn_delete_key = document.querySelector("#btn-delete-key");
 	btn_delete_key.onclick = function(e){
 		if(!support){
@@ -320,42 +294,6 @@ _alert( logMsg, "success" );
 	}//end event
 
 
-	var btn_test = document.querySelector("#btn-test");
-	btn_test.onclick = function(e){
-		if(!support){
-			return false;
-		}
-		var cacheName = cacheNameField.value;
-//console.log(cacheName);
-		if( !cacheName || cacheName.length===0 ){
-logMsg="<b>Object cache name</b> is empty....";
-_alert( logMsg, "warning" );
-			return false;
-		}
-		
-		cacheKeyField.value = "pages/star-wars-logo_.jpg";//url for load image
-		var key = "pages/star-wars-logo.jpg";//cache image under different name
-		
-		var url = cacheKeyField.value;
-//console.log(url);
-
-		caches.open( cacheName ).then(function( cache ){
-			
-			fetch( url ).then(function (response){
-console.log( response );
-				if (!response.ok) {
-					throw new TypeError('bad response status');
-				} else {
-logMsg="Image by url "+url+" cached under name " + key+", reload page and see image....";
-func.log( "<p class='alert alert-success'>"+logMsg+"</p>", "info" );
-				}
-				return cache.put( key, response);
-			})				
-
-		});
-	}//end event
-
-
 
 	btn_swList.onclick = function(e){
 		navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -452,14 +390,14 @@ function _getListCaches(){
 		caches.keys().then( function(keyList) {
 console.log( keyList);
 			if( keyList.length > 0){
-func.log("<h4>List cache objects</h4>");
+_log("<h4>List cache objects</h4>");
 				var html = "<ul class='list-unstyled'>{{list}}</ul>";
 				var listHtml = "";
 				for( var n = 0; n < keyList.length; n++){
 					listHtml += "<li class='list-group-item'>" + keyList[n] + "</li>";					
 				}//next
 				html = html.replace("{{list}}", listHtml);
-func.log(html);
+_log(html);
 
 				var cacheNameField = document.querySelector("#cache-name");
 				cacheNameField.value = keyList[0];
@@ -478,14 +416,14 @@ function _getKeys( cacheName ){
 		cache.keys().then( function(keyList) {
 				if( keyList.length > 0){
 console.log("CACHE key list:", keyList);
-func.log("<h4>Key list, cache object <b>"+cacheName+"</b></h4>");
+_log("<h4>Key list, cache object <b>"+cacheName+"</b></h4>");
 						var html = "<ol class='list-unstyled'>{{list}}</ol>";
 						var listHtml = "";
 						for( var n = 0; n < keyList.length; n++){
 							listHtml += "<li class='list-group-item'>" + keyList[n]["url"] + "</li>";
 						}//next
 						html = html.replace("{{list}}", listHtml);
-func.log(html);
+_log(html);
 				} else {
 logMsg="no keys found in object cache " + cacheName;
 _alert( logMsg, "warning" );
@@ -496,7 +434,7 @@ _alert( logMsg, "warning" );
 
 
 function _listSW( registrations ){
-func.log("<h4>Servise workers list</h4>");
+_log("<h4>Servise workers list</h4>");
 	var html = "<div class='panel panel-primary'>{{list}}</div>";
 	var listHtml = "";
 	 for(var n=0; n < registrations.length; n++) {
@@ -507,7 +445,7 @@ func.log("<h4>Servise workers list</h4>");
 		listHtml += "<div class='panel-body'>" + _scopeHtml + _stateHtml + _urlHtml+"</div>";
 	}//next
 	html = html.replace("{{list}}", listHtml);
-func.log(html);
+_log(html);
 	
 }//end _listSW()
 

@@ -3,8 +3,9 @@
 const CACHE_NAME = "cache-and-update-v1";
 
 const FILES_TO_CACHE = [
-"offline.html",
-"css/bootstrap337.min.css"
+//"offline.html",
+//"css/bootstrap337.min.css"
+"db/bookmarks.json"
 ];
 
 /* The install event fires when the service worker is first installed.
@@ -16,10 +17,10 @@ console.log("WORKER: install event in progress.", event);
 
 	event.waitUntil(	// after install service worker open new cache
 		caches.open(CACHE_NAME).then( function(cache){// add all caching resource URLs
-					cache.addAll( FILES_TO_CACHE ).then(function( _cache){
-console.log("[ServiceWorker] Pre-caching offline recources", _cache);
-						return _cache;
+					cache.addAll( FILES_TO_CACHE ).then(function(){
+console.log("[ServiceWorker] Pre-caching offline recources");
 						self.skipWaiting();//activate SW right now.....
+						//return _cache;
 					});
 				})
 		);
@@ -32,13 +33,14 @@ console.log("[ServiceWorker] Pre-caching offline recources", _cache);
    CSS resources, fonts, any images, etc.
 */
 self.addEventListener("fetch", function(event) {
-/*	
+
 console.log("WORKER: fetch event in progress.", event.request.url);
 console.log(event, event.request.mode);
 
-	if (event.request.mode !== "navigate") {// Not a page navigation, bail.
-		return;
-	}
+	//if (event.request.mode !== "navigate") {// Not a page navigation, bail.
+		//return;
+	//}
+/*	
 	event.respondWith(
 		fetch(event.request)
 		.catch(() => {
@@ -49,7 +51,25 @@ console.log(event, event.request.mode);
 		})
 	);
 */
-});
+	event.respondWith( 
+		caches.match( event.request )
+			.then(function(cachedResponse){// ищем запрашиваемый ресурс в хранилище кэша
+
+			if (cachedResponse) {// выдаём кэш, если он есть
+				var lastModified = new Date( cachedResponse.headers.get("last-modified") );
+console.log("-- cachedResponse:", cachedResponse.url, lastModified);
+				return cachedResponse;
+			}
+
+				// иначе запрашиваем из сети как обычно
+				return fetch(event.request).catch(function(res){
+console.log( res );
+				});
+
+			})
+	);
+
+});//end event
 
 /* The activate event fires after a service worker has been successfully installed.
    It is most useful when phasing out an older version of a service worker, as at

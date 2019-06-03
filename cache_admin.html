@@ -32,7 +32,7 @@ text-decoration:none;
 outline: none;
 }
 #log .alert {
-margin-bottom: 0;
+margin-bottom: 2px;
 padding: 10px;
 }
 
@@ -108,22 +108,26 @@ pages/star-wars-logo_.jpg (pages/star-wars-logo.jpg)
 				</div>
 
 				<div class="col-xs-6 colsm-6 col-md-6 col-lg-6">
-					<button id="btn-list-caches" class="btn btn-primary">list cache objects</button>
-					
-					<div>
-						<button id="btn-delete-cache" class="btn btn-danger">delete cache by name</button>
-	<a href="https://developer.mozilla.org/ru/docs/Web/API/CacheStorage/delete" target="_blank">developer.mozilla.org, CacheStorage.delete()</a>
-					</div>
-					
-					<button id="btn-list-cache-keys" class="btn btn-primary">list cache keys, CacheStorage.keys()</button>
-					<button id="btn-add-key" class="btn btn-success">add one key into object cache</button>
-					<button id="btn-delete-key" class="btn btn-danger">delete one key into object cache</button>
-					
-					<div>
-						<button id="btn-match-key" class="btn btn-info">cache.match()</button>
-						<small>find key into object cache</small>
-					</div>
-					
+<ul class="list-unstyled">
+	<li class="list-group-item">
+		<button id="btn-list-caches" class="btn btn-primary">list cache objects</button>
+	</li>
+	<li class="list-group-item">
+		<button id="btn-delete-cache" class="btn btn-danger">delete cache by name</button>
+	</li>
+	<li class="list-group-item">
+		<button id="btn-list-cache-keys" class="btn btn-primary">list cache keys</button>
+	</li>
+	<li class="list-group-item">
+		<button id="btn-add-key" class="btn btn-success">add one key into object cache</button>
+	</li>
+	<li class="list-group-item">
+		<button id="btn-delete-key" class="btn btn-danger">delete one key into object cache</button>
+	</li>
+	<li class="list-group-item">
+		<button id="btn-match-key" class="btn btn-info">cache.match()</button>
+	</li>
+</ul>
 				</div>
 				
 			</div>
