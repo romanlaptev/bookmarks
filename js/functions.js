@@ -356,9 +356,9 @@ function runAjax( opt ){
 				num++;
 			}//next
 			url += "?"+ paramsStr;
-			url += "&noCache=" + (new Date().getTime()) + Math.random(); //no cache
+			//url += "&noCache=" + (new Date().getTime()) + Math.random(); //no cache
 		} else {
-			url += "?noCache=" + (new Date().getTime()) + Math.random(); //no cache
+			//url += "?noCache=" + (new Date().getTime()) + Math.random(); //no cache
 		}
 		
 	//}

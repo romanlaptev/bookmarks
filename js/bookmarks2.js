@@ -41,9 +41,16 @@ var webApp = {
 		"breadcrumbs": {},
 		"imageNotLoad": "img/image_not_load.png",
 		
-		"cacheSupport" : false,
-		"swSupport" : false,
-		"promiseSupport": false
+		"jsonSupport" : JSON ? true : false,
+		
+		"cacheSupport" : window.caches ? true : false,
+		"swSupport" : navigator.serviceWorker ? true : false,
+		"promiseSupport": window.Promise  ? true : false,
+		
+		"indexedDBsupport" : window.indexedDB ? true : false,
+		"webSQLsupport" : window.openDatabase  ? true : false,
+		"localStorageSupport" : window['localStorage']  ? true : false,
+		"dataStoreType" : _detectDataStore()
 		
 	},//end vars{}
 	
@@ -697,106 +704,7 @@ console.log( "reader, progress");
 	
 }//end _app()
 
-//Start tests
-function runTests(){
-
-	_alert( navigator.userAgent, "info" );
-//--------------------------
-	webApp.vars["logMsg"] = "navigator.onLine: " + navigator.onLine;
-	if ( navigator.onLine ) {
-		_alert( webApp.vars["logMsg"], "success");
-	} else {
-		_alert( webApp.vars["logMsg"], "danger");
-	}
-	
-//--------------------------------------
-	if ( typeof window.caches !== "undefined") {
-		webApp.vars["cacheSupport"] = true;
-		webApp.vars["logMsg"] = "CacheStorage API, window.caches support: " + webApp.vars["cacheSupport"];
-		_alert( webApp.vars["logMsg"], "success");
-	} else {
-		webApp.vars["logMsg"] = "<b>window.caches</b> NOT supported...";
-		_alert( webApp.vars["logMsg"], "danger");
-	}
-	
-//--------------------------------------
-	var result = navigator.serviceWorker;
-//alert(result);	
-	if ( result ) {
-		webApp.vars["swSupport"] = true;
-		webApp.vars["logMsg"] = "Service Worker API, <b>navigator.serviceWorker</b> support: " + webApp.vars["swSupport"];
-		_alert( webApp.vars["logMsg"], "success");
-	} else {
-		webApp.vars["logMsg"] = "<b>navigator.serviceWorker</b> NOT supported...";
-		_alert( webApp.vars["logMsg"], "danger");
-		
-		if( window.location.protocol !== "https:"){
-			webApp.vars["logMsg"] = "serviceWorker requires 'https:' protocol., but used: " + window.location.protocol;
-			_alert( webApp.vars["logMsg"], "warning");
-		}
-	}
-//---------------------------------
-	var test =  typeof window.Promise !== "undefined";
-	webApp.vars["logMsg"] = "window.Promise support: " + test;
-	if( test ){
-		webApp.vars["promiseSupport"] = true;
-		_alert( webApp.vars["logMsg"], "success");
-	} else {
-		_alert( webApp.vars["logMsg"], "error");
-	}
-
-//--------------------------------------
-	var tests = [];
-/*	
-	var test = {
-		"name" : "window.ActiveXObject",
-		"result" : false
-	};
-	//if(window.ActiveXObject || "ActiveXObject" in window){
-	if( window.ActiveXObject ){
-		test["result"] = true;
-		test["msg"] = "supported";
-//console.log(window.ActiveXObject);
-	}
-	_push( tests, test );
-*/	
-//--------------------------------------
-	var test = {
-		"name" : "JSON support",
-		"result" : false
-	};
-	if (typeof JSON === 'object') {
-		test["result"] = true;
-	} else {
-		test["msg"] = "typeof JSON :" + typeof JSON;
-		test["msg"] += ", methods JSON.stringify(obj), JSON.parse(json_string) not supported...";
-	}
-	_push( tests, test );
-
-//console.log(tests);
-	webApp.vars["tests"] = tests;
-	
-	//form HTML
-	var testTpl = '<li><b>{{name}}</b> : <span class="text-info text-uppercase"><b>{{result}}</b></span></li>';
-	
-	var testHtml = "";
-	for( var n = 0; n < tests.length; n++){
-	
-		var html = testTpl.replace("{{name}}", tests[n]["name"])
-		.replace("{{result}}", tests[n]["result"]);
-		
-		var msg = tests[n]["msg"];
-		if(!msg){
-			msg = "";
-		}
-		html = html.replace("{{msg}}", msg );
-		testHtml += html;
-	}//next
-	
-	return "<ul class='list-unstyled'>" + testHtml + "</ul>";
-	
-}//end runTests()
-
+/*
 function registerServiceWorker() {
 	const SW_NAME = "sw.js";
 	
@@ -839,14 +747,32 @@ console.log(error);
 	});//end event
 	
 }//end registerServiceWorker()
+*/
+
+function _detectDataStore(){
+//console.log(arguments);		
+//console.log( this );		
+	var dataStoreType = false;
+	if( window['localStorage']  ? true : false ){
+		dataStoreType = "localStorage";
+	}
+	if( window.openDatabase  ? true : false ){
+		dataStoreType = "webSQL";
+	}
+	if( window.indexedDB ? true : false ){
+		dataStoreType = "indexedDB";
+	}
+	return dataStoreType;
+}//end _detectDataStore()
+
 
 
 function _runApp(){
-
-	var html = runTests();
-	_log( html );
+	//var html = runTests();
+	//_log( html );
 	
 	webApp.vars["isRunApp"] = false;
+/*
 	for( var n = 0; n < webApp.vars["tests"].length; n++ ){
 		var _test = webApp.vars["tests"][n];
 //console.log(_test);
@@ -857,16 +783,20 @@ function _runApp(){
 			break;
 		}
 	}//next
-	
-	if( webApp.vars["swSupport"] && 
-			webApp.vars["cacheSupport"] && 
-				webApp.vars["promiseSupport"] ){
-		registerServiceWorker();
+*/	
+	if( webApp.vars["jsonSupport"]){
+		webApp.vars["isRunApp"] = true;
 	}
+
+	// if( webApp.vars["swSupport"] && 
+			// webApp.vars["cacheSupport"] && 
+				// webApp.vars["promiseSupport"] ){
+		// registerServiceWorker();
+	// }
 	
 	if( !webApp.vars["isRunApp"] ){
 		webApp.vars["logMsg"] = "error, webApplication is not running in this browser....";
-		_alert(webApp.vars["logMsg"], "error");
+_alert(webApp.vars["logMsg"], "error");
 console.log( webApp.vars["logMsg"] );
 		return false;
 	}
