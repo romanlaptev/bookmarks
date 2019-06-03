@@ -37,9 +37,9 @@ self.addEventListener("fetch", function(event) {
 console.log("WORKER: fetch event in progress.", event.request.url);
 console.log(event, event.request.mode);
 
-	//if (event.request.mode !== "navigate") {// Not a page navigation, bail.
-		//return;
-	//}
+	if (event.request.mode !== "navigate") {// Not a page navigation, bail.
+		return;
+	}
 /*	
 	event.respondWith(
 		fetch(event.request)
