@@ -55,296 +55,6 @@ function init(){
 	//document.getElementById("btn-list").click();
 	_listStories();
 	defineEvents();
-	
-
-	document.getElementById("btn-clear-store").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-
-		_clearStore({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( log, runtime ){
-var msg = "_clearStore(), "+ log + ", " +runtime + " sec";				
-_log(msg);
-			}
-		});
-	}//end event
-	
-	if( document.getElementById("btn-get-info") ){
-		document.getElementById("btn-get-info").onclick = function(){
-		}//end event
-	}
-	
-	if( document.getElementById("btn-load") ){
-		document.getElementById("btn-load").onclick = function(){
-			_loadSpr({
-				"url" : document.getElementById("input_file").value,
-				"callback" : function( res ){
-console.log("after load...", res.length);				
-/*
-						var _dbName = document.getElementById("dbname").value;
-						var _storeName = document.getElementById("storename").value;
-						if( _storeName.length === 0 ){
-							var _url = document.getElementById("input_file").value;
-							var pos_last_dot = _url.lastIndexOf(".");
-							//var pos_last = _url.length;
-							//var type = _url.substring( pos_last_dot + 1, pos_last );
-							var pos_last_slash = _url.lastIndexOf("/");
-							_storeName = _url.substring( pos_last_slash+1, pos_last_dot ).toUpperCase();
-						}
-
-						var _storeDataJson = __parseCSVTable( res, _storeName );
-	//console.log(_storeDataJson, _storeDataJson.length);					
-						if( _storeDataJson && _storeDataJson.length > 0){
-							_saveRecords({
-								"dbName" : _dbName,
-								"storeName" : _storeName,
-								"json" : _storeDataJson,
-								"callback" : function(){
-	var msg = "Saved records to " + _dbName + "." + _storeName;								
-	console.log(msg);
-	_log(msg);								
-								}
-							});
-						}
-*/
-				}
-			});
-			
-		}//end event
-	}
-
-	document.getElementById("btn-run-query").onclick = function(){
-		var dbName = document.getElementById("dbname").value;
-		var storeName = document.getElementById("storename").value;
-/*		
-		//SELECT KOD, TXT, KOD_MAIN FROM SIMPLE_SPR WHERE KOD_MAIN IN (1,5) AND NOMER=170
-		var queryObj = {
-			"action" : "select",
-			"tableName": storeName,
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
-			"where" : [
-				{"key" : "KOD_MAIN", "value" : [1, 5], "compare": "IN"},
-				{"logic": "AND", "key" : "NOMER", "value" : "170", "compare": "="},
-				{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
- 			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
-				}
-
-			}
-		};
-*/
-
-/*
-// select distinct txt text,kod kod,kod_main kod_main,null km from SIMPLE_SPR where 
-// nomer = 175 and 
-// kod_main is null  and 
-// kod in(select kod from sl_klass_perm where perm_name='CPR_175' and nomer=175)
-		var queryObj = {
-			"action" : "select",
-			"distinct"	: true,
-			"tableName": storeName, //"SIMPLE_SPR",
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "TEXT2", "ORDER_BY", "ARCHIVE_STAT"],
-			"where" : [
-				{"key" : "NOMER", "value" : "175", "compare": "="},
-				{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="},
-				{"logic": "AND", "key" : "KOD", "value" : {
-					"action" : "select",
-					"tableName": "SL_KLASS_PERM",
-					"targetFields" : ["KOD", "ZAPRET"],
-					"where" : [
-						{"key" : "PERM_NAME", "value" : "CPR_175", "compare": "="},
-						{"logic": "AND", "key" : "NOMER", "value" : "175", "compare": "="},
-					],
-					"callback" : function(){}
-					
-				}, "compare": "IN"}
-			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
-				}
-
-			}
-		};
-*/
-
-/*
-// select distinct txt text,kod kod,null kod_main,null km from PMLP_ADR_LVL_4 where 
-// LVL_1_KOD = "-980200" AND -- VENTSPILS NOVADS
-// LVL_2_KOD = "-980213" AND -- PILTENE
-// (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
-// order by ord_lov
-		
-// select * from PMLP_ADR_LVL_4 
-// WHERE LVL_1_KOD = "-980200" -- VENTSPILS NOVADS
-// AND LVL_2_KOD = "-980213" -- PILTENE
-// AND ARCHIVE_STAT !=1
-// -- AND  (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
-// order by ord_lov
-
-// select * from PMLP_ADR_LVL_4 
-// WHERE LVL_1_KOD = "-980200"
-// AND LVL_2_KOD = "-980213"
-// OR LVL_1_KOD = "-660200"
-// AND ARCHIVE_STAT !=1
-// order by ord_lov
-
-		var queryObj = {
-			"action" : "select",
-			//"distinct" : true,
-			"tableName": storeName,
-			"targetFields" : ["KOD", "TXT", "ORD_LOV", "ARCHIVE_STAT" ],
-			"where" : [
-				{"key" : "LVL_1_KOD", "value" : "-980200", "compare": "="},
-				{"logic": "AND", "key" : "LVL_2_KOD", "value" : "-980213", "compare": "="},
-				{"logic": "OR", "key" : "LVL_1_KOD", "value" : "-660200", "compare": "="},
-				{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
-				
-				//{"key" : "LVL_2_KOD", "value" : "-980213", "compare": "<>"}
- 			],
-			"orderBy" : "ORD_LOV",
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
-				}
-
-			}
-		};
-*/
-
-/*
-//SELECT * FROM simple_spr where nomer="182" and kod_main is null		
-		var queryObj = {
-			"action" : "select",
-			"tableName": storeName,
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
-			"where" : [
-				{"key" : "NOMER", "value" : "182", "compare": "="},
-				{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="}
- 			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
-				}
-
-			}
-		};
-*/
-
-		
-/*
-(
-	( 
-		(	(LVL_2_KOD :AR_VT_PP_KOD AND  LVL_2_KOD<>'100003003' ) or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
-			and 
-			(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL) 	
-	) 
-	or 
-	(	
-		(	(LVL_2_KOD :AR_VT_PP_KOD and  LVL_2_KOD='100003003') or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
-		and 
-		(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL)
-	)
-)
-// order by ord_lov
-
-*/
-//select count(KOD), * from AR_ADR_LVL_4 where 
-//lvl_2_kod='100003011' and lvl_2_kod<>'100003003'
-//order by ORD_LOV
-		var queryObj = {
-			"action" : "select",
-			"tableName": "AR_ADR_LVL_4",
-			"targetFields" : [
-"KOD",
-"TXT",
-"LVL_1_KOD",
-"LVL_2_KOD",
-"LVL_3_KOD",
-"ORD_LOV",
-"ARCHIVE_STAT"
-],
-			"orderBy" : "ORD_LOV",
-			"where" : [
-				{"logic": "", "key" : "LVL_2_KOD", "value" : "100003011", "compare": "="},
-				{"logic": "AND", "key" : "LVL_2_KOD", "value" : "100003003", "compare": "<>"}
- 			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
-				}
-
-			}
-		};
-
-
-/*
-		var queryObj = {
-			"action" : "select",
-			"tableName": "SIMPLE_SPR",
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
-			"where" : [
-				{"logic": "", "key" : "NOMER", "value" : "779", "compare": "="},
-				{"logic": "OR", "key" : "NOMER", "value" : "984", "compare": "="},
-				{"logic": "AND", "key" : "KOD", "value" : "14", "compare": "="}//,
-				//{"logic": "AND", "key" : "KOD", "value" : "01", "compare": "!="}
- 			],
-			
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
-				}
-
-			}
-		};
-*/
-		_runQuery({
-			"dbName" : dbName,
-			"storeName" : storeName,//"_SIMPLE_SPR",//"SL_KLASS_PERM"
-			"queryObj" : queryObj,
-			"callback" : function( data ){
-var msg = "- end process queries, num records: " + data.length;
-console.log( msg );
-_log(msg);
-console.log( data );
-			}
-		});
-
-	}//end event
-	
-	if( document.getElementById("btn-import") ){
-		document.getElementById("btn-import").onclick = function(){
-		}//end event
-	}
-	
 }//end init()	
 
 
@@ -1418,10 +1128,10 @@ _log(msg);
 
 		function _postFunc(log){ 
 //console.log(options);
-//console.log("callback, create_store, " + options["storeName"]);
+console.log(arguments);
 
 			var timeEnd = new Date();
-			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+			var runtime_s = ( timeEnd.getTime() - timeStart.getTime() ) / 1000;
 //console.log("Runtime: ", runtime_s);
 
 			if( typeof options["callback"] == "function"){
@@ -2076,7 +1786,7 @@ console.log("_set_version(), error indexedDB.open ", e);//?
 				
 					case "create_store":
 						if( db.objectStoreNames.contains( _iDBparams["storeName"] )) {
-var msg = "dont create "  + _iDBparams["storeName"] + ", store exists....";
+var msg = "data store  "  + _iDBparams["storeName"] + " not created, store exists....";
 //console.log(msg);
 							_iDBparams["runStatus"] = "error";				
 							if( typeof _iDBparams["callback"] === "function"){
@@ -3145,7 +2855,7 @@ _alert( _vars.logMsg, "warning" );
 			"recordKey" : recordKey,
 			"recordValue" : recordValue,
 			"callback" : function( runtime ){
-_vars.logMsg = "_addRecord(), db: "+ dbName +", store: "+ storeName ", key: "+ recordKey+", runtime: " + runtime;
+_vars.logMsg = "_addRecord(), db: "+ dbName +", store: "+ storeName + ", key: "+ recordKey+", runtime: " + runtime;
 _alert( _vars.logMsg, "warning" );
 console.log( _vars.logMsg );
 			}
@@ -3404,6 +3114,326 @@ _alert( _vars.logMsg, "warning" );
 			"callback" : function( log ){
 _vars.logMsg = "_deleteRecord(), "+ log;
 _alert( _vars.logMsg, "warning" );
+			}
+		});
+
+	}//end event
+
+
+//----------------------------------	
+	var btn_clearStore = document.querySelector("#btn-clear-store");
+	btn_clearStore.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+		_clearStore({
+			"dbName" : dbName,
+			"storeName" : storeName,
+			"callback" : function( log, runtime ){
+_vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
+_alert( _vars.logMsg, "warning" );
+			}
+		});
+
+	}//end event
+
+
+//----------------------------------	
+/*
+	if( document.getElementById("btn-load") ){
+		document.getElementById("btn-load").onclick = function(){
+			_loadSpr({
+				"url" : document.getElementById("input_file").value,
+				"callback" : function( res ){
+console.log("after load...", res.length);				
+						// var _dbName = document.getElementById("dbname").value;
+						// var _storeName = document.getElementById("storename").value;
+						// if( _storeName.length === 0 ){
+							// var _url = document.getElementById("input_file").value;
+							// var pos_last_dot = _url.lastIndexOf(".");
+							// //var pos_last = _url.length;
+							// //var type = _url.substring( pos_last_dot + 1, pos_last );
+							// var pos_last_slash = _url.lastIndexOf("/");
+							// _storeName = _url.substring( pos_last_slash+1, pos_last_dot ).toUpperCase();
+						// }
+
+						// var _storeDataJson = __parseCSVTable( res, _storeName );
+	// //console.log(_storeDataJson, _storeDataJson.length);					
+						// if( _storeDataJson && _storeDataJson.length > 0){
+							// _saveRecords({
+								// "dbName" : _dbName,
+								// "storeName" : _storeName,
+								// "json" : _storeDataJson,
+								// "callback" : function(){
+	// var msg = "Saved records to " + _dbName + "." + _storeName;								
+	// console.log(msg);
+	// _log(msg);								
+								// }
+							// });
+						// }
+				}
+			});
+			
+		}//end event
+	}
+*/
+
+//----------------------------------	
+	var btn_runQuery = document.querySelector("#btn-run-query");
+	btn_runQuery.onclick = function(e){
+		if( !_vars["indexedDBsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var storeName = storeNameField.value;
+//console.log(storeName);
+		if( !storeName || storeName.length===0 ){
+_vars.logMsg="input field <b>store name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+/*		
+		//SELECT KOD, TXT, KOD_MAIN FROM SIMPLE_SPR WHERE KOD_MAIN IN (1,5) AND NOMER=170
+		var queryObj = {
+			"action" : "select",
+			"tableName": storeName,
+			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
+			"where" : [
+				{"key" : "KOD_MAIN", "value" : [1, 5], "compare": "IN"},
+				{"logic": "AND", "key" : "NOMER", "value" : "170", "compare": "="},
+				{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
+ 			],
+			"callback" : function( opt ){
+console.log( "- end query");
+//console.log( opt["data"] );
+
+				//Run query, end process
+				if( typeof opt["callback"] == "function"){
+					opt["callback"]( opt["data"] );
+				}
+
+			}
+		};
+*/
+
+/*
+// select distinct txt text,kod kod,kod_main kod_main,null km from SIMPLE_SPR where 
+// nomer = 175 and 
+// kod_main is null  and 
+// kod in(select kod from sl_klass_perm where perm_name='CPR_175' and nomer=175)
+		var queryObj = {
+			"action" : "select",
+			"distinct"	: true,
+			"tableName": storeName, //"SIMPLE_SPR",
+			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "TEXT2", "ORDER_BY", "ARCHIVE_STAT"],
+			"where" : [
+				{"key" : "NOMER", "value" : "175", "compare": "="},
+				{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="},
+				{"logic": "AND", "key" : "KOD", "value" : {
+					"action" : "select",
+					"tableName": "SL_KLASS_PERM",
+					"targetFields" : ["KOD", "ZAPRET"],
+					"where" : [
+						{"key" : "PERM_NAME", "value" : "CPR_175", "compare": "="},
+						{"logic": "AND", "key" : "NOMER", "value" : "175", "compare": "="},
+					],
+					"callback" : function(){}
+					
+				}, "compare": "IN"}
+			],
+			"callback" : function( opt ){
+console.log( "- end query");
+//console.log( opt["data"] );
+
+				//Run query, end process
+				if( typeof opt["callback"] == "function"){
+					opt["callback"]( opt["data"] );
+				}
+
+			}
+		};
+*/
+
+/*
+// select distinct txt text,kod kod,null kod_main,null km from PMLP_ADR_LVL_4 where 
+// LVL_1_KOD = "-980200" AND -- VENTSPILS NOVADS
+// LVL_2_KOD = "-980213" AND -- PILTENE
+// (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
+// order by ord_lov
+		
+// select * from PMLP_ADR_LVL_4 
+// WHERE LVL_1_KOD = "-980200" -- VENTSPILS NOVADS
+// AND LVL_2_KOD = "-980213" -- PILTENE
+// AND ARCHIVE_STAT !=1
+// -- AND  (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
+// order by ord_lov
+
+// select * from PMLP_ADR_LVL_4 
+// WHERE LVL_1_KOD = "-980200"
+// AND LVL_2_KOD = "-980213"
+// OR LVL_1_KOD = "-660200"
+// AND ARCHIVE_STAT !=1
+// order by ord_lov
+
+		var queryObj = {
+			"action" : "select",
+			//"distinct" : true,
+			"tableName": storeName,
+			"targetFields" : ["KOD", "TXT", "ORD_LOV", "ARCHIVE_STAT" ],
+			"where" : [
+				{"key" : "LVL_1_KOD", "value" : "-980200", "compare": "="},
+				{"logic": "AND", "key" : "LVL_2_KOD", "value" : "-980213", "compare": "="},
+				{"logic": "OR", "key" : "LVL_1_KOD", "value" : "-660200", "compare": "="},
+				{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
+				
+				//{"key" : "LVL_2_KOD", "value" : "-980213", "compare": "<>"}
+ 			],
+			"orderBy" : "ORD_LOV",
+			"callback" : function( opt ){
+console.log( "- end query");
+//console.log( opt["data"] );
+
+				//Run query, end process
+				if( typeof opt["callback"] == "function"){
+					opt["callback"]( opt["data"] );
+				}
+
+			}
+		};
+*/
+
+/*
+//SELECT * FROM simple_spr where nomer="182" and kod_main is null		
+		var queryObj = {
+			"action" : "select",
+			"tableName": storeName,
+			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
+			"where" : [
+				{"key" : "NOMER", "value" : "182", "compare": "="},
+				{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="}
+ 			],
+			"callback" : function( opt ){
+console.log( "- end query");
+//console.log( opt["data"] );
+
+				//Run query, end process
+				if( typeof opt["callback"] == "function"){
+					opt["callback"]( opt["data"] );
+				}
+
+			}
+		};
+*/
+
+/*
+(
+	( 
+		(	(LVL_2_KOD :AR_VT_PP_KOD AND  LVL_2_KOD<>'100003003' ) or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
+			and 
+			(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL) 	
+	) 
+	or 
+	(	
+		(	(LVL_2_KOD :AR_VT_PP_KOD and  LVL_2_KOD='100003003') or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
+		and 
+		(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL)
+	)
+)
+// order by ord_lov
+
+*/
+
+//select count(KOD), * from AR_ADR_LVL_4 where 
+//lvl_2_kod='100003011' and lvl_2_kod<>'100003003'
+//order by ORD_LOV
+		var queryObj = {
+			"action" : "select",
+			"tableName": "AR_ADR_LVL_4",
+			"targetFields" : [
+"KOD",
+"TXT",
+"LVL_1_KOD",
+"LVL_2_KOD",
+"LVL_3_KOD",
+"ORD_LOV",
+"ARCHIVE_STAT"
+],
+			"orderBy" : "ORD_LOV",
+			"where" : [
+				{"logic": "", "key" : "LVL_2_KOD", "value" : "100003011", "compare": "="},
+				{"logic": "AND", "key" : "LVL_2_KOD", "value" : "100003003", "compare": "<>"}
+ 			],
+			"callback" : function( opt ){
+console.log( "- end query");
+//console.log( opt["data"] );
+
+				//Run query, end process
+				if( typeof opt["callback"] == "function"){
+					opt["callback"]( opt["data"] );
+				}
+
+			}
+		};
+
+
+/*
+		var queryObj = {
+			"action" : "select",
+			"tableName": "SIMPLE_SPR",
+			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
+			"where" : [
+				{"logic": "", "key" : "NOMER", "value" : "779", "compare": "="},
+				{"logic": "OR", "key" : "NOMER", "value" : "984", "compare": "="},
+				{"logic": "AND", "key" : "KOD", "value" : "14", "compare": "="}//,
+				//{"logic": "AND", "key" : "KOD", "value" : "01", "compare": "!="}
+ 			],
+			
+			"callback" : function( opt ){
+console.log( "- end query");
+//console.log( opt["data"] );
+
+				//Run query, end process
+				if( typeof opt["callback"] == "function"){
+					opt["callback"]( opt["data"] );
+				}
+
+			}
+		};
+*/
+		_runQuery({
+			"dbName" : dbName,
+			"storeName" : storeName,//"_SIMPLE_SPR",//"SL_KLASS_PERM"
+			"queryObj" : queryObj,
+			"callback" : function( data ){
+_vars.logMsg = "_runQuery(), - end process queries, num records: " + data.length;
+_alert( _vars.logMsg, "info" );
+console.log( data );
 			}
 		});
 
