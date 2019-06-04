@@ -136,8 +136,37 @@ function _alert( message, level ){
 		break;
 	}//end switch
 	
-}//end _alert()		
+}//end _alert()
+
+function _wrapLogMsg( message, level ){
+	switch (level) {
+		case "info":
+			message = "<p class='alert alert-info'>" + message + "</p>";
+			return message;
+		break;
 		
+		case "warning":
+			message = "<p class='alert alert-warning'>" + message + "</p>";
+			return message;
+		break;
+		
+		case "danger":
+		case "error":
+			message = "<p class='alert alert-danger'>" + message + "</p>";
+			return message;
+		break;
+		
+		case "success":
+			message = "<p class='alert alert-success'>" + message + "</p>";
+			return message;
+		break;
+		
+		default:
+			return message;
+		break;
+	}//end switch
+	
+}//end _wrapLogMsg()
 
 /*
 parse XML document to array

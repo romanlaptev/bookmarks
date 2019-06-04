@@ -1049,18 +1049,13 @@ console.log(opt["baseQuery"]);
 	}//end _runQuery()
 
 
-	
-	
-	
-	
-
 	function _listStories(){
 		//_log("", "store-list");
 		//_log("<p><b>list DB stores</b></p>", "store-list");
 		_getListStores({
 			"dbName" : document.getElementById("dbname").value,
 			"callback": function( listStores ){
-console.log("callback, getListStores ", listStores);
+//console.log("callback, getListStores ", listStores);
 
 				if( typeof listStores !== "undefined" &&
 						listStores.length > 0){
@@ -1128,8 +1123,8 @@ _log(msg);
 
 		function _postFunc(log){ 
 //console.log(options);
-console.log(arguments);
-
+//console.log(arguments);
+			
 			var timeEnd = new Date();
 			var runtime_s = ( timeEnd.getTime() - timeStart.getTime() ) / 1000;
 //console.log("Runtime: ", runtime_s);
@@ -1786,7 +1781,7 @@ console.log("_set_version(), error indexedDB.open ", e);//?
 				
 					case "create_store":
 						if( db.objectStoreNames.contains( _iDBparams["storeName"] )) {
-var msg = "data store  "  + _iDBparams["storeName"] + " not created, store exists....";
+var msg = "data store <b>"  + _iDBparams["storeName"] + "</b> not created, store exists....";
 //console.log(msg);
 							_iDBparams["runStatus"] = "error";				
 							if( typeof _iDBparams["callback"] === "function"){
@@ -1816,7 +1811,7 @@ var msg = "data store  "  + _iDBparams["storeName"] + " not created, store exist
 
 							
 						store.transaction.oncomplete = function(event) {
-//var msg = "Create store " + _iDBparams["storeName"] + ' in ' + _iDBparams["dbName"];
+var msg = "Create store <b>" + _iDBparams["storeName"] + "</b>, database: <b>" + _iDBparams["dbName"] +"</b>";
 //console.log(msg, e);
 							_iDBparams["runStatus"] = "success";				
 							if( typeof _iDBparams["callback"] === "function"){
@@ -2765,9 +2760,11 @@ _alert( _vars.logMsg, "warning" );
 			"dbName" : dbName,
 			"storeName" : storeName,
 			"callback" : function( log, runtime ){
-_vars.logMsg="_createStore(), "+ log +", runtime: " + runtime;
-_alert( _vars.logMsg, "success" );
-console.log( _vars.logMsg );
+//console.log( dbInfo["iDBparams"] );
+				_vars.logMsg="_createStore(), "+ log +", runtime: " + runtime;
+//_alert( _vars.logMsg, "success" );
+				_vars.logMsg = _wrapLogMsg( _vars.logMsg, dbInfo["iDBparams"]["runStatus"] );
+_log( _vars.logMsg );
 				_listStories();
 			}
 		});
@@ -2802,9 +2799,12 @@ _alert( _vars.logMsg, "warning" );
 			"dbName" : dbName,
 			"storeName" : storeName,
 			"callback" : function( log, runtime ){
-_vars.logMsg = "_deleteStore(), "+ log +", runtime: " + runtime;
-_alert( _vars.logMsg, "warning" );
-console.log( _vars.logMsg );
+				_vars.logMsg = "_deleteStore(), "+ log +", runtime: " + runtime;
+//_alert( _vars.logMsg, "warning" );
+//console.log( _vars.logMsg );
+				_vars.logMsg = _wrapLogMsg( _vars.logMsg, dbInfo["iDBparams"]["runStatus"] );
+_log( _vars.logMsg );
+
 				_listStories();
 			}
 		});
@@ -2855,9 +2855,11 @@ _alert( _vars.logMsg, "warning" );
 			"recordKey" : recordKey,
 			"recordValue" : recordValue,
 			"callback" : function( runtime ){
-_vars.logMsg = "_addRecord(), db: "+ dbName +", store: "+ storeName + ", key: "+ recordKey+", runtime: " + runtime;
-_alert( _vars.logMsg, "warning" );
-console.log( _vars.logMsg );
+_vars.logMsg = "_addRecord(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeName + "</b>, key: <b>"+ recordKey+"</b>, runtime: " + runtime;
+//_alert( _vars.logMsg, "warning" );
+//console.log( _vars.logMsg );
+				_vars.logMsg = _wrapLogMsg( _vars.logMsg, dbInfo["iDBparams"]["runStatus"] );
+				_log( _vars.logMsg );
 			}
 		});
 
