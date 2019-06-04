@@ -2722,7 +2722,6 @@ _alert( _vars.logMsg, "warning" );
 _vars.logMsg="_dropDB(), "+ log +", runtime: " + runtime;
 _alert( _vars.logMsg, "warning" );
 console.log( _vars.logMsg );
-				_listStories();
 			}
 		});
 

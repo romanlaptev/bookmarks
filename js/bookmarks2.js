@@ -289,7 +289,7 @@ function _loadData( postFunc ){
 	} 
 		switch (webApp.vars["dataStoreType"]) {				
 			case "indexedDB":
-console.log("TEST");			
+console.log("TEST");
 				//__serverRequest();
 			break;
 			
