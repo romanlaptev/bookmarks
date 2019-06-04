@@ -124,19 +124,7 @@ $(window).scroll(function() {
 		<button id="btn-scroll-to-top" class="btn btn-info scroll-to nolink" data-target="insert-json">scroll to top</button>
 	</div>
 
-
 <!-- ********************** load progress bar ************************** -->	
-<!--
-<div id="wait-window" class="">
-	<h1 class="text-center">wait...</h1>
-	<div class="loader loader2"></div> 
-	ajax load:
-	<div class="progress">
-		<div id="load-progress-bar" class="progress-bar hide"></div>
-	</div>
-</div>
-<div id="overlay" class="overlay"></div>
--->
 <div id="wait" class="hide"></div>
 
 <div class="dm-overlay" id="win1">
@@ -147,15 +135,22 @@ $(window).scroll(function() {
                 <h1 class="text-center">wait...</h1>
 
 				<div class="loader loader2"></div> 
-ajax load:
-				<div class="progress">
-					<div id="load-progress-bar" class="progress-bar hide"></div>
-				</div>
+<div id="load-progress">				
+ajax load: <span id="num-total-load"></span>
+	<div class="progress">
+		<div id="load-progress-bar" class="progress-bar hide"></div>
+	</div>
+</div>
+<!--
+prepare data:
+	<div class="progress">
+		<div id="parse-progress-bar" class="progress-bar"></div>
+	</div>
+-->
+			</div>
+		</div>
 
-            </div>
-        </div>
-
-    </div>
+	</div>
 </div>
 
 

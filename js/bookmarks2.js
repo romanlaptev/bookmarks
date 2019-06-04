@@ -3,8 +3,15 @@ var webApp = {
 		"app_title" : "Bookmarks",
 		//"log" : [],
 		"logMsg" : "",
-		"data_url" : "db/bookmarks.json",
-		//"data_url" : "db/lib.json",
+
+		"dataUrl" : "db/bookmarks.json",
+		//"dataUrl" : "db/lib.json",
+		"use_localcache": false,
+		"DB" : {
+			"dataType" : "json",//xml, csv
+			"dbName": "bookmarks"
+		},
+		
 		"userDataUrl" : getById("user-data-url"),
 		"userDataFile" : getById("user-data-file"),
 		
@@ -13,8 +20,11 @@ var webApp = {
 		"pageContainer" : getById("content-column"),
 		"insertContainer" : getById("insert-json"),
 		"btnParse" : getById("btn-parse"),
+		
 		"wait" : getById("wait"),
 		"waitWindow" : getById("win1"),
+		"loadProgressBar" : getById("load-progress-bar")	,
+		"numTotalLoad" : getById("num-total-load"),
 		
 		"log" : getById("log"),
 		"btnToggle" : getById("btn-toggle-log"),
@@ -87,7 +97,7 @@ function _app( opt ){
 
 	// private variables and functions
 	var _vars = {
-		"init_url" : "#?q=parse-json"
+		"init_url" : "#?q=get-data"
 	};// _vars
 	
 	var _init = function( opt ){
@@ -238,85 +248,26 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 			case "upload":
 			break;
 			
-			case "parse-json":
-//console.log( webApp.vars["userDataUrl"] );
-//console.log( webApp.vars["userDataUrl"].value );
-				if( webApp.vars["userDataUrl"].value.length > 0){
-					webApp.vars["data_url"] = webApp.vars["userDataUrl"].value;
-				}
-
-				if( webApp.vars["data_url"].length > 0){
-//webApp.vars["logMsg"] = "start parsing...." + webApp.vars["data_url"];
-//_log("<div class='alert'>" + webApp.vars["logMsg"] + "</div>");
-				} else {
-webApp.vars["logMsg"] = "error, not defined 'data_url' "
-_log("<div class='alert alert-danger'>" + webApp.vars["logMsg"] + "</div>");
-console.log( webApp.vars["logMsg"] );
-				}
-				
+			case "get-data":
 
 				if( webApp.vars["waitWindow"] ){
 					//waitWindow.className="modal-dialog";
 					webApp.vars["waitWindow"].style.display="block";
 				}
-
-				runAjax( {
-					"requestMethod" : "GET", 
-					"url" : webApp.vars["data_url"], 
-					"onProgress" : function( e ){
-						var percentComplete = 0;
-						if(e.lengthComputable) {
-							percentComplete = Math.ceil(e.loaded / e.total * 100);
-						}
-console.log( "Loaded " + e.loaded + " bytes of total " + e.total, e.lengthComputable, percentComplete+"%" );
-
-						var loadProgressBar = getById("load-progress-bar");
-						if( loadProgressBar ){
-							//loadProgress.value = percentComplete;
-							loadProgressBar.className = "progress-bar";
-							loadProgressBar.style.width = percentComplete+"%";
-							loadProgressBar.innerHTML = percentComplete+"%";
-						}
-
-					},//end callback function
-					
-					"onError" : function( xhr ){
-//console.log( "onError ", xhr);
-						webApp.vars["userDataUrl"].value = "";
-					},//end callback function
-					
-					"onLoadEnd" : function( headers ){
-//console.log( "onLoadEnd ", headers);
-						if( webApp.vars["waitWindow"] ){
-							webApp.vars["waitWindow"].style.display="none";
-						}
-					},//end callback function
-					
-					"callback": function( data, runtime ){
-webApp.vars["logMsg"] = "load " + webApp.vars["data_url"]  +", runtime: "+ runtime +" sec";
-_log("<div class='alert'>" + webApp.vars["logMsg"] + "</div>");
-console.log( webApp.vars["logMsg"] );
-//console.log( "_postFunc(), " + typeof data );
-//console.log( data );
-//for( var key in data){
-//console.log(key +" : "+data[key]);
-//}
-
-//setTimeout(function(){
-						if( webApp.vars["waitWindow"] ){
-							webApp.vars["waitWindow"].style.display="none";
-						}
-//}, 1000*3);
-
-						if( data.length > 0){
-							_parseJSON( data );
-						} else {
-webApp.vars["logMsg"] = "error, no JSON data in " + webApp.vars["data_url"] ;
-_log("<p class='alert alert-danger'>" + webApp.vars["logMsg"] + "</p>");
-console.log( webApp.vars["logMsg"] );
-						}
+			
+				_loadData(function( data ){
+						//var t = setTimeout(function(){
+//console.log("end of wait..", arguments);				
+							if( webApp.vars["waitWindow"] ){
+								webApp.vars["waitWindow"].style.display="none";
+							}
+//console.log("end loading..");		
+						//}, 1000*3);
 						
-					}//end callback()
+//console.log( data );
+						if( data ){
+							_parseAjax( data );
+						}
 				});
 				
 			break;
@@ -327,6 +278,142 @@ console.log("function _urlManager(),  GET query string: ", webApp.vars["GET"]);
 		}//end switch
 		
 	}//end _urlManager()
+	
+
+//======================================= LOAD DATA
+function _loadData( postFunc ){
+//console.log("_loadData() ", arguments);
+
+	if( !webApp.vars["use_localcache"] ){
+		webApp.vars["dataStoreType"] = false;
+	} 
+		switch (webApp.vars["dataStoreType"]) {				
+			case "indexedDB":
+console.log("TEST");			
+				//__serverRequest();
+			break;
+			
+			case "webSQL":
+			break;
+			
+			case "localStorage":
+			break;
+
+			default:
+				__serverRequest();
+			break;
+		}//end switch
+		
+		return false;
+		
+		function __serverRequest(){
+//console.log( webApp.vars["userDataUrl"] );
+//console.log( webApp.vars["userDataUrl"].value );
+			if( webApp.vars["userDataUrl"].value.length > 0){
+				webApp.vars["dataUrl"] = webApp.vars["userDataUrl"].value;
+			}
+		
+			if( !webApp.vars["dataUrl"] ||
+				webApp.vars["dataUrl"].length === 0 ){
+webApp.vars["logMsg"] = "error, not found or incorrect 'dataUrl'...";
+_alert( webApp.vars["logMsg"], "error");
+//console.log( webApp.vars["logMsg"] );
+				return false;
+			}
+
+			runAjax( {
+				"requestMethod" : "GET", 
+				"url" : webApp.vars["dataUrl"], 
+				
+				"onProgress" : function( e ){
+					var percentComplete = 0;
+					if(e.lengthComputable) {
+						percentComplete = Math.ceil(e.loaded / e.total * 100);
+					}
+console.log( "Loaded " + e.loaded + " bytes of total " + e.total, e.lengthComputable, percentComplete+"%" );
+					if( webApp.vars["loadProgressBar"] ){
+						webApp.vars["loadProgressBar"].className = "progress-bar";
+						webApp.vars["loadProgressBar"].style.width = percentComplete+"%";
+						webApp.vars["loadProgressBar"].innerHTML = percentComplete+"%";
+						
+						webApp.vars["numTotalLoad"].innerHTML = ((e.total / 1024) / 1024).toFixed(2)  + " Mb";
+					}
+					
+				},
+					
+				"onLoadEnd" : function( headers ){
+//console.log( headers );
+				},
+				
+				"onError" : function( xhr ){
+//console.log( "onError ", arguments);
+					webApp.vars["userDataUrl"].value = "";
+
+webApp.vars["logMsg"] = "error, ajax load failed..." + webApp.vars["dataUrl"];
+_alert( webApp.vars["logMsg"], "error");
+console.log( webApp.vars["logMsg"] );
+
+					if( typeof postFunc === "function"){
+						postFunc();
+					}
+					//return false;
+				},
+
+				"callback": function( data, runtime ){
+webApp.vars["logMsg"] = "load <b>" + webApp.vars["dataUrl"]  +"</b>, runtime: "+ runtime +" sec";
+_alert( webApp.vars["logMsg"], "success");
+//console.log( webApp.vars["logMsg"] );
+
+//console.log( "runAjax, ", typeof data );
+//console.log( data );
+//for( var key in data){
+//console.log(key +" : "+data[key]);
+//}
+					if( !data){
+webApp.vars["logMsg"] = "error, no data in " + webApp.vars["dataUrl"];
+_alert( webApp.vars["logMsg"], "error");
+console.log( webApp.vars["logMsg"] );
+						if( typeof postFunc === "function"){
+							postFunc(false);
+						}
+						return false;
+					} else {
+						if( typeof postFunc === "function"){
+							postFunc(data);
+						}
+					}
+
+				}//end callback()
+			});
+		}//end __serverRequest()				
+
+	}//end _loadData()
+
+
+	function _parseAjax( data ){
+		if( webApp.vars["DB"]["dataType"].length === 0 ){
+webApp.vars["logMsg"] = "error, no found or incorrect " + webApp.vars["DB"]["dataType"];
+//func.log("<p class='alert alert-danger'>" + webApp.vars["logMsg"] + "</p>");
+console.log( webApp.vars["logMsg"] );
+			return false;
+		}
+		
+		switch( webApp.vars["DB"]["dataType"] ){
+			case "xml":
+				//_parseXML( data );
+			break;
+			
+			case "json":
+				_parseJSON( data );
+			break;
+			
+			case "csv":
+				//_parseCSVBlocks(data);
+			break;
+		}//end switch
+		
+	}//_parseAjax()
+
 	
 	function _parseJSON( jsonStr ){
 		try{
