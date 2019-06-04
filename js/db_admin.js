@@ -11,6 +11,14 @@ _vars = {
 	"dbName" : "bookmarks"
 	
 }//end vars{}
+console.log( _vars );
+
+
+var dbInfo = [];
+//dbInfo["version"] = 0;
+dbInfo["useIndex"] = false;
+console.log(dbInfo);
+
 
 function _detectDataStore(){
 //console.log(arguments);		
@@ -28,13 +36,7 @@ function _detectDataStore(){
 	return dataStoreType;
 }//end _detectDataStore()
 
-console.log( _vars );
 
-var dbInfo = [];
-//dbInfo["version"] = 0;
-dbInfo["useIndex"] = false;
-
-console.log(dbInfo);
 
 window.onload = function(){
 	_vars.logMsg = navigator.userAgent;
@@ -51,8 +53,8 @@ window.onload = function(){
 
 
 function init(){
-	document.getElementById("dbname").value = _vars["dbName"];
-	//document.getElementById("btn-list").click();
+	_getById("dbname").value = _vars["dbName"];
+	//_getById("btn-list").click();
 	_listStories();
 	defineEvents();
 }//end init()	
@@ -60,7 +62,7 @@ function init(){
 
 function _changeValue( fid, value ){
 //console.log( value );	
-	document.getElementById( fid ).value = value;	
+	_getById( fid ).value = value;	
 }
 
 
@@ -87,10 +89,10 @@ function _changeValue( fid, value ){
 			if( xhr.readyState === 4){
 //console.log("Status: " + xhr.status );
 				if( xhr.status === 200){
-//document.getElementById("log").innerHTML += xhr.responseText;
+//_getById("log").innerHTML += xhr.responseText;
 
-					if( document.getElementById("load-progress") ){
-						document.getElementById("load-progress").value = 0;
+					if( _getById("load-progress") ){
+						_getById("load-progress").value = 0;
 					}
 					
 					var timeEnd = new Date();
@@ -117,8 +119,8 @@ _log("<p>Ajax load error, statusText: <b class='text-danger'>" + xhr.statusText 
 				percentComplete = Math.ceil(e.loaded / e.total * 100);
 			}
 console.log( "Loaded " + e.loaded + " bytes of total " + e.total, e.lengthComputable, percentComplete+"%" );
-			if( document.getElementById("load-progress") ){
-				document.getElementById("load-progress").value = percentComplete;
+			if( _getById("load-progress") ){
+				_getById("load-progress").value = percentComplete;
 			}
 		};
 		xhr.send();
@@ -1053,7 +1055,7 @@ console.log(opt["baseQuery"]);
 		//_log("", "store-list");
 		//_log("<p><b>list DB stores</b></p>", "store-list");
 		_getListStores({
-			"dbName" : document.getElementById("dbname").value,
+			"dbName" : _getById("dbname").value,
 			"callback": function( listStores ){
 //console.log("callback, getListStores ", listStores);
 
@@ -1069,7 +1071,7 @@ console.log(opt["baseQuery"]);
 					// _log(html, "store-list");
 //console.log(html);
 					
-					var select = document.getElementById("sel1");
+					var select = _getById("sel1");
 					select.innerHTML = "";
 					for( var n = 0; n < listStores.length; n++){
 						var opt = document.createElement("option");
@@ -1079,9 +1081,9 @@ console.log(opt["baseQuery"]);
 					}//next
 					
 				} else {
-					var select = document.getElementById("sel1");
+					var select = _getById("sel1");
 					select.innerHTML = "";
-					document.getElementById("storename").innerHTML = "";
+					_getById("storename").innerHTML = "";
 					
 					var msg = "Empty list iDB stores";
 					console.log(msg);
@@ -1496,19 +1498,13 @@ _log(msg);
 
 		function _postFunc( data ){ 
 //console.log("callback, get_records, " + options["storeName"]);
-
 			var timeEnd = new Date();
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
 //console.log("Runtime: ", runtime_s);
-var msg = "_getRecords(), "+ options["dbName"] +"."+ options["storeName"] + ", " +runtime_s + " sec, num records: " + data.length;				
-_log(msg);
-console.log(msg);
 //console.log(data );
-
 			if( typeof options["callback"] == "function"){
 				options["callback"]( data, runtime_s );
 			}
-
 		}//end _postFunc()
 		
 	};//end _getRecords()
@@ -1825,11 +1821,11 @@ var msg = "Create store <b>" + _iDBparams["storeName"] + "</b>, database: <b>" +
 var msg = "";						
 						if( db.objectStoreNames.contains( _iDBparams["storeName"] ) ){
 							db.deleteObjectStore( _iDBparams["storeName"] );
-msg = "Delete store " + _iDBparams["storeName"] + ' from ' + _iDBparams["dbName"];
+msg = "Delete store <b>" + _iDBparams["storeName"] + "</b> from database <b>" + _iDBparams["dbName"]+"</b>";
 //console.log(msg);				
 							_iDBparams["runStatus"] = "success";				
 						} else {
-msg = _iDBparams["storeName"] + ' not exists in DB ' + _iDBparams["dbName"];
+msg = "<b>"+ _iDBparams["storeName"] + "</b> not exists in DB <b>" + _iDBparams["dbName"] + "</b>";
 //console.log(msg);
 							_iDBparams["runStatus"] = "error";				
 						}
@@ -1850,10 +1846,10 @@ msg = _iDBparams["storeName"] + ' not exists in DB ' + _iDBparams["dbName"];
 				db = e.target.result;
 				
 				// //refresh store-list
-				// if( document.getElementById("store-list") ){
-					// document.getElementById("store-list").innerHTML = "";
+				// if( _getById("store-list") ){
+					// _getById("store-list").innerHTML = "";
 					// for( var n = 0; n < db.objectStoreNames.length; n++){
-						// document.getElementById("store-list").innerHTML += "<li>" +db.objectStoreNames[n]+ "</li>";
+						// _getById("store-list").innerHTML += "<li>" +db.objectStoreNames[n]+ "</li>";
 					// }//next
 				// }
 				
@@ -2444,8 +2440,8 @@ var msg = "Success clear " + _iDBparams["storeName"];
 
 			
 				transaction.oncomplete = function(event) {
-var msg = _iDBparams["storeName"] + ", transaction get_records complete.!!!";
-console.log(msg);
+//var msg = _iDBparams["storeName"] + ", transaction get_records complete...";
+//console.log(msg);
 //console.log( result );
 					// var _resObj = {
 						// "storeName" : _iDBparams["storeName"],
@@ -2686,18 +2682,18 @@ function defineEvents(){
 		_alert(_vars.logMsg, "success");
 	});
 
-	var btn_clear_log = document.querySelector("#btn-clear-log");
+	var btn_clear_log = _getById("btn-clear-log");
 	btn_clear_log.onclick = function(){
 		log.innerHTML = "";
 	};
 	
-	var dbNameField = document.querySelector("#dbname");
-	var storeNameField = document.querySelector("#storename");
-	var recordKeyField = document.querySelector("#record-key");
-	var recordValueField = document.querySelector("#record-value");
+	var dbNameField = _getById("dbname");
+	var storeNameField = _getById("storename");
+	var recordKeyField = _getById("record-key");
+	var recordValueField = _getById("record-value");
 	
 //----------------------------------	
-	var btn_list = document.querySelector("#btn-list");
+	var btn_list = _getById("btn-list");
 	btn_list.onclick = function(e){
 //console.log(e);
 		if( !_vars["indexedDBsupport"] ){
@@ -2707,7 +2703,7 @@ function defineEvents(){
 	}//end event
 
 //----------------------------------	
-	var btn_drop_db = document.querySelector("#btn-dropDB");
+	var btn_drop_db = _getById("btn-dropDB");
 	btn_drop_db.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -2721,7 +2717,7 @@ _alert( _vars.logMsg, "warning" );
 		}
 		
 		_dropDB({
-			"dbName" : dbName.value,
+			"dbName" : dbName,
 			"callback" : function( log, runtime ){
 _vars.logMsg="_dropDB(), "+ log +", runtime: " + runtime;
 _alert( _vars.logMsg, "warning" );
@@ -2734,7 +2730,7 @@ console.log( _vars.logMsg );
 
 
 //----------------------------------	
-	var btn_create = document.querySelector("#btn-create");
+	var btn_create = _getById("btn-create");
 	btn_create.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -2773,7 +2769,7 @@ _log( _vars.logMsg );
 
 
 //----------------------------------	
-	var btn_delete_store = document.querySelector("#btn-delete-store");
+	var btn_delete_store = _getById("btn-delete-store");
 	btn_delete_store.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -2813,7 +2809,7 @@ _log( _vars.logMsg );
 
 
 //----------------------------------	
-	var btn_addRecord = document.querySelector("#btn-add-record");
+	var btn_addRecord = _getById("btn-add-record");
 	btn_addRecord.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -2841,7 +2837,12 @@ _vars.logMsg="input field <b>record key</b> is empty....";
 _alert( _vars.logMsg, "warning" );
 			return false;
 		}
-
+		// recordKey = parseInt( recordKeyField.value );
+// console.log(recordKey);
+		// if( isNaN( recordKey ) ){
+			// recordKey = recordKeyField.value;
+		// }
+		
 		var recordValue = recordValueField.value;
 		if( !recordValue || recordValue.length===0 ){
 _vars.logMsg="input field <b>record value</b> is empty....";
@@ -2867,7 +2868,7 @@ _vars.logMsg = "_addRecord(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeNa
 
 
 //----------------------------------	
-	var btn_addRecords = document.querySelector("#btn-add-records");
+	var btn_addRecords = _getById("btn-add-records");
 	btn_addRecords.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -2908,7 +2909,7 @@ console.log( _vars.logMsg );
 	}//end event
 
 //----------------------------------	
-	var btn_numRecords = document.querySelector("#btn-num-records");
+	var btn_numRecords = _getById("btn-num-records");
 	btn_numRecords.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -2934,16 +2935,16 @@ _alert( _vars.logMsg, "warning" );
 			"dbName" : dbName,
 			"storeName" : storeName,
 			"callback" : function( num ){
-_vars.logMsg = "_numRecords(), store:" + storeName + ", " + num + " records.";
+_vars.logMsg = "_numRecords(), store: <b>" + storeName + "</b>, " + num + " records.";
 _alert( _vars.logMsg, "info" );
-console.log( _vars.logMsg );
+//console.log( _vars.logMsg );
 			}
 		});
 
 	}//end event
 
 //----------------------------------	
-	var btn_getRecords = document.querySelector("#btn-get-records");
+	var btn_getRecords = _getById("btn-get-records");
 	btn_getRecords.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -2969,17 +2970,17 @@ _alert( _vars.logMsg, "warning" );
 			"dbName" : dbName,
 			"storeName" : storeName,
 			"callback" : function( data, runtime ){
-_vars.logMsg = "_getRecords(), db: "+ dbName +", store:"+ storeName + ", " +runtime + " sec, num records: " + data.length;
+_vars.logMsg = "_getRecords(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeName + "</b>, " +runtime + " sec, num records: " + data.length;
 _alert( _vars.logMsg, "info" );
-console.log( _vars.logMsg );
-//console.log(data );
+//console.log( _vars.logMsg );
+console.log(data );
 			}
 		});
 
 	}//end event
 
 //----------------------------------	
-	var btn_getRecordsObj = document.querySelector("#btn-get-records-obj");
+	var btn_getRecordsObj = _getById("btn-get-records-obj");
 	btn_getRecordsObj.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -3006,7 +3007,7 @@ _alert( _vars.logMsg, "warning" );
 			"storeName" : storeName,
 			"action" : "get_records_obj",
 			"callback" : function( data, runtime ){
-_vars.logMsg = "_getRecords(), get storeData as object, db: "+ dbName +", store:"+ storeName + ", " +runtime + " sec, num records: " + data.length;
+_vars.logMsg = "_getRecords(), get storeData as object, db: <b>"+ dbName +"</b>, store:<b>"+ storeName + "</b>, " +runtime + " sec...";
 _alert( _vars.logMsg, "info" );
 //console.log( _vars.logMsg );
 console.log(data );
@@ -3016,7 +3017,7 @@ console.log(data );
 	}//end event
 
 //----------------------------------	
-	var btn_getRecord = document.querySelector("#btn-get-record");
+	var btn_getRecord = _getById("btn-get-record");
 	btn_getRecord.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -3045,10 +3046,10 @@ _alert( _vars.logMsg, "warning" );
 			return false;
 		}
 //console.log(recordKey);
-		recordKey = parseInt( recordKeyField.value );
-		if( isNaN( recordKey ) ){
-			recordKey = recordKeyField.value;
-		}
+		// recordKey = parseInt( recordKeyField.value );
+		// if( isNaN( recordKey ) ){
+			// recordKey = recordKeyField.value;
+		// }
 
 		_getRecord({
 			"dbName" : dbName,
@@ -3074,7 +3075,7 @@ console.log(data);
 
 
 //----------------------------------	
-	var btn_deleteRecord = document.querySelector("#btn-delete-record");
+	var btn_deleteRecord = _getById("btn-delete-record");
 	btn_deleteRecord.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -3103,10 +3104,10 @@ _alert( _vars.logMsg, "warning" );
 			return false;
 		}
 //console.log(recordKey);
-		recordKey = parseInt( recordKeyField.value );
-		if( isNaN( recordKey ) ){
-			recordKey = recordKeyField.value;
-		}
+		// recordKey = parseInt( recordKeyField.value );
+		// if( isNaN( recordKey ) ){
+			// recordKey = recordKeyField.value;
+		// }
 
 		_deleteRecord({
 			"dbName" : dbName,
@@ -3115,7 +3116,9 @@ _alert( _vars.logMsg, "warning" );
 			"recordKey" : recordKey,
 			"callback" : function( log ){
 _vars.logMsg = "_deleteRecord(), "+ log;
-_alert( _vars.logMsg, "warning" );
+				_vars.logMsg = _wrapLogMsg( _vars.logMsg, dbInfo["iDBparams"]["runStatus"] );
+				_log( _vars.logMsg );
+//_alert( _vars.logMsg, "warning" );
 			}
 		});
 
@@ -3123,7 +3126,7 @@ _alert( _vars.logMsg, "warning" );
 
 
 //----------------------------------	
-	var btn_clearStore = document.querySelector("#btn-clear-store");
+	var btn_clearStore = _getById("btn-clear-store");
 	btn_clearStore.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -3159,16 +3162,16 @@ _alert( _vars.logMsg, "warning" );
 
 //----------------------------------	
 /*
-	if( document.getElementById("btn-load") ){
-		document.getElementById("btn-load").onclick = function(){
+	if( _getById("btn-load") ){
+		_getById("btn-load").onclick = function(){
 			_loadSpr({
-				"url" : document.getElementById("input_file").value,
+				"url" : _getById("input_file").value,
 				"callback" : function( res ){
 console.log("after load...", res.length);				
-						// var _dbName = document.getElementById("dbname").value;
-						// var _storeName = document.getElementById("storename").value;
+						// var _dbName = _getById("dbname").value;
+						// var _storeName = _getById("storename").value;
 						// if( _storeName.length === 0 ){
-							// var _url = document.getElementById("input_file").value;
+							// var _url = _getById("input_file").value;
 							// var pos_last_dot = _url.lastIndexOf(".");
 							// //var pos_last = _url.length;
 							// //var type = _url.substring( pos_last_dot + 1, pos_last );
@@ -3198,7 +3201,8 @@ console.log("after load...", res.length);
 */
 
 //----------------------------------	
-	var btn_runQuery = document.querySelector("#btn-run-query");
+if( _getById("btn-run-query") ){
+	var btn_runQuery = _getById("btn-run-query");
 	btn_runQuery.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
 			return false;
@@ -3440,5 +3444,163 @@ console.log( data );
 		});
 
 	}//end event
+}
 
 }//end defineEvents()
+
+
+//====================================
+//console.log for old IE
+if (!window.console){ 
+	window.console = {
+		"log" : function( msg ){
+			var log = getById("log");
+			if(log){
+				log.innerHTML += msg +"<br>";
+			} else {
+				alert(msg);
+				//document.writeln(msg);
+			}
+		}
+	}
+};
+
+function _push( ar, item){
+	if( ar.push ){
+		ar.push(item);
+	} else {
+		var num = ar.length;
+		ar[num] = item;
+	}
+}// end _push()
+
+function _getById(id){
+	
+	if( document.querySelector ){
+		var obj = document.querySelector("#"+id);
+		return obj;
+	}
+	
+	if( document.getElementById ){
+		var obj = document.getElementById(id);
+		return obj;
+	}
+	
+	if( document.all ){
+		var obj = document.all[id];
+		return obj;
+	}
+	
+	//if( document.layers ){
+		//var obj = document.layers[id];
+		//return obj;
+	//}
+	
+	return false;
+}//end _getById()
+
+function _log( msg, id){
+//console.log(arguments);
+//alert(arguments.length);
+//		for( var n = 0; n < arguments.length; n++){
+//			var _s = "<li> arguments." + n +" = "+ arguments[n] + "</li>";
+//alert( _s );
+//		}
+	var id = id || arguments[1];//IE4 fix
+//alert( msg );
+//alert( id );
+
+	if(!id){
+		var id = "log";
+	}
+	
+	var output = _getById(id);
+	if( output ){	
+		if( msg.length == 0){
+			output.innerHTML = "";
+		} else {
+			output.innerHTML += msg;
+			
+			// var logWrap = getById("log-wrap");
+			// if( logWrap ){
+// console.log(logWrap);
+// console.log(logWrap.style.display);
+				// if( logWrap.style.display === "none"){
+					// logWrap.style.display="block";
+				// }
+			// }			
+			
+		}
+		
+	} else {
+		console.log(msg);
+		//alert(msg);
+		//document.writeln(msg);
+	}
+	
+	// if( typeof _showHiddenLog === "function"){
+// //console.log(_showHiddenLog);
+		// _showHiddenLog();
+	// }
+	
+}//end _log()
+
+function _alert( message, level ){
+	switch (level) {
+		case "info":
+			message = "<p class='alert alert-info'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "warning":
+			message = "<p class='alert alert-warning'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "danger":
+		case "error":
+			message = "<p class='alert alert-danger'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		case "success":
+			message = "<p class='alert alert-success'>" + message + "</p>";
+			_log(message);
+		break;
+		
+		default:
+			_log(message);
+		break;
+	}//end switch
+	
+}//end _alert()
+
+function _wrapLogMsg( message, level ){
+	switch (level) {
+		case "info":
+			message = "<p class='alert alert-info'>" + message + "</p>";
+			return message;
+		break;
+		
+		case "warning":
+			message = "<p class='alert alert-warning'>" + message + "</p>";
+			return message;
+		break;
+		
+		case "danger":
+		case "error":
+			message = "<p class='alert alert-danger'>" + message + "</p>";
+			return message;
+		break;
+		
+		case "success":
+			message = "<p class='alert alert-success'>" + message + "</p>";
+			return message;
+		break;
+		
+		default:
+			return message;
+		break;
+	}//end switch
+	
+}//end _wrapLogMsg
