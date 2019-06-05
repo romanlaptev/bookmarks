@@ -586,7 +586,7 @@ console.log("statusText:" + xhr.statusText);
 		var all_headers = xhr.getAllResponseHeaders();
 //console.log( all_headers );
 		if( typeof  p["onLoadEnd"] === "function"){
-			p["onLoadEnd"](all_headers);
+			p["onLoadEnd"](all_headers, xhr);
 		}
 	}//end _loadEnd()
 	

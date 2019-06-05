@@ -301,7 +301,22 @@ console.log( "storage.checkAppData(), end process, lastModified: ", lastModified
 						} 
 							
 						if( lastModified.length > 0 ){
-							//__checkDate( lastModified )
+							
+							if( webApp.vars["support"]["promiseSupport"] ){
+__checkDatePromise( lastModified ).then(
+function( needUpdate ) {
+webApp.vars["logMsg"]= "need to update data: " + needUpdate;
+_alert( webApp.vars["logMsg"], "info");
+
+	if( needUpdate ){
+		__serverRequest();
+	}
+}, 
+function(error){
+console.log( "promise reject, ", error );
+});
+							}
+							
 							if( typeof postFunc === "function"){
 								postFunc(false);
 							}
@@ -323,6 +338,54 @@ console.log( "storage.checkAppData(), end process, lastModified: ", lastModified
 		}//end switch
 		
 		return false;
+		
+		function __checkDatePromise( dateStr ){
+			return new Promise( function(resolve, reject) {
+		
+				//get cache date, DDMMYYYY
+				var sDay = dateStr.substr(0,2);
+				var sMonth = dateStr.substr(3,2);
+				var sYear = dateStr.substr(6,4);
+
+				var intYear = parseInt( sYear );
+				var intMonth = parseInt( sMonth );
+				intMonth = intMonth - 1;
+				var intDay = parseInt( sDay );
+				
+				var cacheDate = new Date( intYear, intMonth, intDay );
+	//console.log( cacheDate );
+				
+				runAjax( {
+					"requestMethod" : "HEAD", 
+					"url" : webApp.vars["dataUrl"], 
+					
+					"onLoadEnd" : function( headers, xhr ){
+	//console.log( headers );
+	//console.log(xhr.getResponseHeader("last-modified") );
+						var serverDate = new Date( xhr.getResponseHeader("last-modified") );
+						
+	console.log( serverDate, " more than > ", cacheDate, serverDate > cacheDate );
+
+						resolve( serverDate > cacheDate );
+					},
+					
+					"onError" : function( xhr ){
+	console.log( "onError ", arguments);
+						reject( xhr.statusText );
+					},
+
+					"callback": function( data, runtime ){
+	//console.log( "runAjax, ", typeof data );
+	console.log( data );
+	//for( var key in data){
+	//console.log(key +" : "+data[key]);
+	//}
+					}//end callback()
+				});
+			
+			});//end promise
+			
+		}//end __checkDate()
 		
 		function __serverRequest(){
 //console.log( webApp.vars["userDataUrl"] );
