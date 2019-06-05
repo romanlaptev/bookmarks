@@ -301,14 +301,10 @@ console.log( "storage.checkAppData(), end process, lastModified: ", lastModified
 						} 
 							
 						if( lastModified.length > 0 ){
-							//storage.getAppData({
-								//"callback": function(){
-//console.log( "storage.getAppData(), end process");
-									if( typeof postFunc === "function"){
-										postFunc(false);
-									}
-								//}
-							//});
+							//__checkDate( lastModified )
+							if( typeof postFunc === "function"){
+								postFunc(false);
+							}
 						}
 							
 					}//end callback
