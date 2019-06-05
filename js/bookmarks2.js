@@ -6,10 +6,11 @@ var webApp = {
 
 		"dataUrl" : "db/bookmarks.json",
 		//"dataUrl" : "db/lib.json",
-		"use_localcache": false,
-		"DB" : {
+		"use_localcache": true,
+		"cache" : {
 			"dataType" : "json",//xml, csv
-			"dbName": "bookmarks"
+			"dbName": "localcache",
+			"dataStoreName" : "bookmarks.json"
 		},
 		
 		"userDataUrl" : getById("user-data-url"),
@@ -51,16 +52,18 @@ var webApp = {
 		"breadcrumbs": {},
 		"imageNotLoad": "img/image_not_load.png",
 		
-		"jsonSupport" : JSON ? true : false,
-		
-		"cacheSupport" : window.caches ? true : false,
-		"swSupport" : navigator.serviceWorker ? true : false,
-		"promiseSupport": window.Promise  ? true : false,
-		
-		"indexedDBsupport" : window.indexedDB ? true : false,
-		"webSQLsupport" : window.openDatabase  ? true : false,
-		"localStorageSupport" : window['localStorage']  ? true : false,
-		"dataStoreType" : _detectDataStore()
+		"support" : {
+			"jsonSupport" : JSON ? true : false,
+			
+			"cacheSupport" : window.caches ? true : false,
+			"swSupport" : navigator.serviceWorker ? true : false,
+			"promiseSupport": window.Promise  ? true : false,
+			
+			"indexedDBsupport" : window.indexedDB ? true : false,
+			"webSQLsupport" : window.openDatabase  ? true : false,
+			"localStorageSupport" : window['localStorage']  ? true : false,
+			"dataStoreType" : _detectDataStore()
+		}
 		
 	},//end vars{}
 	
@@ -285,12 +288,31 @@ function _loadData( postFunc ){
 //console.log("_loadData() ", arguments);
 
 	if( !webApp.vars["use_localcache"] ){
-		webApp.vars["dataStoreType"] = false;
+		webApp.vars["support"]["dataStoreType"] = false;
 	} 
-		switch (webApp.vars["dataStoreType"]) {				
+		switch (webApp.vars["support"]["dataStoreType"]) {				
 			case "indexedDB":
-console.log("TEST");
-				//__serverRequest();
+				storage.checkAppData({
+					"callback": function( lastModified ){
+console.log( "storage.checkAppData(), end process, lastModified: ", lastModified);
+
+						if( !lastModified ){
+							__serverRequest();
+						} 
+							
+						if( lastModified.length > 0 ){
+							//storage.getAppData({
+								//"callback": function(){
+//console.log( "storage.getAppData(), end process");
+									if( typeof postFunc === "function"){
+										postFunc(false);
+									}
+								//}
+							//});
+						}
+							
+					}//end callback
+				});//end storage.checkAppData()
 			break;
 			
 			case "webSQL":
@@ -391,14 +413,14 @@ console.log( webApp.vars["logMsg"] );
 
 
 	function _parseAjax( data ){
-		if( webApp.vars["DB"]["dataType"].length === 0 ){
-webApp.vars["logMsg"] = "error, no found or incorrect " + webApp.vars["DB"]["dataType"];
+		if( webApp.vars["cache"]["dataType"].length === 0 ){
+webApp.vars["logMsg"] = "error, no found or incorrect " + webApp.vars["cache"]["dataType"];
 //func.log("<p class='alert alert-danger'>" + webApp.vars["logMsg"] + "</p>");
 console.log( webApp.vars["logMsg"] );
 			return false;
 		}
 		
-		switch( webApp.vars["DB"]["dataType"] ){
+		switch( webApp.vars["cache"]["dataType"] ){
 			case "xml":
 				//_parseXML( data );
 			break;
@@ -871,12 +893,12 @@ function _runApp(){
 		}
 	}//next
 */	
-	if( webApp.vars["jsonSupport"]){
+	if( webApp.vars["support"]["jsonSupport"]){
 		webApp.vars["isRunApp"] = true;
 	}
 
-	// if( webApp.vars["swSupport"] && 
-			// webApp.vars["cacheSupport"] && 
+	// if( webApp.vars["support"]["swSupport"] && 
+			// webApp.vars["support"]["cacheSupport"] && 
 				// webApp.vars["promiseSupport"] ){
 		// registerServiceWorker();
 	// }

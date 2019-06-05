@@ -8,7 +8,7 @@ _vars = {
 	"localStorageSupport" : window['localStorage']  ? true : false,
 	"dataStoreType" : _detectDataStore(),
 	
-	"dbName" : "bookmarks"
+	"dbName" : "localcache"
 	
 }//end vars{}
 console.log( _vars );
@@ -35,7 +35,6 @@ function _detectDataStore(){
 	}
 	return dataStoreType;
 }//end _detectDataStore()
-
 
 
 window.onload = function(){
@@ -2900,7 +2899,7 @@ _alert( _vars.logMsg, "warning" );
 			"storeData" : storeData,
 			"callback" : function( runtime ){
 _vars.logMsg = "_addRecords(), db: "+ dbName +", store: "+ storeName +", runtime: " + runtime;
-_alert( _vars.logMsg, "warning" );
+_alert( _vars.logMsg, "info" );
 console.log( _vars.logMsg );
 			}
 		});
