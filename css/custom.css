@@ -83,6 +83,7 @@ margin: 0;
 .alert-warning {
 	color: #000;
 	background-color: #ffb515;
+	border-color: #ffb515;
 }
 
 

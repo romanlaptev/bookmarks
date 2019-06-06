@@ -3,13 +3,13 @@ var iDBmodule =  function(){
 		
 	// private variables and functions
 	_vars = {
-"_vars.logMsg" : "",
+"logMsg" : "",
 		
-"indexedDBsupport" : window.indexedDB ? true : false,
+//"indexedDBsupport" : window.indexedDB ? true : false,
 //window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB
 		
-"webSQLsupport" : window.openDatabase  ? true : false,
-"localStorageSupport" : window['localStorage']  ? true : false,
+//"webSQLsupport" : window.openDatabase  ? true : false,
+//"localStorageSupport" : window['localStorage']  ? true : false,
 		
 //"version" = 0;
 "useIndex" : false
@@ -28,9 +28,23 @@ var iDBmodule =  function(){
 		}
 	//console.log(p);
 		
+			if( !window.indexedDB ) {
+_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+		
 		if( p["dbName"].length === 0){
-var msg = "_getListStores(), error, argument 'dbName' empty.... ";
-console.log( msg );
+_vars["logMsg"] = "_getListStores(), error, argument 'dbName' empty.... ";
+console.log( _vars["logMsg"] );
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
 			return false;
 		}
 		
@@ -51,6 +65,7 @@ console.log( msg );
 	};//end _getListStores()
 
 
+
 	var _getRecords = function( opt ){
 //console.log(arguments);
 		var options = {
@@ -64,6 +79,16 @@ console.log( msg );
 			options[key] = opt[key];
 		}
 //console.log(options);
+
+			if( !window.indexedDB ) {
+_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
 
 		if( options["storeName"].length === 0){
 var msg = "_getRecords(), error, argument 'storeName' empty.... ";
@@ -94,6 +119,9 @@ _log(msg);
 		
 	};//end _getRecords()
 
+
+
+
 //*доработка - если opt["recordKey"] является массивом, то выбрать все записи, перечисленные в opt["recordKey"]
 	var _getRecord = function( opt ){
 //console.log(arguments);
@@ -108,6 +136,16 @@ _log(msg);
 			options[key] = opt[key];
 		}
 //console.log(options);
+
+			if( !window.indexedDB ) {
+_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
 
 		if( options["storeName"].length === 0){
 var msg = "_getRecord(), error, argument 'storeName' empty.... ";
@@ -146,11 +184,141 @@ _log(msg);
 		
 	};//end _getRecord()
 
+
+
+	var _clearStore = function( opt ){
+//console.log(arguments);
+		var p = {
+			"dbName": "",
+			"storeName": "",
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+//console.log(p);
+
+			if( !window.indexedDB ) {
+_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+
+		if( p["storeName"].length === 0){
+var msg = "_clearStore(), error, argument 'storeName' empty.... ";
+console.log( msg );
+_log(msg);
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+	
+		var timeStart = new Date();
+		iDB({
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"action" : "clear_store",
+			"callback" : _postFunc
+		});
+
+		function _postFunc( log ){ 
+//console.log(p);
+//console.log("callback, clear_store, " + p["storeName"]);
+
+			var timeEnd = new Date();
+			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+//console.log("Runtime: ", runtime_s);
+
+			if( typeof p["callback"] == "function"){
+				p["callback"](log, runtime_s);
+			}
+
+		}//end _postFunc()
+	};//end _clearStore	()
+
+
+
+	var _addRecords = function( opt ){
+//console.log(arguments);
+		var p = {
+			"dbName": "",
+			"storeName": "",
+			"storeData": [ {"key":"","value":""}, {"key":"","value":""} ],
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+//console.log(p);
+
+			if( !window.indexedDB ) {
+_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+
+		if( p["storeName"].length === 0){
+var msg = "Parameters error, required 'storeName'";			
+console.log( msg );
+_log(msg);
+			return false;
+		}
+		if( p["storeData"].length === 0 &&
+			typeof p["storeData"] !== "object"){
+console.log( "Parameters error, required 'storeData' " );
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+
+		var timeStart = new Date();
+		iDB({
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"storeData" : p["storeData"],
+			"action" : "add_records",
+			"callback" : _postFunc
+		});
+
+		function _postFunc(){ 
+//console.log("callback, add_records, " + p["storeName"]);
+
+			var timeEnd = new Date();
+			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+//var msg = "_addRecords(), runtime: " + runtime_s;				
+//console.log(msg);
+//_log(msg);
+			if( typeof p["callback"] == "function"){
+				p["callback"](runtime_s);
+			}
+
+		}//end _postFunc()
+		
+	};//end _addRecords()
+
+
+
 	// public interfaces
 	return{
 		getListStores: _getListStores,
 		getRecords: _getRecords,
-		getRecord: _getRecord
+		getRecord: _getRecord,
+		clearStore: _clearStore,
+		addRecords: _addRecords
 	};
 
 };//end module
@@ -295,49 +463,6 @@ _log(msg);
 	
 
 
-	var _clearStore = function( opt ){
-//console.log(arguments);
-		var options = {
-			"dbName": "",
-			"storeName": "",
-			"callback": null
-		};
-		//extend options object
-		for(var key in opt ){
-			options[key] = opt[key];
-		}
-//console.log(options);
-
-		if( options["storeName"].length === 0){
-var msg = "_clearStore(), error, argument 'storeName' empty.... ";
-console.log( msg );
-_log(msg);
-			return false;
-		}
-	
-		var timeStart = new Date();
-		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"action" : "clear_store",
-			"callback" : _postFunc
-		});
-
-		function _postFunc( log ){ 
-//console.log(options);
-//console.log("callback, clear_store, " + options["storeName"]);
-
-			var timeEnd = new Date();
-			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-//console.log("Runtime: ", runtime_s);
-
-			if( typeof options["callback"] == "function"){
-				options["callback"](log, runtime_s);
-			}
-
-		}//end _postFunc()
-	};//end _clearStore	()
-	
 	
 	var _addRecord = function( opt ){
 //console.log(arguments);
@@ -399,58 +524,6 @@ _log(msg);
 		
 	};//end _addRecord()
 
-	
-	var _addRecords = function( opt ){
-//console.log(arguments);
-		var options = {
-			"dbName": "",
-			"storeName": "",
-			"storeData": [ {"key":"","value":""}, {"key":"","value":""} ],
-			"callback": null
-		};
-		//extend options object
-		for(var key in opt ){
-			options[key] = opt[key];
-		}
-//console.log(options);
-
-		if( options["storeName"].length === 0){
-var msg = "Parameters error, needed 'storeName'";			
-console.log( msg );
-_log(msg);
-			return false;
-		}
-		if( options["storeData"].length === 0 &&
-			typeof options["storeData"] !== "object"){
-console.log( "Parameters error, needed 'storeData = [...]'" );
-			return false;
-		}
-
-		var timeStart = new Date();
-		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"storeData" : options["storeData"],
-			"action" : "add_records",
-			"callback" : _postFunc
-		});
-
-
-		function _postFunc(){ 
-//console.log("callback, add_records, " + options["storeName"]);
-
-			var timeEnd = new Date();
-			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-//var msg = "_addRecords(), runtime: " + runtime_s;				
-//console.log(msg);
-//_log(msg);
-			if( typeof options["callback"] == "function"){
-				options["callback"](runtime_s);
-			}
-
-		}//end _postFunc()
-		
-	};//end _addRecords()
 	
 
 	var _numRecords = function( opt ){

@@ -23,11 +23,9 @@ var storage = {
 	"checkAppData": function(opt){
 		return _checkAppData( opt );
 	},
-	// "saveAppData": function(opt){
-		// if ( config["use_localcache"] ) {
-			// return _saveAppData( opt );
-		// }
-	// }//,
+	"saveAppData": function(opt){
+		return _saveAppData( opt );
+	}//,
 	//"getAppData": function(opt){
 		//return _getAppData( opt );
 	//}
@@ -68,7 +66,7 @@ indexedDatabase.getRecord({
 	"storeName" : webApp.vars["cache"]["dataStoreName"],
 	"recordKey" : "lastModified",
 	"callback" : function( data, runtime ){
-console.log(data);
+//console.log(data);
 
 		if(!data){
 			if(typeof p["callback"] === "function"){
@@ -94,13 +92,59 @@ console.log(data);
 				}
 				
 			}
-			
 
 		}
 	});
 
 }//end _checkAppData()
 				
+function _saveAppData( opt ){
+//console.log("function _saveAppData()", opt);
+	var p = {
+		"data": null,
+		"callback" : null
+	};
+	//extend p object
+	for(var key in opt ){
+		p[key] = opt[key];
+	}
+//console.log(p);
+
+	if( p["data"] ){
+
+		indexedDatabase.clearStore({
+			"dbName" : webApp.vars["cache"]["dbName"],
+			"storeName" : webApp.vars["cache"]["dataStoreName"],
+			"callback" : function( log, runtime ){
+//_vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
+//_alert( _vars.logMsg, "warning" );
+
+				var storeData = [];
+				storeData.push( {"key": "lastModified", "value" : webApp.vars["cache"]["serverDate"]} );
+				storeData.push( {"key": "jsonString", "value" : p["data"]} );
+
+				indexedDatabase.addRecords({
+						"dbName" : webApp.vars["cache"]["dbName"],
+						"storeName" : webApp.vars["cache"]["dataStoreName"],
+						"storeData" : storeData,
+						"callback" : function( runtime ){
+_vars.logMsg = "_addRecords(), db: "+ webApp.vars["cache"]["dbName"] + "\
+, store: "+ webApp.vars["cache"]["dataStoreName"] +", runtime: " + runtime;
+_alert( _vars.logMsg, "success" );
+console.log( _vars.logMsg );
+					}
+				});//end addRecords
+
+			}
+		});//end clearStore
+
+	}
+
+			
+	if(typeof p["callback"] === "function"){
+		p["callback"]();
+	}
+}//end _saveAppData()
 
 /*
 function _getAppData( opt ){

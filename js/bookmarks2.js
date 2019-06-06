@@ -10,7 +10,8 @@ var webApp = {
 		"cache" : {
 			"dataType" : "json",//xml, csv
 			"dbName": "localcache",
-			"dataStoreName" : "bookmarks.json"
+			"dataStoreName" : "bookmarks.json",
+			"needUpdate": false
 		},
 		
 		"userDataUrl" : getById("user-data-url"),
@@ -287,34 +288,40 @@ console.log("function _urlManager(),  GET query string: ", webApp.vars["GET"]);
 function _loadData( postFunc ){
 //console.log("_loadData() ", arguments);
 
-	if( !webApp.vars["use_localcache"] ){
-		webApp.vars["support"]["dataStoreType"] = false;
-	} 
+		if( !webApp.vars["use_localcache"] ){
+			webApp.vars["support"]["dataStoreType"] = false;
+		} 
+		
 		switch (webApp.vars["support"]["dataStoreType"]) {				
 			case "indexedDB":
 				storage.checkAppData({
 					"callback": function( lastModified ){
-console.log( "storage.checkAppData(), end process, lastModified: ", lastModified);
+console.log( "storage.checkAppData(), end process, lastModified: ", lastModified, typeof lastModified);
 
 						if( !lastModified ){
+							webApp.vars["cache"]["needUpdate"] = true;
 							__serverRequest();
 						} 
 							
-						if( lastModified.length > 0 ){
-							
+						if( lastModified ){
 							if( webApp.vars["support"]["promiseSupport"] ){
-__checkDatePromise( lastModified ).then(
-function( needUpdate ) {
-webApp.vars["logMsg"]= "need to update data: " + needUpdate;
-_alert( webApp.vars["logMsg"], "info");
-
-	if( needUpdate ){
-		__serverRequest();
-	}
-}, 
-function(error){
+	
+								__checkDatePromise( lastModified ).then(
+								function( needUpdate ) {
+console.log("needUpdate: ", needUpdate);
+									if( needUpdate ){
+											webApp.vars["cache"]["needUpdate"] = true;
+										__serverRequest();
+									} else {
+										//storage.getAppData();
+									}
+								}, 
+								function(error){
 console.log( "promise reject, ", error );
-});
+								});
+
+							} else {
+								//.....use jQuery deferred object
 							}
 							
 							if( typeof postFunc === "function"){
@@ -339,33 +346,43 @@ console.log( "promise reject, ", error );
 		
 		return false;
 		
-		function __checkDatePromise( dateStr ){
-			return new Promise( function(resolve, reject) {
-		
-				//get cache date, DDMMYYYY
-				var sDay = dateStr.substr(0,2);
-				var sMonth = dateStr.substr(3,2);
-				var sYear = dateStr.substr(6,4);
+		//function __checkDatePromise( dateStr ){
+		function __checkDatePromise( cacheDate ){
+//console.log("test2: ", cacheDate, typeof cacheDate);
 
+			return new Promise( function(resolve, reject) {
+/*		
+				//get cache date, yyyy-mm-dd hh:mm  (2019-06-03 09:58)
+				dateStr = dateStr.replace(/-/g, "");
+				var sYear = dateStr.substr(0,4);
+				var sMonth = dateStr.substr(4,2);
+				var sDay = dateStr.substr(6,2);
+				
+				var sTime = dateStr.substr(9, dateStr.length ).split(":");
+console.log( dateStr, sYear, sMonth, sDay, sTime[0], sTime[1] );
+					
 				var intYear = parseInt( sYear );
 				var intMonth = parseInt( sMonth );
 				intMonth = intMonth - 1;
 				var intDay = parseInt( sDay );
+				var intHour = parseInt( sTime[0] );
+				var intMin = parseInt( sTime[1] );
 				
-				var cacheDate = new Date( intYear, intMonth, intDay );
-	//console.log( cacheDate );
-				
+				var cacheDate = new Date( intYear, intMonth, intDay, intHour, intMin );
+console.log( cacheDate );
+*/				
 				runAjax( {
 					"requestMethod" : "HEAD", 
 					"url" : webApp.vars["dataUrl"], 
 					
 					"onLoadEnd" : function( headers, xhr ){
 	//console.log( headers );
-	//console.log(xhr.getResponseHeader("last-modified") );
+console.log(xhr.getResponseHeader("last-modified") );
 						var serverDate = new Date( xhr.getResponseHeader("last-modified") );
 						
 	console.log( serverDate, " more than > ", cacheDate, serverDate > cacheDate );
 
+						webApp.vars["cache"]["serverDate"] = serverDate;
 						resolve( serverDate > cacheDate );
 					},
 					
@@ -384,8 +401,8 @@ console.log( "promise reject, ", error );
 				});
 			
 			});//end promise
-			
 		}//end __checkDate()
+
 		
 		function __serverRequest(){
 //console.log( webApp.vars["userDataUrl"] );
@@ -422,8 +439,11 @@ console.log( "Loaded " + e.loaded + " bytes of total " + e.total, e.lengthComput
 					
 				},
 					
-				"onLoadEnd" : function( headers ){
+				"onLoadEnd" : function( headers, xhr ){
 //console.log( headers );
+console.log(xhr.getResponseHeader("last-modified") );
+						var serverDate = new Date( xhr.getResponseHeader("last-modified") );
+						webApp.vars["cache"]["serverDate"] = serverDate;
 				},
 				
 				"onError" : function( xhr ){
@@ -457,8 +477,24 @@ console.log( webApp.vars["logMsg"] );
 						if( typeof postFunc === "function"){
 							postFunc(false);
 						}
-						return false;
-					} else {
+					} 
+
+					if( data && data.length > 0){
+						
+						if( webApp.vars["cache"]["needUpdate"] ){
+webApp.vars["logMsg"]= "need to update cache data - " + webApp.vars["dataUrl"];
+//_alert( webApp.vars["logMsg"], "warning");
+console.log( webApp.vars["logMsg"] );
+							storage.saveAppData({
+								"data": data,
+								"callback" : function( state ){
+webApp.vars["logMsg"]= "Update cache data, " + webApp.vars["dataUrl"];
+_alert( webApp.vars["logMsg"], "success");
+//console.log( webApp.vars["logMsg"] );
+								}
+							});
+						}
+						
 						if( typeof postFunc === "function"){
 							postFunc(data);
 						}
@@ -515,7 +551,7 @@ _log("<div class='alert alert-danger'>" + webApp.vars["logMsg"] + "</div>");
 		webApp.vars["dateAdded"] = __parseDate( jsonObj["dateAdded"] );
 		webApp.vars["lastModified"] = __parseDate( jsonObj["lastModified"] );
 		webApp.vars["logMsg"] = "dateAdded : " + webApp.vars["dateAdded"] + ", lastModified : " + webApp.vars["lastModified"];
-		_log("<div class='alert'>" + webApp.vars["logMsg"] + "</div>");
+		_alert( webApp.vars["logMsg"], "info");
 		
 //--------------------------------
 		// for( var key in jsonObj ){
