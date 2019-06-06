@@ -25,13 +25,13 @@ var storage = {
 	},
 	"saveAppData": function(opt){
 		return _saveAppData( opt );
-	}//,
-	//"getAppData": function(opt){
-		//return _getAppData( opt );
-	//}
+	},
+	"getAppData": function(opt){
+		return _getAppData( opt );
+	}
 	
 };//end storage
-console.log("storage object:", storage);
+//console.log("storage object:", storage);
 
 
 function _checkAppData( opt ){
@@ -53,7 +53,7 @@ function _checkAppData( opt ){
 	indexedDatabase.getListStores({
 		"dbName" : webApp.vars["cache"]["dbName"],
 		"callback": function( listStores ){
-console.log("listStores: ", listStores);
+//console.log("listStores: ", listStores);
 
 			if( typeof listStores !== "undefined" &&
 					listStores.length > 0){
@@ -146,7 +146,7 @@ console.log( _vars.logMsg );
 	}
 }//end _saveAppData()
 
-/*
+
 function _getAppData( opt ){
 //console.log("function _getAppData()", opt);
 	var p = {
@@ -156,12 +156,20 @@ function _getAppData( opt ){
 	for(var key in opt ){
 		p[key] = opt[key];
 	}
-console.log(p);
+//console.log(p);
 
-	//.............
+	indexedDatabase.getRecord({
+		"dbName" : webApp.vars["cache"]["dbName"],
+		"storeName" : webApp.vars["cache"]["dataStoreName"],
+		"recordKey" : "jsonString",
+		"callback" : function( data, runtime ){
+//console.log(data);
+			if(typeof p["callback"] === "function"){
+				p["callback"]( data );
+			}
+			
+		}
+	});
 		
-	if(typeof p["callback"] === "function"){
-		p["callback"]();
-	}
 }//end _getAppData()
-*/
+

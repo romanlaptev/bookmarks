@@ -309,12 +309,26 @@ console.log( "storage.checkAppData(), end process, lastModified: ", lastModified
 								__checkDatePromise( lastModified ).then(
 								function( needUpdate ) {
 console.log("needUpdate: ", needUpdate);
+
 									if( needUpdate ){
 											webApp.vars["cache"]["needUpdate"] = true;
 										__serverRequest();
+										
 									} else {
-										//storage.getAppData();
+										
+										//Get application data from cache
+										storage.getAppData({
+											"callback": function(data){
+//console.log(data);												
+												if( typeof postFunc === "function"){
+													postFunc(data);
+												}
+												
+											}
+										});
+										
 									}
+									
 								}, 
 								function(error){
 console.log( "promise reject, ", error );
@@ -377,11 +391,9 @@ console.log( cacheDate );
 					
 					"onLoadEnd" : function( headers, xhr ){
 	//console.log( headers );
-console.log(xhr.getResponseHeader("last-modified") );
+//console.log(xhr.getResponseHeader("last-modified") );
 						var serverDate = new Date( xhr.getResponseHeader("last-modified") );
-						
-	console.log( serverDate, " more than > ", cacheDate, serverDate > cacheDate );
-
+//console.log( serverDate, " more than > ", cacheDate, serverDate > cacheDate );
 						webApp.vars["cache"]["serverDate"] = serverDate;
 						resolve( serverDate > cacheDate );
 					},
@@ -393,7 +405,7 @@ console.log(xhr.getResponseHeader("last-modified") );
 
 					"callback": function( data, runtime ){
 	//console.log( "runAjax, ", typeof data );
-	console.log( data );
+	//console.log( data );
 	//for( var key in data){
 	//console.log(key +" : "+data[key]);
 	//}
