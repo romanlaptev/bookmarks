@@ -11,7 +11,7 @@ var webApp = {
 			"dataType" : "json",//xml, csv
 			"dbName": "localcache",
 			"dataStoreName" : "bookmarks.json",
-			"needUpdate": false
+			"cacheUpdate": false
 		},
 		
 		"userDataUrl" : getById("user-data-url"),
@@ -201,6 +201,25 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 			}
 		});//end event
 		
+		$("#btn-update-cache").on("click", function(e){
+			$("#serviceModal").modal("hide");
+			
+			if( webApp.vars["waitWindow"] ){
+				webApp.vars["waitWindow"].style.display="block";
+			}
+		
+			webApp.vars["cache"]["cacheUpdate"] = true;
+			_serverRequestAppDate( function(data){
+console.log("end update..", data);
+				if( webApp.vars["waitWindow"] ){
+					webApp.vars["waitWindow"].style.display="none";
+				}
+				if( data ){
+					_parseAjax( data );
+				}
+			});
+		});//end event
+		
 	}//end defineEvents()
 
 
@@ -249,11 +268,7 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 				//}, 1000*3);
 			break;
 
-			case "upload":
-			break;
-			
 			case "get-data":
-
 				if( webApp.vars["waitWindow"] ){
 					//waitWindow.className="modal-dialog";
 					webApp.vars["waitWindow"].style.display="block";
@@ -294,25 +309,41 @@ function _loadData( postFunc ){
 		
 		switch (webApp.vars["support"]["dataStoreType"]) {				
 			case "indexedDB":
+			
+				//Get application data from cache
+				storage.getAppData({
+					"callback": function(data){
+//console.log(data);
+						if( !data ){
+							webApp.vars["cache"]["cacheUpdate"] = true;
+							_serverRequestAppDate( postFunc );
+						} else {
+							if( typeof postFunc === "function"){
+								postFunc(data);
+							}
+						}
+					}
+				});
+/*			
 				storage.checkAppData({
 					"callback": function( lastModified ){
 console.log( "storage.checkAppData(), end process, lastModified: ", lastModified, typeof lastModified);
 
 						if( !lastModified ){
-							webApp.vars["cache"]["needUpdate"] = true;
-							__serverRequest();
+							webApp.vars["cache"]["cacheUpdate"] = true;
+							_serverRequestAppDate();
 						} 
 							
 						if( lastModified ){
 							if( webApp.vars["support"]["promiseSupport"] ){
 	
 								__checkDatePromise( lastModified ).then(
-								function( needUpdate ) {
-console.log("needUpdate: ", needUpdate);
+								function( cacheUpdate ) {
+console.log("cacheUpdate: ", cacheUpdate);
 
-									if( needUpdate ){
-											webApp.vars["cache"]["needUpdate"] = true;
-										__serverRequest();
+									if( cacheUpdate ){
+											webApp.vars["cache"]["cacheUpdate"] = true;
+										_serverRequestAppDate();
 										
 									} else {
 										
@@ -345,6 +376,7 @@ console.log( "promise reject, ", error );
 							
 					}//end callback
 				});//end storage.checkAppData()
+*/				
 			break;
 			
 			case "webSQL":
@@ -354,37 +386,36 @@ console.log( "promise reject, ", error );
 			break;
 
 			default:
-				__serverRequest();
+				_serverRequestAppDate( postFunc );
 			break;
 		}//end switch
 		
 		return false;
 		
+/*		
 		//function __checkDatePromise( dateStr ){
 		function __checkDatePromise( cacheDate ){
 //console.log("test2: ", cacheDate, typeof cacheDate);
 
 			return new Promise( function(resolve, reject) {
-/*		
 				//get cache date, yyyy-mm-dd hh:mm  (2019-06-03 09:58)
-				dateStr = dateStr.replace(/-/g, "");
-				var sYear = dateStr.substr(0,4);
-				var sMonth = dateStr.substr(4,2);
-				var sDay = dateStr.substr(6,2);
+				// dateStr = dateStr.replace(/-/g, "");
+				// var sYear = dateStr.substr(0,4);
+				// var sMonth = dateStr.substr(4,2);
+				// var sDay = dateStr.substr(6,2);
 				
-				var sTime = dateStr.substr(9, dateStr.length ).split(":");
-console.log( dateStr, sYear, sMonth, sDay, sTime[0], sTime[1] );
+				// var sTime = dateStr.substr(9, dateStr.length ).split(":");
+// console.log( dateStr, sYear, sMonth, sDay, sTime[0], sTime[1] );
 					
-				var intYear = parseInt( sYear );
-				var intMonth = parseInt( sMonth );
-				intMonth = intMonth - 1;
-				var intDay = parseInt( sDay );
-				var intHour = parseInt( sTime[0] );
-				var intMin = parseInt( sTime[1] );
+				// var intYear = parseInt( sYear );
+				// var intMonth = parseInt( sMonth );
+				// intMonth = intMonth - 1;
+				// var intDay = parseInt( sDay );
+				// var intHour = parseInt( sTime[0] );
+				// var intMin = parseInt( sTime[1] );
 				
-				var cacheDate = new Date( intYear, intMonth, intDay, intHour, intMin );
-console.log( cacheDate );
-*/				
+				// var cacheDate = new Date( intYear, intMonth, intDay, intHour, intMin );
+// console.log( cacheDate );
 				runAjax( {
 					"requestMethod" : "HEAD", 
 					"url" : webApp.vars["dataUrl"], 
@@ -414,65 +445,68 @@ console.log( cacheDate );
 			
 			});//end promise
 		}//end __checkDate()
+*/				
 
-		
-		function __serverRequest(){
+	}//end _loadData()
+
+
+	function _serverRequestAppDate( postFunc ){
 //console.log( webApp.vars["userDataUrl"] );
 //console.log( webApp.vars["userDataUrl"].value );
-			if( webApp.vars["userDataUrl"].value.length > 0){
-				webApp.vars["dataUrl"] = webApp.vars["userDataUrl"].value;
-			}
-		
-			if( !webApp.vars["dataUrl"] ||
-				webApp.vars["dataUrl"].length === 0 ){
+		if( webApp.vars["userDataUrl"].value.length > 0){
+			webApp.vars["dataUrl"] = webApp.vars["userDataUrl"].value;
+		}
+	
+		if( !webApp.vars["dataUrl"] ||
+			webApp.vars["dataUrl"].length === 0 ){
 webApp.vars["logMsg"] = "error, not found or incorrect 'dataUrl'...";
 _alert( webApp.vars["logMsg"], "error");
 //console.log( webApp.vars["logMsg"] );
-				return false;
-			}
+			return false;
+		}
 
-			runAjax( {
-				"requestMethod" : "GET", 
-				"url" : webApp.vars["dataUrl"], 
-				
-				"onProgress" : function( e ){
-					var percentComplete = 0;
-					if(e.lengthComputable) {
-						percentComplete = Math.ceil(e.loaded / e.total * 100);
-					}
+		runAjax( {
+			"requestMethod" : "GET", 
+			"url" : webApp.vars["dataUrl"], 
+			
+			"onProgress" : function( e ){
+				var percentComplete = 0;
+				if(e.lengthComputable) {
+					percentComplete = Math.ceil(e.loaded / e.total * 100);
+				}
 console.log( "Loaded " + e.loaded + " bytes of total " + e.total, e.lengthComputable, percentComplete+"%" );
-					if( webApp.vars["loadProgressBar"] ){
-						webApp.vars["loadProgressBar"].className = "progress-bar";
-						webApp.vars["loadProgressBar"].style.width = percentComplete+"%";
-						webApp.vars["loadProgressBar"].innerHTML = percentComplete+"%";
-						
-						webApp.vars["numTotalLoad"].innerHTML = ((e.total / 1024) / 1024).toFixed(2)  + " Mb";
-					}
+				if( webApp.vars["loadProgressBar"] ){
+					webApp.vars["loadProgressBar"].className = "progress-bar";
+					webApp.vars["loadProgressBar"].style.width = percentComplete+"%";
+					webApp.vars["loadProgressBar"].innerHTML = percentComplete+"%";
 					
-				},
-					
-				"onLoadEnd" : function( headers, xhr ){
-//console.log( headers );
-console.log(xhr.getResponseHeader("last-modified") );
-						var serverDate = new Date( xhr.getResponseHeader("last-modified") );
-						webApp.vars["cache"]["serverDate"] = serverDate;
-				},
+					webApp.vars["numTotalLoad"].innerHTML = ((e.total / 1024) / 1024).toFixed(2)  + " Mb";
+				}
 				
-				"onError" : function( xhr ){
+			},
+				
+			"onLoadEnd" : function( headers, xhr ){
+//console.log( headers );
+//console.log(xhr.getResponseHeader("last-modified") );
+					//var serverDate = new Date( xhr.getResponseHeader("last-modified") );
+					//webApp.vars["cache"]["serverDate"] = serverDate;
+			},
+			
+			"onError" : function( xhr ){
 //console.log( "onError ", arguments);
-					webApp.vars["userDataUrl"].value = "";
+				webApp.vars["userDataUrl"].value = "";
 
 webApp.vars["logMsg"] = "error, ajax load failed..." + webApp.vars["dataUrl"];
 _alert( webApp.vars["logMsg"], "error");
 console.log( webApp.vars["logMsg"] );
 
-					if( typeof postFunc === "function"){
-						postFunc();
-					}
-					//return false;
-				},
+				if( typeof postFunc === "function"){
+					postFunc();
+				}
+				//return false;
+			},
 
-				"callback": function( data, runtime ){
+			"callback": function( data, runtime ){
 webApp.vars["logMsg"] = "load <b>" + webApp.vars["dataUrl"]  +"</b>, runtime: "+ runtime +" sec";
 _alert( webApp.vars["logMsg"], "success");
 //console.log( webApp.vars["logMsg"] );
@@ -482,41 +516,40 @@ _alert( webApp.vars["logMsg"], "success");
 //for( var key in data){
 //console.log(key +" : "+data[key]);
 //}
-					if( !data){
+				if( !data){
 webApp.vars["logMsg"] = "error, no data in " + webApp.vars["dataUrl"];
 _alert( webApp.vars["logMsg"], "error");
 console.log( webApp.vars["logMsg"] );
-						if( typeof postFunc === "function"){
-							postFunc(false);
-						}
-					} 
+					if( typeof postFunc === "function"){
+						postFunc(false);
+					}
+				} 
 
-					if( data && data.length > 0){
-						
-						if( webApp.vars["cache"]["needUpdate"] ){
+				if( data && data.length > 0){
+					
+					if( webApp.vars["cache"]["cacheUpdate"] ){
 webApp.vars["logMsg"]= "need to update cache data - " + webApp.vars["dataUrl"];
 //_alert( webApp.vars["logMsg"], "warning");
 console.log( webApp.vars["logMsg"] );
-							storage.saveAppData({
-								"data": data,
-								"callback" : function( state ){
+						storage.saveAppData({
+							"data": data,
+							"callback" : function( state ){
 webApp.vars["logMsg"]= "Update cache data, " + webApp.vars["dataUrl"];
 _alert( webApp.vars["logMsg"], "success");
 //console.log( webApp.vars["logMsg"] );
-								}
-							});
-						}
-						
-						if( typeof postFunc === "function"){
-							postFunc(data);
-						}
+								webApp.vars["cache"]["cacheUpdate"] = false;
+							}
+						});
 					}
+					
+					if( typeof postFunc === "function"){
+						postFunc(data);
+					}
+				}
 
-				}//end callback()
-			});
-		}//end __serverRequest()				
-
-	}//end _loadData()
+			}//end callback()
+		});
+	}//end _serverRequestAppDate()				
 
 
 	function _parseAjax( data ){

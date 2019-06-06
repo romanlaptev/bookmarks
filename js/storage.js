@@ -4,25 +4,9 @@ var storage = {
 		// return _init_cache();
 	// },
 	
-	// "getXml": function(){
-		// _get_xml_from_storage();
-	// },
-
-	// "putItem": function(key, value, callback){
-		// if ( config["use_localcache"] ) {
-			// return _put_to_storage( key, value, callback );
-		// }
-	// },
-	
-	// "getItem": function(key, callback){
-		// if ( config["use_localcache"] ) {
-			// return _getItemFromStorage( key, callback );
-		// }
-	// },
-	
-	"checkAppData": function(opt){
-		return _checkAppData( opt );
-	},
+	//"checkAppData": function(opt){
+		//return _checkAppData( opt );
+	//},
 	"saveAppData": function(opt){
 		return _saveAppData( opt );
 	},
@@ -33,7 +17,7 @@ var storage = {
 };//end storage
 //console.log("storage object:", storage);
 
-
+/*
 function _checkAppData( opt ){
 //console.log("function _checkAppData()", opt);
 	var p = {
@@ -97,7 +81,8 @@ indexedDatabase.getRecord({
 	});
 
 }//end _checkAppData()
-				
+*/
+
 function _saveAppData( opt ){
 //console.log("function _saveAppData()", opt);
 	var p = {
@@ -120,7 +105,7 @@ function _saveAppData( opt ){
 //_alert( _vars.logMsg, "warning" );
 
 				var storeData = [];
-				storeData.push( {"key": "lastModified", "value" : webApp.vars["cache"]["serverDate"]} );
+				//storeData.push( {"key": "lastModified", "value" : webApp.vars["cache"]["serverDate"]} );
 				storeData.push( {"key": "jsonString", "value" : p["data"]} );
 
 				indexedDatabase.addRecords({
@@ -128,8 +113,8 @@ function _saveAppData( opt ){
 						"storeName" : webApp.vars["cache"]["dataStoreName"],
 						"storeData" : storeData,
 						"callback" : function( runtime ){
-_vars.logMsg = "_addRecords(), db: "+ webApp.vars["cache"]["dbName"] + "\
-, store: "+ webApp.vars["cache"]["dataStoreName"] +", runtime: " + runtime;
+_vars.logMsg = "Put data to cache, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
+, store: <b>"+ webApp.vars["cache"]["dataStoreName"] +"</b>, runtime: " + runtime;
 _alert( _vars.logMsg, "success" );
 console.log( _vars.logMsg );
 					}
