@@ -16,6 +16,186 @@ var iDBmodule =  function(){
 		
 	}//end vars{}
 
+
+	var _createStore = function( opt ){
+//console.log(arguments);
+		var p = {
+			"dbName": "",
+			"storeName": "",
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+	//console.log(p);
+
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			error = true;
+		}
+
+		if( p["storeName"].length === 0){
+var msg = "_createStore(), error, argument 'storeName' empty.... ";
+console.log( msg );
+			error = true;
+		}
+		
+		if( _error ){
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+		
+		var timeStart = new Date();
+		iDB({
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"action" : "create_store",
+			"callback" : _postFunc
+		});
+
+		function _postFunc(log){ 
+//console.log(p);
+//console.log(arguments);
+			
+			var timeEnd = new Date();
+			var runtime_s = ( timeEnd.getTime() - timeStart.getTime() ) / 1000;
+	//console.log("Runtime: ", runtime_s);
+
+			if( typeof p["callback"] == "function"){
+				p["callback"](log, runtime_s);
+			}
+
+		}//end _postFunc()
+		
+	};//end _createStore()
+
+
+
+	var _dropDB = function( opt ){
+//console.log(arguments);
+		var p = {
+			"dbName": "",
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+//console.log(p);
+
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			error = true;
+		}
+
+		if( p["dbName"].length === 0){
+var msg = "_dropDB(), error, argument 'dbName' empty.... ";
+console.log( msg );
+			error = true;
+		}
+	
+		if( _error ){
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+		
+		var timeStart = new Date();
+		iDB({
+			"dbName" : p["dbName"],
+			"action" : "drop_db",
+			"callback" : _postFunc
+		});
+
+		function _postFunc( log ){ 
+//console.log("_dropDB(), end process...." + p["dbName"]);
+
+			var timeEnd = new Date();
+			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+//console.log("Runtime: ", runtime_s);
+
+			if( typeof p["callback"] == "function"){
+				p["callback"](log, runtime_s);
+			}
+
+		}//end _postFunc()
+	};//end _dropDB()
+
+
+
+	var _deleteStore = function( opt ){
+//console.log(arguments);
+		var p = {
+			"dbName": "",
+			"storeName": "",
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+//console.log(p);
+
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			error = true;
+		}
+
+		if( p["storeName"].length === 0){
+var msg = "_deleteStore(), error, argument 'storeName' empty.... ";
+console.log( msg );
+			error = true;
+		}
+		
+		if( _error ){
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+
+		var timeStart = new Date();
+		iDB({
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"action" : "delete_store",
+			"callback" : _postFunc
+		});
+
+		function _postFunc( log ){ 
+//console.log(arguments);
+//console.log("callback, delete_store, " + p["storeName"]);
+
+			var timeEnd = new Date();
+			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+//console.log("Runtime: ", runtime_s);
+
+			if( typeof p["callback"] == "function"){
+				p["callback"](log, runtime_s);
+			}
+
+		}//end _postFunc()
+	};//end _deleteStore()
+
+
+
+
 	var _getListStores = function( opt ){
 	//console.log(arguments);
 		var p = {
@@ -27,20 +207,22 @@ var iDBmodule =  function(){
 			p[key] = opt[key];
 		}
 	//console.log(p);
+	
+		var _error = false;
 		
-			if( !window.indexedDB ) {
-_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			//return with error
-			if(typeof p["callback"] === "function"){
-				p["callback"]( false );
-			}
-			return false;
+			error = true;
 		}
 		
 		if( p["dbName"].length === 0){
 _vars["logMsg"] = "_getListStores(), error, argument 'dbName' empty.... ";
 console.log( _vars["logMsg"] );
+			error = true;
+		}
+		
+		if( _error ){
 			//return with error
 			if(typeof p["callback"] === "function"){
 				p["callback"]( false );
@@ -66,23 +248,34 @@ console.log( _vars["logMsg"] );
 
 
 
-	var _getRecords = function( opt ){
+	var _numRecords = function( opt ){
 //console.log(arguments);
-		var options = {
+		var p = {
 			"dbName": "",
 			"storeName": "",
-			"action": "get_records",
 			"callback": null
 		};
-		//extend options object
+		//extend p object
 		for(var key in opt ){
-			options[key] = opt[key];
+			p[key] = opt[key];
 		}
-//console.log(options);
+//console.log(p);
 
-			if( !window.indexedDB ) {
-_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
+			error = true;
+		}
+
+		if( p["storeName"].length === 0){
+var msg = "Parameters error, required 'storeName'";			
+console.log( msg );
+			error = true;
+		}
+
+		if( _error ){
 			//return with error
 			if(typeof p["callback"] === "function"){
 				p["callback"]( false );
@@ -90,30 +283,84 @@ console.log( _vars["logMsg"] );
 			return false;
 		}
 
-		if( options["storeName"].length === 0){
-var msg = "_getRecords(), error, argument 'storeName' empty.... ";
-console.log( msg );
-_log(msg);
-			return false;
+		//var timeStart = new Date();
+		iDB({
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"action" : "number_records",
+			"callback" : _postFunc
+		});
+
+
+		function _postFunc( num ){ 
+//console.log("callback, number_records, " + p["storeName"], num);
+			// var timeEnd = new Date();
+			// var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+// //console.log("Runtime: ", runtime_s);
+
+			if( typeof p["callback"] == "function"){
+				p["callback"](num);
+			}
+
+		}//end _postFunc()
+	};//end _numRecords()
+
+
+
+
+	var _getRecords = function( opt ){
+//console.log(arguments);
+		var p = {
+			"dbName": "",
+			"storeName": "",
+			"action": "get_records",
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+//console.log(p);
+
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			error = true;
 		}
 
+		if( p["storeName"].length === 0){
+var msg = "_getRecords(), error, argument 'storeName' empty.... ";
+console.log( msg );
+			error = true;
+		}
+
+		if( _error ){
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
+			return false;
+		}
+		
 		var timeStart = new Date();
 		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"action" : options["action"],
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"action" : p["action"],
 			"callback" : _postFunc
 		});
 
 
 		function _postFunc( data ){ 
-//console.log("callback, get_records, " + options["storeName"]);
+//console.log("callback, get_records, " + p["storeName"]);
 			var timeEnd = new Date();
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
 //console.log("Runtime: ", runtime_s);
 //console.log(data );
-			if( typeof options["callback"] == "function"){
-				options["callback"]( data, runtime_s );
+			if( typeof p["callback"] == "function"){
+				p["callback"]( data, runtime_s );
 			}
 		}//end _postFunc()
 		
@@ -125,59 +372,63 @@ _log(msg);
 //*доработка - если opt["recordKey"] является массивом, то выбрать все записи, перечисленные в opt["recordKey"]
 	var _getRecord = function( opt ){
 //console.log(arguments);
-		var options = {
+		var p = {
 			"dbName": "",
 			"storeName": "",
 			"action": "get_record",
 			"callback": null
 		};
-		//extend options object
+		//extend p object
 		for(var key in opt ){
-			options[key] = opt[key];
+			p[key] = opt[key];
 		}
-//console.log(options);
+//console.log(p);
 
-			if( !window.indexedDB ) {
-_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
+			error = true;
+		}
+
+		if( p["storeName"].length === 0){
+var msg = "_getRecord(), error, argument 'storeName' empty.... ";
+console.log( msg );
+			error = true;
+		}
+		if( p["recordKey"].length === 0){
+var msg = "_getRecord(), error, argument 'recordKey' empty.... ";
+console.log( msg );
+			error = true;
+		}
+
+		if( _error ){
 			//return with error
 			if(typeof p["callback"] === "function"){
 				p["callback"]( false );
 			}
 			return false;
 		}
-
-		if( options["storeName"].length === 0){
-var msg = "_getRecord(), error, argument 'storeName' empty.... ";
-console.log( msg );
-_log(msg);
-			return false;
-		}
-		if( options["recordKey"].length === 0){
-var msg = "_getRecord(), error, argument 'recordKey' empty.... ";
-console.log( msg );
-_log(msg);
-			return false;
-		}
-
+		
 		var timeStart = new Date();
 		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"action" : options["action"],
-			"recordKey" : options["recordKey"],
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"action" : p["action"],
+			"recordKey" : p["recordKey"],
 			"callback" : _postFunc
 		});
 
 		function _postFunc( data ){ 
-//console.log("callback, get_record, " + options["storeName"]);
+//console.log("callback, get_record, " + p["storeName"]);
 
 			var timeEnd = new Date();
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
 //console.log("Runtime: ", runtime_s);
 
-			if( typeof options["callback"] == "function"){
-				options["callback"]( data, runtime_s );
+			if( typeof p["callback"] == "function"){
+				p["callback"]( data, runtime_s );
 			}
 
 		}//end _postFunc()
@@ -199,20 +450,21 @@ _log(msg);
 		}
 //console.log(p);
 
-			if( !window.indexedDB ) {
-_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			//return with error
-			if(typeof p["callback"] === "function"){
-				p["callback"]( false );
-			}
-			return false;
+			error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "_clearStore(), error, argument 'storeName' empty.... ";
 console.log( msg );
-_log(msg);
+			error = true;
+		}
+	
+		if( _error ){
 			//return with error
 			if(typeof p["callback"] === "function"){
 				p["callback"]( false );
@@ -259,25 +511,26 @@ _log(msg);
 		}
 //console.log(p);
 
-			if( !window.indexedDB ) {
-_vars["logMsg"] = "_getListStores(), IndexedDB is not supported....";
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			//return with error
-			if(typeof p["callback"] === "function"){
-				p["callback"]( false );
-			}
-			return false;
+			error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "Parameters error, required 'storeName'";			
 console.log( msg );
-_log(msg);
-			return false;
+			error = true;
 		}
 		if( p["storeData"].length === 0 &&
 			typeof p["storeData"] !== "object"){
 console.log( "Parameters error, required 'storeData' " );
+			error = true;
+		}
+
+		if( _error ){
 			//return with error
 			if(typeof p["callback"] === "function"){
 				p["callback"]( false );
@@ -312,318 +565,149 @@ console.log( "Parameters error, required 'storeData' " );
 
 
 
-	// public interfaces
-	return{
-		getListStores: _getListStores,
-		getRecords: _getRecords,
-		getRecord: _getRecord,
-		clearStore: _clearStore,
-		addRecords: _addRecords
-	};
-
-};//end module
-
-var indexedDatabase = iDBmodule();
-//console.log("indexedDatabase module:", indexedDatabase);
-
-
-
-
-
-	var _createStore = function( opt ){
-	//console.log(arguments);
-		var p = {
-			"dbName": "",
-			"storeName": "",
-			"callback": null
-		};
-		//extend p object
-		for(var key in opt ){
-			p[key] = opt[key];
-		}
-	//console.log(p);
-
-		if( p["storeName"].length === 0){
-	var msg = "_createStore(), error, argument 'storeName' empty.... ";
-	console.log( msg );
-	_log(msg);
-			return false;
-		}
-		
-		var timeStart = new Date();
-		iDB({
-			"dbName" : p["dbName"],
-			"storeName" : p["storeName"],
-			"action" : "create_store",
-			"callback" : _postFunc
-		});
-
-		function _postFunc(log){ 
-	//console.log(p);
-	//console.log(arguments);
-			
-			var timeEnd = new Date();
-			var runtime_s = ( timeEnd.getTime() - timeStart.getTime() ) / 1000;
-	//console.log("Runtime: ", runtime_s);
-
-			if( typeof p["callback"] == "function"){
-				p["callback"](log, runtime_s);
-			}
-
-		}//end _postFunc()
-		
-	};//end _createStore()
-
-
-
-	
-	var _dropDB = function( opt ){
-//console.log(arguments);
-		var options = {
-			"dbName": "",
-			"callback": null
-		};
-		//extend options object
-		for(var key in opt ){
-			options[key] = opt[key];
-		}
-//console.log(options);
-
-		if( options["dbName"].length === 0){
-var msg = "_dropDB(), error, argument 'dbName' empty.... ";
-console.log( msg );
-			return false;
-		}
-	
-		
-		var timeStart = new Date();
-		iDB({
-			"dbName" : options["dbName"],
-			"action" : "drop_db",
-			"callback" : _postFunc
-		});
-
-		function _postFunc( log ){ 
-//console.log("_dropDB(), end process...." + options["dbName"]);
-
-			var timeEnd = new Date();
-			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-//console.log("Runtime: ", runtime_s);
-
-			if( typeof options["callback"] == "function"){
-				options["callback"](log, runtime_s);
-			}
-
-		}//end _postFunc()
-	};//end _dropDB()
-
-	
-	var _deleteStore = function( opt ){
-//console.log(arguments);
-		var options = {
-			"dbName": "",
-			"storeName": "",
-			"callback": null
-		};
-		//extend options object
-		for(var key in opt ){
-			options[key] = opt[key];
-		}
-//console.log(options);
-
-		if( options["storeName"].length === 0){
-var msg = "_deleteStore(), error, argument 'storeName' empty.... ";
-console.log( msg );
-_log(msg);
-			return false;
-		}
-	
-		var timeStart = new Date();
-		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"action" : "delete_store",
-			"callback" : _postFunc
-		});
-
-		function _postFunc( log ){ 
-//console.log(arguments);
-//console.log("callback, delete_store, " + options["storeName"]);
-
-			var timeEnd = new Date();
-			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-//console.log("Runtime: ", runtime_s);
-
-			if( typeof options["callback"] == "function"){
-				options["callback"](log, runtime_s);
-			}
-
-		}//end _postFunc()
-	};//end _deleteStore()
-	
-
-
-	
 	var _addRecord = function( opt ){
 //console.log(arguments);
-		var options = {
+		var p = {
 			"dbName": "",
 			"storeName": "",
 			"recordValue": "",
 			"recordKey": "",
 			"callback": null
 		};
-		//extend options object
+		//extend p object
 		for(var key in opt ){
-			options[key] = opt[key];
+			p[key] = opt[key];
 		}
-//console.log(options);
+//console.log(p);
 
-		if( options["storeName"].length === 0){
-var msg = "Parameters error, needed 'storeName'";			
-console.log( msg );
-_log(msg);
-			return false;
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			error = true;
 		}
-		if( options["recordKey"].length === 0){
-var msg = "Parameters error, needed 'recordKey'";			
+
+		if( p["storeName"].length === 0){
+var msg = "Parameters error, required 'storeName'";			
 console.log( msg );
-_log(msg);
-			return false;
+			error = true;
 		}
-		if( options["recordValue"].length === 0){
-var msg = "Parameters error, needed 'recordValue'";			
+		
+		if( p["recordKey"].length === 0){
+var msg = "Parameters error, required 'recordKey'";			
 console.log( msg );
-_log(msg);
+			error = true;
+		}
+		
+		if( p["recordValue"].length === 0){
+var msg = "Parameters error, required 'recordValue'";			
+console.log( msg );
+			error = true;
+		}
+
+		if( _error ){
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
 			return false;
 		}
 
 		var timeStart = new Date();
 		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"recordKey" : options["recordKey"],
-			"recordValue" : options["recordValue"],
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"recordKey" : p["recordKey"],
+			"recordValue" : p["recordValue"],
 			"action" : "add_record",
 			"callback" : _postFunc
 		});
 
 
 		function _postFunc(){ 
-//console.log("callback, add_record, ", options["storeName"], options["recordKey"], options["recordValue"]);
+//console.log("callback, add_record, ", p["storeName"], p["recordKey"], p["recordValue"]);
 
 			var timeEnd = new Date();
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
 //console.log("Runtime: ", runtime_s);
 
-			if( typeof options["callback"] == "function"){
-				options["callback"](runtime_s);
+			if( typeof p["callback"] == "function"){
+				p["callback"](runtime_s);
 			}
 
 		}//end _postFunc()
 		
 	};//end _addRecord()
 
-	
 
-	var _numRecords = function( opt ){
-//console.log(arguments);
-		var options = {
-			"dbName": "",
-			"storeName": "",
-			"callback": null
-		};
-		//extend options object
-		for(var key in opt ){
-			options[key] = opt[key];
-		}
-//console.log(options);
-
-		if( options["storeName"].length === 0){
-var msg = "Parameters error, needed 'storeName'";			
-console.log( msg );
-_log(msg);
-			return false;
-		}
-
-		//var timeStart = new Date();
-		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"action" : "number_records",
-			"callback" : _postFunc
-		});
-
-
-		function _postFunc( num ){ 
-//console.log("callback, number_records, " + options["storeName"], num);
-
-			// var timeEnd = new Date();
-			// var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-// //console.log("Runtime: ", runtime_s);
-
-			if( typeof options["callback"] == "function"){
-				options["callback"](num);
-			}
-
-		}//end _postFunc()
-		
-	};//end _numRecords()
-	
-	
-	
 	var _deleteRecord = function( opt ){
 //console.log(arguments);
-		var options = {
+		var p = {
 			"dbName": "",
 			"storeName": "",
 			"recordKey": "",
 			"action": "delete_record",
 			"callback": null
 		};
-		//extend options object
+		//extend p object
 		for(var key in opt ){
-			options[key] = opt[key];
+			p[key] = opt[key];
 		}
-//console.log(options);
+//console.log(p);
 
-		if( options["storeName"].length === 0){
+		var _error = false;
+		
+		if( !window.indexedDB ) {
+_vars["logMsg"] = "IndexedDB is not supported....";
+console.log( _vars["logMsg"] );
+			error = true;
+		}
+
+		if( p["storeName"].length === 0){
 var msg = "_deleteRecord(), error, argument 'storeName' empty.... ";
 console.log( msg );
-_log(msg);
-			return false;
+			error = true;
 		}
-		if( options["recordKey"].length === 0){
+		if( p["recordKey"].length === 0){
 var msg = "_deleteRecord(), error, argument 'recordKey' empty.... ";
 console.log( msg );
-_log(msg);
+			error = true;
+		}
+
+		if( _error ){
+			//return with error
+			if(typeof p["callback"] === "function"){
+				p["callback"]( false );
+			}
 			return false;
 		}
 
 		var timeStart = new Date();
 		iDB({
-			"dbName" : options["dbName"],
-			"storeName" : options["storeName"],
-			"action" : options["action"],
-			"recordKey" : options["recordKey"],
+			"dbName" : p["dbName"],
+			"storeName" : p["storeName"],
+			"action" : p["action"],
+			"recordKey" : p["recordKey"],
 			"callback" : _postFunc
 		});
 
 		function _postFunc( log ){ 
-//console.log("callback, delete_record, " + options["storeName"]);
+//console.log("callback, delete_record, " + p["storeName"]);
 
 			var timeEnd = new Date();
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
 //console.log("Runtime: ", runtime_s);
 
-			if( typeof options["callback"] == "function"){
-				options["callback"]( log, runtime_s );
+			if( typeof p["callback"] == "function"){
+				p["callback"]( log, runtime_s );
 			}
 
 		}//end _postFunc()
 	};//end _deleteRecord()
-	
-	
+
+
+
 	var iDB = function( opt ){
 //console.log("iDB, ", iDB.caller, arguments);
 		
@@ -777,7 +861,7 @@ console.log("_set_version(), error indexedDB.open ", e);//?
 		}//end _set_version()
 		
 		function _upgrade( request){
-			request.onupgradeneeded = function(e) {
+			request.onupgraderequired = function(e) {
 //var msg = 'Upgrading ' + _iDBparams["dbName"];
 //console.log(msg, e);	
 					
@@ -848,7 +932,7 @@ msg = "<b>"+ _iDBparams["storeName"] + "</b> not exists in DB <b>" + _iDBparams[
 					
 				}//end switch
 				
-			}//end upgradeneeded callback
+			}//end upgraderequired callback
 		 
 			request.onsuccess = function(e) {
 //var msg = "request.onsuccess";
@@ -1679,5 +1763,25 @@ console.log(msg, e);
 			
 		}//end _run_transaction()
 	}//end iDB()
-	
 
+
+
+	// public interfaces
+	return{
+		createStore: _createStore,
+		dropDB: _dropDB,
+		deleteStore: _deleteStore,
+		getListStores: _getListStores,
+		numRecords: _numRecords,
+		getRecords: _getRecords,
+		getRecord: _getRecord,
+		clearStore: _clearStore,
+		addRecords: _addRecords,
+		addRecord: _addRecord,
+		deleteRecord: _deleteRecord
+	};
+
+};//end module
+
+var indexedDatabase = iDBmodule();
+//console.log("indexedDatabase module:", indexedDatabase);
