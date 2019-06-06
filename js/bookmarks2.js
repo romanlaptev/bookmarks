@@ -210,7 +210,7 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 		
 			webApp.vars["cache"]["cacheUpdate"] = true;
 			_serverRequestAppDate( function(data){
-console.log("end update..", data);
+//console.log("end update..", data);
 				if( webApp.vars["waitWindow"] ){
 					webApp.vars["waitWindow"].style.display="none";
 				}
