@@ -64,6 +64,11 @@ var webApp = {
 			"webSQLsupport" : window.openDatabase  ? true : false,
 			"localStorageSupport" : window['localStorage']  ? true : false,
 			"dataStoreType" : _detectDataStore()
+		},
+		
+		"timers": {
+			"loadData" : {},
+			"updateCache": {}
 		}
 		
 	},//end vars{}
@@ -96,6 +101,10 @@ console.log("init webapp!");
 console.log(webApp);
 
 //==================================
+function _getRunTime( timer){
+	return ( timer.end.getTime() - timer.start.getTime() ) / 1000;
+}//end _getRunTime()
+
 function _app( opt ){
 //console.log(arguments);	
 
@@ -209,6 +218,7 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 			}
 		
 			webApp.vars["cache"]["cacheUpdate"] = true;
+			webApp.vars["timers"]["updateCache"]["start"] = new Date();
 			_serverRequestAppDate( function(data){
 //console.log("end update..", data);
 				if( webApp.vars["waitWindow"] ){
@@ -217,6 +227,11 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 				if( data ){
 					_parseAjax( data );
 				}
+				
+				webApp.vars["timers"]["updateCache"]["end"] = new Date();
+				webApp.vars["logMsg"] = "Update cache, total runtime: </small>" + _getRunTime( webApp.vars["timers"]["updateCache"] ) + " sec</small>";
+				_alert( webApp.vars["logMsg"], "info");
+				
 			});
 		});//end event
 		
@@ -274,6 +289,7 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 					webApp.vars["waitWindow"].style.display="block";
 				}
 			
+				webApp.vars["timers"]["loadData"]["start"] = new Date();
 				_loadData(function( data ){
 						//var t = setTimeout(function(){
 //console.log("end of wait..", arguments);				
@@ -287,6 +303,11 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 						if( data ){
 							_parseAjax( data );
 						}
+						
+						webApp.vars["timers"]["loadData"]["end"] = new Date();
+						webApp.vars["logMsg"] = "Load application data, total runtime: </small>" + _getRunTime( webApp.vars["timers"]["loadData"] ) + " sec</small>";
+						_alert( webApp.vars["logMsg"], "info");
+						
 				});
 				
 			break;
@@ -539,8 +560,8 @@ console.log( webApp.vars["logMsg"] );
 						storage.saveAppData({
 							"data": data,
 							"callback" : function( state ){
-webApp.vars["logMsg"]= "Update cache data, " + webApp.vars["dataUrl"];
-_alert( webApp.vars["logMsg"], "success");
+//webApp.vars["logMsg"]= "Update cache data, " + webApp.vars["dataUrl"];
+//_alert( webApp.vars["logMsg"], "success");
 //console.log( webApp.vars["logMsg"] );
 								webApp.vars["cache"]["cacheUpdate"] = false;
 							}

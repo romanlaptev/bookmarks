@@ -148,7 +148,18 @@ function _getAppData( opt ){
 		"storeName" : webApp.vars["cache"]["dataStoreName"],
 		"recordKey" : "jsonString",
 		"callback" : function( data, runtime ){
-//console.log(data);
+			
+_vars.logMsg = "Get data from localcache, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
+, store: <b>"+ webApp.vars["cache"]["dataStoreName"] +"</b>, runtime: " + runtime;
+				if( indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error" ){
+_vars.logMsg += "<br>"+ indexedDatabase.dbInfo["iDBparams"]["reason"];
+_vars.logMsg += "<br>"+ indexedDatabase.dbInfo["errorDescription"];
+				}
+_alert( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+//console.log( _vars.logMsg );
+//console.log( indexedDatabase.dbInfo );
+//console.log( data );
+
 			if(typeof p["callback"] === "function"){
 				p["callback"]( data );
 			}

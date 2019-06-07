@@ -1,6 +1,5 @@
 var iDBmodule =  function(){
-//console.log("TEST1");
-		
+	
 	// private variables and functions
 	_vars = {
 "logMsg" : "",
@@ -12,10 +11,10 @@ var iDBmodule =  function(){
 //"localStorageSupport" : window['localStorage']  ? true : false,
 		
 //"version" = 0;
-"useIndex" : false
-		
+"useIndex" : false,
+"iDBparams" : {},
+"errorDescription": ""
 	}//end vars{}
-
 
 	var _createStore = function( opt ){
 //console.log(arguments);
@@ -35,13 +34,13 @@ var iDBmodule =  function(){
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "_createStore(), error, argument 'storeName' empty.... ";
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 		
 		if( _error ){
@@ -95,13 +94,13 @@ console.log( msg );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["dbName"].length === 0){
 var msg = "_dropDB(), error, argument 'dbName' empty.... ";
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 	
 		if( _error ){
@@ -153,13 +152,13 @@ console.log( msg );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "_deleteStore(), error, argument 'storeName' empty.... ";
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 		
 		if( _error ){
@@ -213,13 +212,13 @@ console.log( msg );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 		
 		if( p["dbName"].length === 0){
 _vars["logMsg"] = "_getListStores(), error, argument 'dbName' empty.... ";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 		
 		if( _error ){
@@ -266,13 +265,13 @@ console.log( _vars["logMsg"] );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "Parameters error, required 'storeName'";			
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 
 		if( _error ){
@@ -327,13 +326,13 @@ console.log( msg );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "_getRecords(), error, argument 'storeName' empty.... ";
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 
 		if( _error ){
@@ -382,28 +381,27 @@ console.log( msg );
 		for(var key in opt ){
 			p[key] = opt[key];
 		}
-//console.log(p);
+//console.log(p, p["recordKey"].length, p["recordKey"] || p["recordKey"].length === 0);
 
 		var _error = false;
 		
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
-		if( p["storeName"].length === 0){
-var msg = "_getRecord(), error, argument 'storeName' empty.... ";
-console.log( msg );
-			error = true;
+		if( !p["recordKey"] || p["storeName"].length === 0){
+			_vars["errorDescription"]  = "_getRecord(), error, argument 'storeName' empty.... ";
+			_error = true;
 		}
-		if( p["recordKey"].length === 0){
-var msg = "_getRecord(), error, argument 'recordKey' empty.... ";
-console.log( msg );
-			error = true;
+		if( !p["recordKey"] || p["recordKey"].length === 0){
+			_vars["errorDescription"]  = "_getRecord(), error, argument 'recordKey' empty.... ";
+			_error = true;
 		}
 
 		if( _error ){
+			_vars["iDBparams"]["runStatus"] = "error";
 			//return with error
 			if(typeof p["callback"] === "function"){
 				p["callback"]( false );
@@ -455,13 +453,13 @@ console.log( msg );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "_clearStore(), error, argument 'storeName' empty.... ";
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 	
 		if( _error ){
@@ -516,18 +514,18 @@ console.log( msg );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "Parameters error, required 'storeName'";			
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 		if( p["storeData"].length === 0 &&
 			typeof p["storeData"] !== "object"){
 console.log( "Parameters error, required 'storeData' " );
-			error = true;
+			_error = true;
 		}
 
 		if( _error ){
@@ -585,25 +583,25 @@ console.log( "Parameters error, required 'storeData' " );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "Parameters error, required 'storeName'";			
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 		
 		if( p["recordKey"].length === 0){
 var msg = "Parameters error, required 'recordKey'";			
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 		
 		if( p["recordValue"].length === 0){
 var msg = "Parameters error, required 'recordValue'";			
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 
 		if( _error ){
@@ -661,18 +659,18 @@ console.log( msg );
 		if( !window.indexedDB ) {
 _vars["logMsg"] = "IndexedDB is not supported....";
 console.log( _vars["logMsg"] );
-			error = true;
+			_error = true;
 		}
 
 		if( p["storeName"].length === 0){
 var msg = "_deleteRecord(), error, argument 'storeName' empty.... ";
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 		if( p["recordKey"].length === 0){
 var msg = "_deleteRecord(), error, argument 'recordKey' empty.... ";
 console.log( msg );
-			error = true;
+			_error = true;
 		}
 
 		if( _error ){
@@ -1765,7 +1763,6 @@ console.log(msg, e);
 	}//end iDB()
 
 
-
 	// public interfaces
 	return{
 		createStore: _createStore,
@@ -1778,7 +1775,8 @@ console.log(msg, e);
 		clearStore: _clearStore,
 		addRecords: _addRecords,
 		addRecord: _addRecord,
-		deleteRecord: _deleteRecord
+		deleteRecord: _deleteRecord,
+		dbInfo: _vars
 	};
 
 };//end module
