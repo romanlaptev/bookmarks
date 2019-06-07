@@ -1,3 +1,7 @@
+/*
+var indexedDatabase = iDBmodule();
+console.log("indexedDatabase module:", indexedDatabase);
+*/
 var iDBmodule =  function(){
 	
 	// private variables and functions
@@ -10,7 +14,7 @@ var iDBmodule =  function(){
 //"webSQLsupport" : window.openDatabase  ? true : false,
 //"localStorageSupport" : window['localStorage']  ? true : false,
 		
-//"version" = 0;
+//"version": 0,
 "useIndex" : false,
 "iDBparams" : {},
 "errorDescription": ""
@@ -391,7 +395,7 @@ console.log( _vars["logMsg"] );
 			_error = true;
 		}
 
-		if( !p["recordKey"] || p["storeName"].length === 0){
+		if( !p["storeName"] || p["storeName"].length === 0){
 			_vars["errorDescription"]  = "_getRecord(), error, argument 'storeName' empty.... ";
 			_error = true;
 		}
@@ -456,13 +460,13 @@ console.log( _vars["logMsg"] );
 			_error = true;
 		}
 
-		if( p["storeName"].length === 0){
-var msg = "_clearStore(), error, argument 'storeName' empty.... ";
-console.log( msg );
+		if( !p["storeName"] || p["storeName"].length === 0){
+			_vars["errorDescription"]  = "_clearStore(), error, argument 'storeName' empty.... ";
 			_error = true;
 		}
 	
 		if( _error ){
+			_vars["iDBparams"]["runStatus"] = "error";
 			//return with error
 			if(typeof p["callback"] === "function"){
 				p["callback"]( false );
@@ -480,12 +484,13 @@ console.log( msg );
 
 		function _postFunc( log ){ 
 //console.log(p);
-//console.log("callback, clear_store, " + p["storeName"]);
+//console.log("callback, clear_store, " + p["storeName"], log, _vars["iDBparams"]);
 
 			var timeEnd = new Date();
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
 //console.log("Runtime: ", runtime_s);
 
+//console.log(p["callback"].toString() );
 			if( typeof p["callback"] == "function"){
 				p["callback"](log, runtime_s);
 			}
@@ -552,7 +557,6 @@ console.log( "Parameters error, required 'storeData' " );
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
 //var msg = "_addRecords(), runtime: " + runtime_s;				
 //console.log(msg);
-//_log(msg);
 			if( typeof p["callback"] == "function"){
 				p["callback"](runtime_s);
 			}
@@ -824,6 +828,7 @@ console.log("indexedDB error, ", e);//?
 					db = e.target.result;
 //var msg = options["dbName"] + ", db.version = " + db.version, db;
 //console.log(msg);				
+					_iDBparams["version"] = db.version;
 					db.close();
 					
 					if( typeof options["callback"] === "function"){
@@ -834,6 +839,7 @@ console.log("indexedDB error, ", e);//?
 				request.onerror = function(e){
 var msg = "get_version(), error " + e.target.error.name +", "+ e.target.error.message;
 console.log(msg);
+					_iDBparams["runStatus"] = "error";
 					// if( e.target.error.name === "UnknownError"){
 // console.log("error name: " + e.target.error.name);
 					// }
@@ -859,7 +865,9 @@ console.log("_set_version(), error indexedDB.open ", e);//?
 		}//end _set_version()
 		
 		function _upgrade( request){
-			request.onupgraderequired = function(e) {
+//console.log("function _upgrade()", request);
+
+			request.onupgradeneeded = function(e) {
 //var msg = 'Upgrading ' + _iDBparams["dbName"];
 //console.log(msg, e);	
 					
@@ -870,7 +878,7 @@ console.log("_set_version(), error indexedDB.open ", e);//?
 					case "create_store":
 						if( db.objectStoreNames.contains( _iDBparams["storeName"] )) {
 var msg = "data store <b>"  + _iDBparams["storeName"] + "</b> not created, store exists....";
-//console.log(msg);
+console.log(msg);
 							_iDBparams["runStatus"] = "error";				
 							if( typeof _iDBparams["callback"] === "function"){
 								_iDBparams["callback"](msg);
@@ -899,7 +907,7 @@ var msg = "data store <b>"  + _iDBparams["storeName"] + "</b> not created, store
 
 							
 						store.transaction.oncomplete = function(event) {
-var msg = "Create store <b>" + _iDBparams["storeName"] + "</b>, database: <b>" + _iDBparams["dbName"] +"</b>";
+//var msg = "Create store <b>" + _iDBparams["storeName"] + "</b>, database: <b>" + _iDBparams["dbName"] +"</b>";
 //console.log(msg, e);
 							_iDBparams["runStatus"] = "success";				
 							if( typeof _iDBparams["callback"] === "function"){
@@ -930,7 +938,7 @@ msg = "<b>"+ _iDBparams["storeName"] + "</b> not exists in DB <b>" + _iDBparams[
 					
 				}//end switch
 				
-			}//end upgraderequired callback
+			}//end upgradenedeed callback
 		 
 			request.onsuccess = function(e) {
 //var msg = "request.onsuccess";
@@ -965,7 +973,6 @@ console.log(msg, e);
 						} else {
 //var msg = _iDBparams["storeName"] + ' not exists in DB ' + _iDBparams["dbName"];
 //console.log(msg);
-//_log(msg);
 
 							var buffer = _iDBparams["callback"];
 							var storeData = _iDBparams["storeData"];
@@ -976,7 +983,6 @@ console.log(msg, e);
 								"callback" : function(){
 //var msg = "callback, create_store, "+ _iDBparams["storeName"];									
 //console.log(msg, buffer, storeData);
-//_log(msg);
 
 									iDB({
 										"dbName" : _iDBparams["dbName"],
@@ -985,6 +991,7 @@ console.log(msg, e);
 										"action" : _iDBparams["action"],
 										"callback" : buffer
 									});
+
 								}
 							});
 
@@ -997,7 +1004,6 @@ console.log(msg, e);
 						} else {
 var msg = _iDBparams["storeName"] + ' not exists in DB ' + _iDBparams["dbName"];
 console.log(msg);
-_log(msg);
 
 							var buffer = _iDBparams["callback"];
 							iDB({
@@ -1007,7 +1013,6 @@ _log(msg);
 								"callback" : function(){
 //var msg = "callback, create_store, "+ _iDBparams["storeName"];									
 //console.log(msg, buffer, storeData);
-//_log(msg);
 									iDB({
 										"dbName" : _iDBparams["dbName"],
 										"storeName" : _iDBparams["storeName"],
@@ -1063,7 +1068,6 @@ _log(msg);
 			request.onerror = function(e) {
 var msg = "indexedDB request error: " + e.target.error.name+", "+ e.target.error.message;
 console.log(msg, e);
-_log(msg);
 				_iDBparams["runStatus"] = "error";
 				_iDBparams["reason"] = msg;
 				// if( e.target.error.name === "UnknownError"){
@@ -1080,16 +1084,15 @@ _log(msg);
 var msg = "Database " + _iDBparams["dbName"] + " being blocked";
 console.log(msg, e);				
 			};
-		
+			
 		}//end _upgrade()	
 
-		//function _run_transaction( args ){
 		function _run_transaction(){
 //console.log("function _run_transaction() : " + _iDBparams["storeName"], _iDBparams["action"]);
 		
 			if( !db.objectStoreNames.contains( _iDBparams["storeName"] ) ){
 				var msg = "Name object store '" + _iDBparams["storeName"] + "' not exists in DB " + _iDBparams["dbName"];
-console.log(msg);		
+//console.log(msg);		
 				if( typeof _iDBparams["callback"] === "function"){
 					_iDBparams["runStatus"] = "error";
 					_iDBparams["reason"] = msg;
@@ -1171,8 +1174,6 @@ console.log(msg, event);
 								// database["action"] = "update_master";
 								// iDB(function( res ){
 // var msg = "iDB(), _run_transaction(), _abortUpdate(), status: abort, QuotaExceededError";									
-// _log(msg);
-// _u.debug(msg);
 									// _importAbort();
 								// });
 								
@@ -1780,6 +1781,3 @@ console.log(msg, e);
 	};
 
 };//end module
-
-var indexedDatabase = iDBmodule();
-//console.log("indexedDatabase module:", indexedDatabase);

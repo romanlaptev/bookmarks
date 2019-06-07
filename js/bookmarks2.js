@@ -1,3 +1,6 @@
+var indexedDatabase = iDBmodule();
+console.log("indexedDatabase module:", indexedDatabase);
+
 var webApp = {
 	"vars" : {
 		"app_title" : "Bookmarks",

@@ -1767,8 +1767,8 @@ console.log("_set_version(), error indexedDB.open ", e);//?
 		
 		function _upgrade( request){
 			request.onupgradeneeded = function(e) {
-//var msg = 'Upgrading ' + _iDBparams["dbName"];
-//console.log(msg, e);	
+var msg = 'Upgrading ' + _iDBparams["dbName"];
+console.log(msg, e);	
 					
 				db = e.target.result;
 				

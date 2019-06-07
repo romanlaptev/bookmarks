@@ -101,8 +101,15 @@ function _saveAppData( opt ){
 			"dbName" : webApp.vars["cache"]["dbName"],
 			"storeName" : webApp.vars["cache"]["dataStoreName"],
 			"callback" : function( log, runtime ){
-//_vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
-//_alert( _vars.logMsg, "warning" );
+//console.log( arguments );
+// _vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
+				// if( indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error" ){
+// _vars.logMsg += "<br>"+ indexedDatabase.dbInfo["iDBparams"]["reason"];
+// //_vars.logMsg += "<br>"+ indexedDatabase.dbInfo["errorDescription"];
+				// }
+// _alert( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+//console.log( _vars.logMsg );
+//console.log( indexedDatabase.dbInfo );
 
 				var storeData = [];
 				//storeData.push( {"key": "lastModified", "value" : webApp.vars["cache"]["serverDate"]} );
@@ -122,6 +129,31 @@ console.log( _vars.logMsg );
 
 			}
 		});//end clearStore
+
+/*
+				var storeData = [];
+				storeData.push( {"key": "jsonString", "value" : p["data"]} );
+
+				indexedDatabase.addRecords({
+						"dbName" : webApp.vars["cache"]["dbName"],
+						"storeName" : webApp.vars["cache"]["dataStoreName"],
+						"storeData" : storeData,
+						"callback" : function( runtime ){
+_vars.logMsg = "Put data to cache, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
+, store: <b>"+ webApp.vars["cache"]["dataStoreName"] +"</b>, runtime: " + runtime;
+_alert( _vars.logMsg, "success" );
+console.log( _vars.logMsg );
+					}
+				});//end addRecords
+		indexedDatabase.createStore({
+			"dbName" : webApp.vars["cache"]["dbName"],
+			"storeName" : webApp.vars["cache"]["dataStoreName"],
+			"callback" : function( log, runtime ){
+console.log( indexedDatabase.dbInfo );
+			}
+		});
+
+*/
 
 	}
 
