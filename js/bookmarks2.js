@@ -305,7 +305,6 @@ function _loadData( postFunc ){
 
 		//do not use localcache if requested dataUrl is not the default value
 		if( webApp.vars["userDataUrl"].value.length > 0){
-			webApp.vars["dataUrl"] = webApp.vars["userDataUrl"].value;
 			webApp.vars["support"]["dataStoreType"] = false;
 		}
 		
@@ -459,9 +458,9 @@ console.log( "promise reject, ", error );
 	function _serverRequestAppDate( postFunc ){
 //console.log( webApp.vars["userDataUrl"] );
 //console.log( webApp.vars["userDataUrl"].value );
-		// if( webApp.vars["userDataUrl"].value.length > 0){
-			// webApp.vars["dataUrl"] = webApp.vars["userDataUrl"].value;
-		// }
+		if( webApp.vars["userDataUrl"].value.length > 0){
+			webApp.vars["dataUrl"] = webApp.vars["userDataUrl"].value;
+		}
 	
 		if( !webApp.vars["dataUrl"] ||
 			webApp.vars["dataUrl"].length === 0 ){
