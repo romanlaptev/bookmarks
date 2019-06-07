@@ -42,8 +42,7 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["storeName"].length === 0){
-var msg = "_createStore(), error, argument 'storeName' empty.... ";
-console.log( msg );
+			_vars["errorDescription"]  = "_createStore(), error, argument 'storeName' empty.... ";
 			_error = true;
 		}
 		
@@ -102,8 +101,7 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["dbName"].length === 0){
-var msg = "_dropDB(), error, argument 'dbName' empty.... ";
-console.log( msg );
+			_vars["errorDescription"]  = "_dropDB(), error, argument 'dbName' empty.... ";
 			_error = true;
 		}
 	
@@ -160,8 +158,7 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["storeName"].length === 0){
-var msg = "_deleteStore(), error, argument 'storeName' empty.... ";
-console.log( msg );
+			_vars["errorDescription"]  = "_deleteStore(), error, argument 'storeName' empty.... ";
 			_error = true;
 		}
 		
@@ -273,8 +270,7 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["storeName"].length === 0){
-var msg = "Parameters error, required 'storeName'";			
-console.log( msg );
+			_vars["errorDescription"]  = "Parameters error, required 'storeName'";			
 			_error = true;
 		}
 
@@ -334,8 +330,7 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["storeName"].length === 0){
-var msg = "_getRecords(), error, argument 'storeName' empty.... ";
-console.log( msg );
+			_vars["errorDescription"]  = "_getRecords(), error, argument 'storeName' empty.... ";
 			_error = true;
 		}
 
@@ -523,8 +518,7 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["storeName"].length === 0){
-var msg = "Parameters error, required 'storeName'";			
-console.log( msg );
+			_vars["errorDescription"]  = "Parameters error, required 'storeName'";			
 			_error = true;
 		}
 		if( p["storeData"].length === 0 &&
@@ -555,7 +549,7 @@ console.log( "Parameters error, required 'storeData' " );
 
 			var timeEnd = new Date();
 			var runtime_s = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-//var msg = "_addRecords(), runtime: " + runtime_s;				
+//var msg  = "_addRecords(), runtime: " + runtime_s;				
 //console.log(msg);
 			if( typeof p["callback"] == "function"){
 				p["callback"](runtime_s);
@@ -591,20 +585,17 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["storeName"].length === 0){
-var msg = "Parameters error, required 'storeName'";			
-console.log( msg );
+			_vars["errorDescription"]  = "Parameters error, required 'storeName'";			
 			_error = true;
 		}
 		
 		if( p["recordKey"].length === 0){
-var msg = "Parameters error, required 'recordKey'";			
-console.log( msg );
+			_vars["errorDescription"]  = "Parameters error, required 'recordKey'";			
 			_error = true;
 		}
 		
 		if( p["recordValue"].length === 0){
-var msg = "Parameters error, required 'recordValue'";			
-console.log( msg );
+			_vars["errorDescription"]  = "Parameters error, required 'recordValue'";			
 			_error = true;
 		}
 
@@ -667,13 +658,11 @@ console.log( _vars["logMsg"] );
 		}
 
 		if( p["storeName"].length === 0){
-var msg = "_deleteRecord(), error, argument 'storeName' empty.... ";
-console.log( msg );
+			_vars["errorDescription"]  = "_deleteRecord(), error, argument 'storeName' empty.... ";
 			_error = true;
 		}
 		if( p["recordKey"].length === 0){
-var msg = "_deleteRecord(), error, argument 'recordKey' empty.... ";
-console.log( msg );
+			_vars["errorDescription"]  = "_deleteRecord(), error, argument 'recordKey' empty.... ";
 			_error = true;
 		}
 
