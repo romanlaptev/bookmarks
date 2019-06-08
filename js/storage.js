@@ -122,7 +122,10 @@ function _saveAppData( opt ){
 						"callback" : function( runtime ){
 _vars.logMsg = "Put data to cache, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
 , store: <b>"+ webApp.vars["cache"]["dataStoreName"] +"</b>, runtime: " + runtime;
-_alert( _vars.logMsg, "success" );
+if(indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error"){
+_vars.logMsg = indexedDatabase.dbInfo["errorDescription"];
+}						
+_alert( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
 console.log( _vars.logMsg );
 					}
 				});//end addRecords

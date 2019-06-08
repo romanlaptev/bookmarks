@@ -36,8 +36,7 @@ var iDBmodule =  function(){
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -95,8 +94,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -152,8 +150,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -211,14 +208,12 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 		
 		if( p["dbName"].length === 0){
-_vars["logMsg"] = "_getListStores(), error, argument 'dbName' empty.... ";
-console.log( _vars["logMsg"] );
+_vars["errorDescription"] = "_getListStores(), error, argument 'dbName' empty.... ";
 			_error = true;
 		}
 		
@@ -264,8 +259,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -324,8 +318,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -385,8 +378,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -450,8 +442,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -512,8 +503,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -579,8 +569,7 @@ console.log( "Parameters error, required 'storeData' " );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 
@@ -652,8 +641,7 @@ console.log( _vars["logMsg"] );
 		var _error = false;
 		
 		if( !window.indexedDB ) {
-_vars["logMsg"] = "IndexedDB is not supported....";
-console.log( _vars["logMsg"] );
+			_vars["errorDescription"] = "IndexedDB is not supported.";
 			_error = true;
 		}
 

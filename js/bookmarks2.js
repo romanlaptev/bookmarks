@@ -232,8 +232,8 @@ console.log("FileList support is " + window.FileList , typeof window.FileList);
 				}
 				
 				webApp.vars["timers"]["updateCache"]["end"] = new Date();
-				webApp.vars["logMsg"] = "Update cache, total runtime: </small>" + _getRunTime( webApp.vars["timers"]["updateCache"] ) + " sec</small>";
-				_alert( webApp.vars["logMsg"], "info");
+				//webApp.vars["logMsg"] = "Update cache, total runtime: </small>" + _getRunTime( webApp.vars["timers"]["updateCache"] ) + " sec</small>";
+				//_alert( webApp.vars["logMsg"], "info");
 				
 			});
 		});//end event
@@ -409,9 +409,11 @@ console.log( "promise reject, ", error );
 			break;
 			
 			case "webSQL":
+				_serverRequestAppDate( postFunc );
 			break;
 			
 			case "localStorage":
+				_serverRequestAppDate( postFunc );
 			break;
 
 			default:
