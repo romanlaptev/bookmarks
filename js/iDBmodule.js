@@ -70,6 +70,8 @@ var iDBmodule =  function(){
 	//console.log("Runtime: ", runtime_s);
 
 			if( typeof p["callback"] == "function"){
+console.log( _vars.iDBparams );
+				
 				p["callback"](log, runtime_s);
 			}
 
@@ -699,7 +701,9 @@ console.log( "Parameters error, required 'storeData' " );
 			"recordValue" : "",
 			"callback": null
 		};
-		_vars["iDBparams"] = _iDBparams;
+
+		//_vars["iDBparams"] = _iDBparams;
+		indexedDatabase.dbInfo["iDBparams"] = _iDBparams;// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		//extend options object
 		for(var key in opt ){
@@ -855,7 +859,7 @@ console.log("_set_version(), error indexedDB.open ", e);//?
 					case "create_store":
 						if( db.objectStoreNames.contains( _iDBparams["storeName"] )) {
 var msg = "data store <b>"  + _iDBparams["storeName"] + "</b> not created, store exists....";
-console.log(msg);
+//console.log(msg);
 							_iDBparams["runStatus"] = "error";				
 							if( typeof _iDBparams["callback"] === "function"){
 								_iDBparams["callback"](msg);
@@ -884,8 +888,8 @@ console.log(msg);
 
 							
 						store.transaction.oncomplete = function(event) {
-//var msg = "Create store <b>" + _iDBparams["storeName"] + "</b>, database: <b>" + _iDBparams["dbName"] +"</b>";
-//console.log(msg, e);
+var msg = "Create store <b>" + _iDBparams["storeName"] + "</b>, database: <b>" + _iDBparams["dbName"] +"</b>";
+console.log(msg, e);
 							_iDBparams["runStatus"] = "success";				
 							if( typeof _iDBparams["callback"] === "function"){
 								_iDBparams["callback"](msg);
@@ -921,14 +925,6 @@ msg = "<b>"+ _iDBparams["storeName"] + "</b> not exists in DB <b>" + _iDBparams[
 //var msg = "request.onsuccess";
 //console.log(msg, e);
 				db = e.target.result;
-				
-				// //refresh store-list
-				// if( _getById("store-list") ){
-					// _getById("store-list").innerHTML = "";
-					// for( var n = 0; n < db.objectStoreNames.length; n++){
-						// _getById("store-list").innerHTML += "<li>" +db.objectStoreNames[n]+ "</li>";
-					// }//next
-				// }
 				
 				db.onerror = function(e) {
 var msg = '(request.onsuccess, db.onerror), database ' + _iDBparams["dbName"] + ', action error!';
