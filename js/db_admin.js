@@ -1115,7 +1115,7 @@ function defineEvents(){
 	var recordKeyField = _getById("record-key");
 	var recordValueField = _getById("record-value");
 	
-//----------------------------------	
+//----------------------------------
 	var btn_list = _getById("btn-list");
 	btn_list.onclick = function(e){
 //console.log(e);
@@ -1125,7 +1125,7 @@ function defineEvents(){
 		_listStories();
 	}//end event
 
-//----------------------------------	
+//----------------------------------
 	var btn_drop_db = _getById("btn-dropDB");
 	btn_drop_db.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1151,7 +1151,7 @@ console.log( _vars.logMsg );
 	}//end event
 
 
-//----------------------------------	
+//----------------------------------
 	var btn_create = _getById("btn-create");
 	btn_create.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1190,7 +1190,7 @@ _log( _vars.logMsg );
 	}//end event
 
 
-//----------------------------------	
+//----------------------------------
 	var btn_delete_store = _getById("btn-delete-store");
 	btn_delete_store.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1230,7 +1230,7 @@ _log( _vars.logMsg );
 	}//end event
 
 
-//----------------------------------	
+//----------------------------------
 	var btn_addRecord = _getById("btn-add-record");
 	btn_addRecord.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1291,7 +1291,7 @@ _vars.logMsg = "_addRecord(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeNa
 	}//end event
 
 
-//----------------------------------	
+//----------------------------------
 	var btn_addRecords = _getById("btn-add-records");
 	btn_addRecords.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1333,7 +1333,7 @@ _log( _vars.logMsg );
 
 	}//end event
 
-//----------------------------------	
+//----------------------------------
 	var btn_numRecords = _getById("btn-num-records");
 	btn_numRecords.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1369,7 +1369,7 @@ _alert( _vars.logMsg, "info" );
 	}//end event
 
 
-//----------------------------------	
+//----------------------------------
 	var btn_getRecords = _getById("btn-get-records");
 	btn_getRecords.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1406,7 +1406,7 @@ console.log(data );
 
 	}//end event
 
-//----------------------------------	
+//----------------------------------
 	var btn_getRecordsObj = _getById("btn-get-records-obj");
 	btn_getRecordsObj.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1444,7 +1444,7 @@ console.log(data );
 
 	}//end event
 
-//----------------------------------	
+//----------------------------------
 	var btn_getRecord = _getById("btn-get-record");
 	btn_getRecord.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1503,7 +1503,7 @@ console.log(data);
 	}//end event
 
 
-//----------------------------------	
+//----------------------------------
 	var btn_deleteRecord = _getById("btn-delete-record");
 	btn_deleteRecord.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1554,7 +1554,7 @@ _log( _vars.logMsg );
 	}//end event
 
 
-//----------------------------------	
+//----------------------------------
 	var btn_clearStore = _getById("btn-clear-store");
 	btn_clearStore.onclick = function(e){
 		if( !_vars["indexedDBsupport"] ){
@@ -1630,7 +1630,7 @@ console.log("after load...", res.length);
 	}
 */
 
-//----------------------------------	
+//----------------------------------
 if( _getById("btn-run-query") ){
 	var btn_runQuery = _getById("btn-run-query");
 	btn_runQuery.onclick = function(e){
@@ -1875,6 +1875,106 @@ console.log( data );
 
 	}//end event
 }
+
+
+//==================================== LOCAL STORAGE buttons
+	var btn_clearLocalStorage = _getById("btn-clear-localstorage");
+	btn_clearLocalStorage.onclick = function(){
+		
+		if( !_vars["localStorageSupport"] ){
+			return false;
+		}
+		
+		if( localStorage.length > 0){ 
+			localStorage.clear();
+_vars.logMsg =  "local storage.is clear.. ";
+_alert( _vars.logMsg, "success");
+		} else {
+_vars.logMsg =  "no action, empty local storage.... ";
+_alert( _vars.logMsg, "warning");
+		}
+		
+console.log(window.localStorage);
+	}//end event
+	
+	var btn_setLocalStorage = _getById("btn-set-localstorage");
+	btn_setLocalStorage.onclick = function(){
+		
+		if( !_vars["localStorageSupport"] ){
+			return false;
+		}
+		
+		var recordKey = recordKeyField.value;
+		if( !recordKey || recordKey.length===0 ){
+_vars.logMsg="input field <b>record key</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var recordValue = recordValueField.value;
+		if( !recordValue || recordValue.length===0 ){
+_vars.logMsg="input field <b>record value</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		try {
+			//localStorage.setItem("a", 1);
+			//localStorage.setItem("b", 2);
+			//localStorage["c"] = 3;
+			localStorage.setItem( recordKey, recordValue);
+			
+_vars.logMsg =  "local storage set item.... ";
+_alert( _vars.logMsg, "success");
+			
+		} catch (e) {
+console.log(e);
+			if (e.description == 'QUOTA_EXCEEDED_ERR') {
+				_alert("localStorage: QUOTA_EXCEEDED_ERR", "error");
+			} else {
+				_alert("localStorage: undefined error", "error");
+			}
+		}
+			
+console.log(window.localStorage);
+	}//end event
+	
+	var btn_listLocalStorage = _getById("btn-list-localstorage");
+	btn_listLocalStorage.onclick = function(e){
+//console.log(e);
+		
+		if( !_vars["localStorageSupport"] ){
+			return false;
+		}
+		
+		if( localStorage.remainingSpace ){
+			_vars.logMsg =  "storage remainingSpace= " + localStorage.remainingSpace + " bytes ";
+		} else {
+			_vars.logMsg =  "storage max size: (1024 * 1024 * 5) bytes ";
+		}
+		_alert( _vars.logMsg, "info");
+		
+		_vars.logMsg =  "data length = " + localStorage.length + "";
+		_alert( _vars.logMsg, "info");
+		
+		if( localStorage.length > 0){ 
+			var listHtml = "";
+			for(var item in localStorage){
+				if( typeof localStorage[item] === "function"){
+					continue;
+				}
+				listHtml += "<li>";
+				listHtml += item + " : " + localStorage[item] +", type: " +typeof localStorage[item];
+				listHtml += "</li>";
+			}
+			var html = "<ul>"+listHtml+"</ul>";
+			_log( html );
+		} else {
+		_vars.logMsg =  "empty local storage.... ";
+		_alert( _vars.logMsg, "warning");
+		}
+		
+	}//end event
 
 }//end defineEvents()
 
