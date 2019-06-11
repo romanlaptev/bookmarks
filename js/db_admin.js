@@ -77,6 +77,16 @@ function init(){
 		//_listStories();
 	}
 
+	var dbNameField = _getById("dbname");
+	var storeNameField = _getById("storename");
+	var recordKeyField = _getById("record-key");
+	var recordValueField = _getById("record-value");
+
+	var dbNameField_websql = _getById("db-name");
+	var dbVersionField_websql = _getById("db-version");
+	var dbDescField_websql = _getById("db-desc");
+	var tableNameField_websql = _getById("table-name");
+
 	defineEvents();
 }//end init()	
 
@@ -1141,11 +1151,6 @@ console.log(e);
 		log.innerHTML = "";
 	};
 	
-	var dbNameField = _getById("dbname");
-	var storeNameField = _getById("storename");
-	var recordKeyField = _getById("record-key");
-	var recordValueField = _getById("record-value");
-	
 //----------------------------------
 	var btn_list = _getById("btn-list");
 	btn_list.onclick = function(e){
@@ -2071,6 +2076,10 @@ _alert( _vars.logMsg, "warning" );
 	
 	var btn_webSqlInsert = _getById("btn-websql-insert");
 	btn_webSqlInsert.onclick = function(){
+		if( !_vars["webSQLsupport"] ){
+			return false;
+		}
+/*		
 			var shortName = 'db_a';
 			var version = '1.0';
 			var displayName = 'User Settings Database';
@@ -2092,12 +2101,52 @@ console.log("Failed to connect to database " + shortName);
 				);
 
 			}
+*/
+/*
+		var tableName = document.getElementById("tablename").value;
+		
+//var sql = "insert into "+ tableName +" (name, shirt) VALUES ('Joe', 'Green');";
+//	var sql = "insert into people (name, shirt) VALUES ('Mark', 'Blue');";
+//	var sql = "insert into people (name, shirt) VALUES ('Phil', 'Orange');";
+//	var sql = "insert into people (name, shirt) VALUES ('jdoe', 'Purple');";
+
+		var db = connectDB();
+		//var sql = "insert into {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
+		var sql = "insert into {{table_name}} VALUES ( {{values}} );";
+		sql = sql.replace("{{table_name}}", tableName);
+		
+//for( var n1 = 0; n1 < 100000; n1++ ){
+		//var fields = "";
+		var values = "";
+		for( var n = 0; n < db_info["tables"][tableName]["fields"].length; n++){
+			//var fieldName = db_info["tables"][tableName]["fields"][n];
+			if(n > 0){
+				//fields += ", ";
+				values += ", ";
+			}
+			//fields += fieldName;
+			values += "'Test!'";
+		}
+		//sql = sql.replace("{{fields}}", fields);
+		sql = sql.replace("{{values}}", values);
+//console.log( sql );
+		runTransaction( sql, db, postFunc, true );
+//}//next		
+		
+		function postFunc( result ){
+console.log("INSERT record into "+ tableName, result);
+		}
+*/
 	}//end event
 	
 
 	var btn_webSqlSelect = _getById("btn-websql-select");
 	btn_webSqlSelect.onclick = function(){
 
+		if( !_vars["webSQLsupport"] ){
+			return false;
+		}
+/*		
 			var shortName = 'db_a';
 			var version = '1.0';
 			var displayName = 'User Settings Database';
@@ -2130,13 +2179,71 @@ function(tx) {
 );
 
 			}
+*/
 
+/*
+		var tableName = document.getElementById("tablename").value;
+		//var sql = "SELECT * FROM "+ tableName + " LIMIT 2117,1";
+		var sql = "SELECT * FROM "+ tableName;
+		var db = connectDB();
+		var timeStart = new Date();
+		runTransaction( sql, db, postFunc, true );
+		
+		function postFunc( result ){
+//console.log( sql, result);
+			var timeEnd = new Date();
+			var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+			_log("");
+			var msg = "- " + sql + ", runtime: " + runtime +" sec";
+			var listHtml = "";
+if( result.rows){
+			msg += ", read " + result.rows.length + " records.";
+			
+
+			//read first record
+			var _list = "<ol>{{list}}</ol>";
+			var _items = "";
+			_items += "First record:";
+			for(var item in result.rows.item(0) ){
+				_items += "<li><b>"+ item +"</b> : " + result.rows.item(0)[item] + "</li>";
+			}
+			listHtml += _list.replace("{{list}}", _items);
+			
+			//read last record
+			var _list = "<ol>{{list}}</ol>";
+			var _items = "";
+			var len = result.rows.length - 1;
+			_items += "Last record:";
+			for(var item in result.rows.item( len ) ){
+				_items += "<li><b>"+ item +"</b> : " + result.rows.item( len )[item] + "</li>";
+			}
+			listHtml += _list.replace("{{list}}", _items);
+
+			// for(var n = 0; n < result.rows.length; n++){
+				// var _list = "<ol>{{list}}</ol>";
+				// var _items = "";
+				// for(var item in result.rows.item(n) ){
+					// _items += "<li>"+ item +" : " + result.rows.item(n)[item] + "</li>";
+				// }
+				// listHtml += _list.replace("{{list}}", _items);
+			// }
+
+}
+			_log( msg );
+			_log( listHtml );
+		}
+
+*/
 	}//end event
 	
 	
 	var btn_webSqlDrop = _getById("btn-websql-drop");
 	btn_webSqlDrop.onclick = function(){
 
+		if( !_vars["webSQLsupport"] ){
+			return false;
+		}
+/*		
 			var shortName = 'db_a';
 			var version = '1.0';
 			var displayName = 'User Settings Database';
@@ -2160,7 +2267,69 @@ console.log("Failed to connect to database " + shortName);
 				});	
 
 			}
+*/			
+		var tableName = tableNameField_websql.value;
+//console.log(tableName);
+		if( !tableName || tableName.length===0 ){
+_vars.logMsg="input field <b>table name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+
+/*
+		var showLog = true;
+		dropTable( tableName, showLog );
+*/
 	}//end event
+
+	var btn_webSqlDropTables = _getById("btn-websql-drop-tables");
+	btn_webSqlDropTables.onclick = function(){
+		if( !_vars["webSQLsupport"] ){
+			return false;
+		}
+		/*
+		getAllTables(function( list ){
+//console.log(list);
+			for( var n = 0; n < list.length; n++ ){
+				dropTable( list[n], true );				
+			}
+			getAllTablesFromDB();			
+		});
+		*/
+	}//end event
+
+	var btn_webSqlList = _getById("btn-websql-list");
+	btn_webSqlList.onclick = function(){
+		if( !_vars["webSQLsupport"] ){
+			return false;
+		}
+		//getAllTablesFromDB();
+	}//end event
+
+	var btn_webSqlCreateTable = _getById("btn-websql-create");
+	btn_webSqlCreateTable.onclick = function(){
+		
+		if( !_vars["webSQLsupport"] ){
+			return false;
+		}
+		
+		var tableName = tableNameField_websql.value;
+//console.log(tableName);
+		if( !tableName || tableName.length===0 ){
+_vars.logMsg="input field <b>table name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		/*
+		createTable({
+			"tableName" : tableName, 
+			"fieldsInfo" : db_info["tables"][ tableName ]["fields"],
+			"executeQuery" : true,
+			"displayLog" : true
+		});
+		*/
+	}//end event
+
 
 
 }//end defineEvents()
