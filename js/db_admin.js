@@ -1105,6 +1105,18 @@ function defineEvents(){
 		_alert(_vars.logMsg, "success");
 	});
 
+if( _vars["localStorageSupport"] ){
+	if ( window.addEventListener ) {
+		window.addEventListener( "storage", _handleStorage, false);
+	} else {
+		window.attachEvent("onstorage", _handleStorage);
+	};
+	function _handleStorage(e){
+console.log(e);		
+	}//end
+}
+
+
 	var btn_clear_log = _getById("btn-clear-log");
 	btn_clear_log.onclick = function(){
 		log.innerHTML = "";
@@ -1939,6 +1951,36 @@ console.log(e);
 console.log(window.localStorage);
 	}//end event
 	
+
+
+	var btn_removeLocalStorage = _getById("btn-remove-localstorage");
+	btn_removeLocalStorage.onclick = function(){
+		
+		if( !_vars["localStorageSupport"] ){
+			return false;
+		}
+		
+		var recordKey = recordKeyField.value;
+		if( !recordKey || recordKey.length===0 ){
+_vars.logMsg="input field <b>record key</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		try {
+			localStorage.removeItem( recordKey);
+_vars.logMsg =  "local storage remove item <b> " +recordKey+"</b>";
+_alert( _vars.logMsg, "success");
+		} catch (e) {
+console.log(e);
+		}
+			
+console.log(window.localStorage);
+	}//end event
+	
+	
+	
+	
 	var btn_listLocalStorage = _getById("btn-list-localstorage");
 	btn_listLocalStorage.onclick = function(e){
 //console.log(e);
@@ -1973,6 +2015,7 @@ console.log(window.localStorage);
 		_vars.logMsg =  "empty local storage.... ";
 		_alert( _vars.logMsg, "warning");
 		}
+console.log(window.localStorage);
 		
 	}//end event
 

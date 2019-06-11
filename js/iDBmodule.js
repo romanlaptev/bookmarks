@@ -889,7 +889,7 @@ var msg = "data store <b>"  + _iDBparams["storeName"] + "</b> not created, store
 							
 						store.transaction.oncomplete = function(event) {
 var msg = "Create store <b>" + _iDBparams["storeName"] + "</b>, database: <b>" + _iDBparams["dbName"] +"</b>";
-console.log(msg, e);
+//console.log(msg, e);
 							_iDBparams["runStatus"] = "success";				
 							if( typeof _iDBparams["callback"] === "function"){
 								_iDBparams["callback"](msg);

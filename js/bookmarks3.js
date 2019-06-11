@@ -336,11 +336,11 @@ function _loadData( postFunc ){
 			webApp.vars["support"]["dataStoreType"] = false;
 		} 
 		
-		switch (webApp.vars["support"]["dataStoreType"]) {				
-			case "indexedDB":
+		if ( webApp.vars["support"]["dataStoreType"] && webApp.vars["support"]["dataStoreType"].length > 0) {
 			
 				//Get application data from cache
 				storage.getAppData({
+					"dataStoreType": webApp.vars["support"]["dataStoreType"],
 					"callback": function(data){
 //console.log(data);
 						if( !data ){
@@ -406,20 +406,11 @@ console.log( "promise reject, ", error );
 					}//end callback
 				});//end storage.checkAppData()
 */				
-			break;
-			
-			case "webSQL":
-				_serverRequestAppDate( postFunc );
-			break;
-			
-			case "localStorage":
-				_serverRequestAppDate( postFunc );
-			break;
-
-			default:
-				_serverRequestAppDate( postFunc );
-			break;
-		}//end switch
+		}
+		
+		if ( !webApp.vars["support"]["dataStoreType"] || webApp.vars["support"]["dataStoreType"].length === 0) {
+			_serverRequestAppDate( postFunc );
+		}
 		
 		return false;
 		
