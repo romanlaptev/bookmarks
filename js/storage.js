@@ -84,7 +84,7 @@ indexedDatabase.getRecord({
 */
 
 function _saveAppData( opt ){
-//console.log("function _saveAppData()", opt);
+console.log("function _saveAppData()", opt);
 	var p = {
 		"dataStoreType": null,
 		"data": null,

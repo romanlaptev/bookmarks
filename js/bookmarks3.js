@@ -554,6 +554,7 @@ webApp.vars["logMsg"]= "need to update cache data - " + webApp.vars["dataUrl"];
 //_alert( webApp.vars["logMsg"], "warning");
 console.log( webApp.vars["logMsg"] );
 						storage.saveAppData({
+							"dataStoreType": webApp.vars["support"]["dataStoreType"],
 							"data": data,
 							"callback" : function( state ){
 //webApp.vars["logMsg"]= "Update cache data, " + webApp.vars["dataUrl"];
