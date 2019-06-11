@@ -2019,6 +2019,131 @@ console.log(window.localStorage);
 		
 	}//end event
 
+//==================================== WebSQL buttons
+	var btn_webSqlConnect = _getById("btn-websql-connect");
+	btn_webSqlConnect.onclick = function(){
+		
+		if( !_vars["webSQLsupport"] ){
+			return false;
+		}
+		
+		var dbName = dbNameField.value;
+//console.log(dbName);
+		if( !dbName || dbName.length===0 ){
+_vars.logMsg="<b>input field DB name</b> is empty....";
+_alert( _vars.logMsg, "warning" );
+			return false;
+		}
+		
+		var version = "1.0";
+		var displayName = "Web SQL Demo Database";
+		var maxSize = 1*1024*1024; // = 1MB
+		db = openDatabase( dbName, version, displayName, maxSize );
+		if( !db ){
+			_var.logMsg ="Failed to connect to database " + dbName;
+			_alert( _vars.logMsg, "error" );
+		} else {
+				db.transaction(function(t){ 
+					t.executeSql ("CREATE TABLE IF NOT EXISTS table1 (food_name TEXT PRIMARY KEY, calories REAL, servings TEXT)");
+					}
+				);
+		}
+	}//end event
+	
+	var btn_webSqlInsert = _getById("btn-websql-insert");
+	btn_webSqlInsert.onclick = function(){
+			var shortName = 'db_a';
+			var version = '1.0';
+			var displayName = 'User Settings Database';
+			var maxSize = 3*1024*1024; // = 3MB
+			db = openDatabase( shortName, version, displayName, maxSize );   
+			if(!db)
+			{
+console.log("Failed to connect to database " + shortName);
+			}
+			else
+			{
+				var food_name = "pizza";
+				var amount_of_calories = 320;
+				var serving_size = "one slice";
+				db.transaction(
+				function(t){ 
+					t.executeSql("INSERT INTO table1 VALUES (?, ?, ?)", [food_name, amount_of_calories, serving_size]);
+					}
+				);
+
+			}
+	}//end event
+	
+
+	var btn_webSqlSelect = _getById("btn-websql-select");
+	btn_webSqlSelect.onclick = function(){
+
+			var shortName = 'db_a';
+			var version = '1.0';
+			var displayName = 'User Settings Database';
+			var maxSize = 3*1024*1024; // = 3MB
+			db = openDatabase( shortName, version, displayName, maxSize );   
+			if(!db)
+			{
+console.log("Failed to connect to database " + shortName);
+			}
+			else
+			{
+var list = document.getElementById("list");
+db.transaction(
+function(tx) {
+	tx.executeSql("SELECT * FROM table1", [], function(tx, result)	{
+//console.log(result, result.rows.length);
+		for(var n = 0; n < result.rows.length; n++)
+		{
+			list.innerHTML += "<ul>";
+			for(var item in result.rows.item(n) )
+			{
+				list.innerHTML += "<li>item: " + result.rows.item(n)[item] + "</li>";
+			}
+			list.innerHTML += "</ul>";
+		}
+	}, 
+	function(t,e) {alert(e.message);}
+	);
+}
+);
+
+			}
+
+	}//end event
+	
+	
+	var btn_webSqlDrop = _getById("btn-websql-drop");
+	btn_webSqlDrop.onclick = function(){
+
+			var shortName = 'db_a';
+			var version = '1.0';
+			var displayName = 'User Settings Database';
+			var maxSize = 3*1024*1024; // = 3MB
+			db = openDatabase( shortName, version, displayName, maxSize );   
+			if(!db)
+			{
+console.log("Failed to connect to database " + shortName);
+			}
+			else
+			{
+				db.transaction(function (t) {
+					 t.executeSql("DROP TABLE table1",[], 
+						 function(t,results){
+							 console.error("table1 dropped");
+						 },
+						 function(t,error){
+							 console.error("Error: " + error.message);
+						 }
+					 )
+				});	
+
+			}
+	}//end event
+
+
 }//end defineEvents()
 
 
