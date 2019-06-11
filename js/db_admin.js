@@ -1134,16 +1134,16 @@ function defineEvents(){
 		_alert(_vars.logMsg, "success");
 	});
 
-if( _vars["localStorageSupport"] ){
-	if ( window.addEventListener ) {
-		window.addEventListener( "storage", _handleStorage, false);
-	} else {
-		window.attachEvent("onstorage", _handleStorage);
-	};
-	function _handleStorage(e){
-console.log(e);		
-	}//end
-}
+// if( _vars["localStorageSupport"] ){
+	// if ( window.addEventListener ) {
+		// window.addEventListener( "storage", _handleStorage, false);
+	// } else {
+		// window.attachEvent("onstorage", _handleStorage);
+	// };
+	// function _handleStorage(e){
+// console.log(e);		
+	// }//end
+// }
 
 
 	var btn_clear_log = _getById("btn-clear-log");
