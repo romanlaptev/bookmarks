@@ -61,13 +61,22 @@ margin: 0;
 	</div>
 
 	<div class="panel row">
-		<label class="col-sm-2 col-md-2">Record key:</label>
-		<div class="col-sm-4 col-md-4">
+		<div class="">
+			<label class="col-sm-2 col-md-2">DB name:</label>
+				<input class="form-control" id="dbname" value="" autocomplete="off"/>
+		</div>
+		<div class="">
+			<label class="col-sm-2 col-md-2">Record key:</label>
 			<input class="form-control" id="record-key" value="">
 		</div>
-		<label class="col-sm-2 col-md-2">Record value:</label>
-		<div class="col-sm-4 col-md-4">
+		<div class="">
+			<label class="col-sm-2 col-md-2">Record value:</label>
 			<input class="form-control" id="record-value" value="">
+		</div>
+		
+		<div class="">
+			<label class="col-sm-4 col-md-4">Store name (or table name):</label>
+			<input class="form-control" id="storename" value="" autocomplete=off />
 		</div>
 	</div>
 		
@@ -76,10 +85,6 @@ margin: 0;
 			<h3>IndexedDB API</h3>
 		</div>
 		<div class="panel-body">
-			<label class="col-sm-2 col-md-2">DB name:</label>
-			<div class="col-sm-4 col-md-4">
-				<input class="form-control" id="dbname" value="" autocomplete="off"/>
-			</div>
 <!--			
 			<label class="col-sm-2 col-md-2">DB version:</label>
 			<div class="col-sm-4 col-md-4">
@@ -89,14 +94,11 @@ margin: 0;
 				<button id="btn-dropDB" class="btn btn-danger">drop database</button>
 			</div>
 -->			
-
 		</div>
 
 		<div class="panel-body">
 			<div class="col-sm-9 col-md-9">
-				<label class="col-sm-2 col-md-2">Store name:</label>
 				<div class="col-sm-10 col-md-10">
-					<input class="form-control" id="storename" value="" autocomplete=off />
 					<select size="10" class="form-control" id="sel1" onChange="_changeValue( 'storename', this.options[this.selectedIndex].value );">
 					<!--
 						<option value="AR_ADR_LVL_1" selected>AR_ADR_LVL_1</option>

@@ -43,21 +43,40 @@ function _detectDataStore(){
 window.onload = function(){
 	_vars.logMsg = navigator.userAgent;
 	_alert( _vars.logMsg, "info" );
+
+	var test = window.openDatabase  ? true : false;
+	var status = window.openDatabase  ? "success" : "error";
+	_vars.logMsg = "webSQL support: " + test;
+_alert( _vars.logMsg, status );
 	
-	if( _vars["dataStoreType"] === "indexedDB"){
+	test = window["localStorage"]  ? true : false;
+	status = window["localStorage"]  ? "success" : "error";
+	_vars.logMsg = "localStorage support: " + test;
+_alert( _vars.logMsg, status );
+
+	test = window.indexedDB ? true : false;
+	status = window.indexedDB  ? "success" : "error";
+	_vars.logMsg = "indexedDB support: " + test;
+_alert( _vars.logMsg, status );
+
+	
+	//if( _vars["dataStoreType"] === "indexedDB"){
 		init();
-	} else {
-	_vars.logMsg = "window.indexedDB API NOT supported....";
-	_alert( _vars.logMsg, "error" );
-	}
+	//} else {
+	//_vars.logMsg = "window.indexedDB API NOT supported....";
+	//_alert( _vars.logMsg, "error" );
+	//}
 	
 };//end window.load
 
 
 function init(){
-	_getById("dbname").value = _vars["dbName"];
-	//_getById("btn-list").click();
-	_listStories();
+	
+	if( _vars["dataStoreType"] === "indexedDB"){
+		_getById("dbname").value = _vars["dbName"];
+		//_listStories();
+	}
+
 	defineEvents();
 }//end init()	
 
