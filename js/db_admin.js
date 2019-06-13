@@ -16,13 +16,24 @@ _vars = {
 }//end vars{}
 
 if( window.openDatabase ){
+	
 	_vars["webSql"] = {
 		"dbName" : "bookmarks",
 		"version": "1.0",
 		"displayName": "Web SQL Database....",
 		"initSize" : 1*1024*1024,
-		"dbLink" : null
-	};
+		"dbLink" : null,
+		"tables": {
+			"table1": {
+				"fields" : {
+"id" : "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT",
+"firstname" : "TEXT NOT NULL DEFAULT 'Jack' ",
+"lastname" : "TEXT"
+					}
+				}
+			}
+		}
+		
 }
 
 console.log( _vars );
@@ -100,7 +111,7 @@ function init(){
 	var dbNameField_websql = _getById("db-name");
 	var dbVersionField_websql = _getById("db-version");
 	var dbDescField_websql = _getById("db-desc");
-	var tableNameField_websql = _getById("table-name");
+	_vars["tableNameField_websql"] = _getById("table-name");
 
 	defineEvents();
 }//end init()	
@@ -139,1189 +150,1170 @@ function defineEvents(){
 	btn_clear_log.onclick = function(){
 		log.innerHTML = "";
 	};
-	
-//----------------------------------
-	var btn_list = _getById("btn-list");
-	btn_list.onclick = function(e){
-//console.log(e);
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		_listStories();
-	}//end event
 
-//----------------------------------
-	var btn_drop_db = _getById("btn-dropDB");
-	btn_drop_db.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		indexedDatabase.dropDB({
-			"dbName" : dbName,
-			"callback" : function( log, runtime ){
-_vars.logMsg="_dropDB(), "+ log +", runtime: " + runtime;
-_alert( _vars.logMsg, "warning" );
-console.log( _vars.logMsg );
+	__indexedDBEvents();
+	__localStorageEvents();
+	__webSQLevents();
+
+
+	function __indexedDBEvents(){
+	//----------------------------------
+		var btn_list = _getById("btn-list");
+		btn_list.onclick = function(e){
+	//console.log(e);
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		});
+			_listStories();
+		}//end event
 
-	}//end event
-
-
-//----------------------------------
-	var btn_create = _getById("btn-create");
-	btn_create.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		indexedDatabase.createStore({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( log, runtime ){
-//console.log( indexedDatabase.dbInfo );
-
-				_vars.logMsg="_createStore(), "+ log +", runtime: " + runtime;
-				_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
-				_listStories();
+	//----------------------------------
+		var btn_drop_db = _getById("btn-dropDB");
+		btn_drop_db.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		});
-		
-	}//end event
-
-
-//----------------------------------
-	var btn_delete_store = _getById("btn-delete-store");
-	btn_delete_store.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		indexedDatabase.deleteStore({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( log, runtime ){
-				_vars.logMsg = "_deleteStore(), "+ log +", runtime: " + runtime;
-//console.log( indexedDatabase.dbInfo );
-
-				_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
-
-				_listStories();
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
 			}
-		});
-
-	}//end event
-
-
-//----------------------------------
-	var btn_addRecord = _getById("btn-add-record");
-	btn_addRecord.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		var recordKey = recordKeyField.value;
-		if( !recordKey || recordKey.length===0 ){
-_vars.logMsg="input field <b>record key</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		// recordKey = parseInt( recordKeyField.value );
-// console.log(recordKey);
-		// if( isNaN( recordKey ) ){
-			// recordKey = recordKeyField.value;
-		// }
-		
-		var recordValue = recordValueField.value;
-		if( !recordValue || recordValue.length===0 ){
-_vars.logMsg="input field <b>record value</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		indexedDatabase.addRecord({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"recordKey" : recordKey,
-			"recordValue" : recordValue,
-			"callback" : function( runtime ){
-//console.log( indexedDatabase.dbInfo );
-				
-_vars.logMsg = "_addRecord(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeName + "</b>, key: <b>"+ recordKey+"</b>, runtime: " + runtime;
-//_alert( _vars.logMsg, "warning" );
-//console.log( _vars.logMsg );
-				_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-				_log( _vars.logMsg );
-			}
-		});
-
-	}//end event
-
-
-//----------------------------------
-	var btn_addRecords = _getById("btn-add-records");
-	btn_addRecords.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		var storeData = [];
-		storeData.push({"value" : "value1"});
-		storeData.push({"value" : "value2"});
-		storeData.push({"value" : "value3"});
-		
-		indexedDatabase.addRecords({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"storeData" : storeData,
-			"callback" : function( runtime ){
-_vars.logMsg = "_addRecords(), db: "+ dbName +", store: "+ storeName +", runtime: " + runtime;
-_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
-//console.log( _vars.logMsg );
-			}
-		});
-
-	}//end event
-
-//----------------------------------
-	var btn_numRecords = _getById("btn-num-records");
-	btn_numRecords.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		indexedDatabase.numRecords({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( num ){
-_vars.logMsg = "_numRecords(), store: <b>" + storeName + "</b>, " + num + " records.";
-_alert( _vars.logMsg, "info" );
-//console.log( _vars.logMsg );
-			}
-		});
-
-	}//end event
-
-
-//----------------------------------
-	var btn_getRecords = _getById("btn-get-records");
-	btn_getRecords.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		indexedDatabase.getRecords({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( data, runtime ){
-_vars.logMsg = "_getRecords(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeName + "</b>, " +runtime + " sec, num records: " + data.length;
-_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
-//console.log( _vars.logMsg );
-console.log(data );
-			}
-		});
-
-	}//end event
-
-//----------------------------------
-	var btn_getRecordsObj = _getById("btn-get-records-obj");
-	btn_getRecordsObj.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		indexedDatabase.getRecords({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"action" : "get_records_obj",
-			"callback" : function( data, runtime ){
-_vars.logMsg = "_getRecords(), get storeData as object, db: <b>"+ dbName +"</b>, store:<b>"+ storeName + "</b>, " +runtime + " sec...";
-_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
-//console.log( _vars.logMsg );
-console.log(data );
-			}
-		});
-
-	}//end event
-
-//----------------------------------
-	var btn_getRecord = _getById("btn-get-record");
-	btn_getRecord.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		var recordKey = recordKeyField.value;
-		if( !recordKey || recordKey.length===0 ){
-_vars.logMsg="input field <b>record key</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-//console.log(recordKey);
-		// recordKey = parseInt( recordKeyField.value );
-		// if( isNaN( recordKey ) ){
-			// recordKey = recordKeyField.value;
-		// }
-
-		indexedDatabase.getRecord({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			//"action" : "get_record",//?
-			"recordKey" : recordKey,
-			"callback" : function( data, runtime ){
-_vars.logMsg = "_getRecord(), db: "+ dbName +", store:"+ storeName + ", " +runtime + " sec, num records: " + data.length;
-_vars.logMsg += ", success get record with key " + recordKey;
-_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
-console.log(data);
-
-				if(data){
-					_log(data );
-				} else {
-					_log(typeof data );
+			
+			indexedDatabase.dropDB({
+				"dbName" : dbName,
+				"callback" : function( log, runtime ){
+	_vars.logMsg="_dropDB(), "+ log +", runtime: " + runtime;
+	_alert( _vars.logMsg, "warning" );
+	console.log( _vars.logMsg );
 				}
-				
+			});
+
+		}//end event
+
+
+	//----------------------------------
+		var btn_create = _getById("btn-create");
+		btn_create.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		});
-
-	}//end event
-
-
-//----------------------------------
-	var btn_deleteRecord = _getById("btn-delete-record");
-	btn_deleteRecord.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		var recordKey = recordKeyField.value;
-		if( !recordKey || recordKey.length===0 ){
-_vars.logMsg="input field <b>record key</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-//console.log(recordKey);
-		// recordKey = parseInt( recordKeyField.value );
-		// if( isNaN( recordKey ) ){
-			// recordKey = recordKeyField.value;
-		// }
-
-		indexedDatabase.deleteRecord({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			//"action" : "delete_record",//?
-			"recordKey" : recordKey,
-			"callback" : function( log ){
-_vars.logMsg = "_deleteRecord(), "+ log;
-_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
-//_alert( _vars.logMsg, "warning" );
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
 			}
-		});
-
-	}//end event
-
-
-//----------------------------------
-	var btn_clearStore = _getById("btn-clear-store");
-	btn_clearStore.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-		indexedDatabase.clearStore({
-			"dbName" : dbName,
-			"storeName" : storeName,
-			"callback" : function( log, runtime ){
-_vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
-_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-_log( _vars.logMsg );
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
 			}
-		});
+			
+			indexedDatabase.createStore({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"callback" : function( log, runtime ){
+	//console.log( indexedDatabase.dbInfo );
 
-	}//end event
-
-
-//----------------------------------	
-/*
-	if( _getById("btn-load") ){
-		_getById("btn-load").onclick = function(){
-			_loadSpr({
-				"url" : _getById("input_file").value,
-				"callback" : function( res ){
-console.log("after load...", res.length);				
-						// var _dbName = _getById("dbname").value;
-						// var _storeName = _getById("storename").value;
-						// if( _storeName.length === 0 ){
-							// var _url = _getById("input_file").value;
-							// var pos_last_dot = _url.lastIndexOf(".");
-							// //var pos_last = _url.length;
-							// //var type = _url.substring( pos_last_dot + 1, pos_last );
-							// var pos_last_slash = _url.lastIndexOf("/");
-							// _storeName = _url.substring( pos_last_slash+1, pos_last_dot ).toUpperCase();
-						// }
-
-						// var _storeDataJson = __parseCSVTable( res, _storeName );
-	// //console.log(_storeDataJson, _storeDataJson.length);					
-						// if( _storeDataJson && _storeDataJson.length > 0){
-							// _saveRecords({
-								// "dbName" : _dbName,
-								// "storeName" : _storeName,
-								// "json" : _storeDataJson,
-								// "callback" : function(){
-	// var msg = "Saved records to " + _dbName + "." + _storeName;								
-	// console.log(msg);
-	// _log(msg);								
-								// }
-							// });
-						// }
+					_vars.logMsg="_createStore(), "+ log +", runtime: " + runtime;
+					_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+					_listStories();
 				}
 			});
 			
 		}//end event
-	}
-*/
 
-//----------------------------------
-if( _getById("btn-run-query") ){
-	var btn_runQuery = _getById("btn-run-query");
-	btn_runQuery.onclick = function(e){
-		if( !_vars["indexedDBsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var storeName = storeNameField.value;
-//console.log(storeName);
-		if( !storeName || storeName.length===0 ){
-_vars.logMsg="input field <b>store name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
 
-/*		
-		//SELECT KOD, TXT, KOD_MAIN FROM SIMPLE_SPR WHERE KOD_MAIN IN (1,5) AND NOMER=170
-		var queryObj = {
-			"action" : "select",
-			"tableName": storeName,
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
-			"where" : [
-				{"key" : "KOD_MAIN", "value" : [1, 5], "compare": "IN"},
-				{"logic": "AND", "key" : "NOMER", "value" : "170", "compare": "="},
-				{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
- 			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
-				}
-
+	//----------------------------------
+		var btn_delete_store = _getById("btn-delete-store");
+		btn_delete_store.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		};
-*/
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
 
-/*
-// select distinct txt text,kod kod,kod_main kod_main,null km from SIMPLE_SPR where 
-// nomer = 175 and 
-// kod_main is null  and 
-// kod in(select kod from sl_klass_perm where perm_name='CPR_175' and nomer=175)
-		var queryObj = {
-			"action" : "select",
-			"distinct"	: true,
-			"tableName": storeName, //"SIMPLE_SPR",
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "TEXT2", "ORDER_BY", "ARCHIVE_STAT"],
-			"where" : [
-				{"key" : "NOMER", "value" : "175", "compare": "="},
-				{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="},
-				{"logic": "AND", "key" : "KOD", "value" : {
-					"action" : "select",
-					"tableName": "SL_KLASS_PERM",
-					"targetFields" : ["KOD", "ZAPRET"],
-					"where" : [
-						{"key" : "PERM_NAME", "value" : "CPR_175", "compare": "="},
-						{"logic": "AND", "key" : "NOMER", "value" : "175", "compare": "="},
-					],
-					"callback" : function(){}
+			indexedDatabase.deleteStore({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"callback" : function( log, runtime ){
+					_vars.logMsg = "_deleteStore(), "+ log +", runtime: " + runtime;
+	//console.log( indexedDatabase.dbInfo );
+
+					_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+
+					_listStories();
+				}
+			});
+
+		}//end event
+
+
+	//----------------------------------
+		var btn_addRecord = _getById("btn-add-record");
+		btn_addRecord.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
+			}
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+
+			var recordKey = recordKeyField.value;
+			if( !recordKey || recordKey.length===0 ){
+	_vars.logMsg="input field <b>record key</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			// recordKey = parseInt( recordKeyField.value );
+	// console.log(recordKey);
+			// if( isNaN( recordKey ) ){
+				// recordKey = recordKeyField.value;
+			// }
+			
+			var recordValue = recordValueField.value;
+			if( !recordValue || recordValue.length===0 ){
+	_vars.logMsg="input field <b>record value</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			indexedDatabase.addRecord({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"recordKey" : recordKey,
+				"recordValue" : recordValue,
+				"callback" : function( runtime ){
+	//console.log( indexedDatabase.dbInfo );
 					
-				}, "compare": "IN"}
-			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
+	_vars.logMsg = "_addRecord(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeName + "</b>, key: <b>"+ recordKey+"</b>, runtime: " + runtime;
+	//_alert( _vars.logMsg, "warning" );
+	//console.log( _vars.logMsg );
+					_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+					_log( _vars.logMsg );
 				}
+			});
 
+		}//end event
+
+
+	//----------------------------------
+		var btn_addRecords = _getById("btn-add-records");
+		btn_addRecords.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		};
-*/
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
 
-/*
-// select distinct txt text,kod kod,null kod_main,null km from PMLP_ADR_LVL_4 where 
-// LVL_1_KOD = "-980200" AND -- VENTSPILS NOVADS
-// LVL_2_KOD = "-980213" AND -- PILTENE
-// (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
-// order by ord_lov
-		
-// select * from PMLP_ADR_LVL_4 
-// WHERE LVL_1_KOD = "-980200" -- VENTSPILS NOVADS
-// AND LVL_2_KOD = "-980213" -- PILTENE
-// AND ARCHIVE_STAT !=1
-// -- AND  (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
-// order by ord_lov
-
-// select * from PMLP_ADR_LVL_4 
-// WHERE LVL_1_KOD = "-980200"
-// AND LVL_2_KOD = "-980213"
-// OR LVL_1_KOD = "-660200"
-// AND ARCHIVE_STAT !=1
-// order by ord_lov
-
-		var queryObj = {
-			"action" : "select",
-			//"distinct" : true,
-			"tableName": storeName,
-			"targetFields" : ["KOD", "TXT", "ORD_LOV", "ARCHIVE_STAT" ],
-			"where" : [
-				{"key" : "LVL_1_KOD", "value" : "-980200", "compare": "="},
-				{"logic": "AND", "key" : "LVL_2_KOD", "value" : "-980213", "compare": "="},
-				{"logic": "OR", "key" : "LVL_1_KOD", "value" : "-660200", "compare": "="},
-				{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
-				
-				//{"key" : "LVL_2_KOD", "value" : "-980213", "compare": "<>"}
- 			],
-			"orderBy" : "ORD_LOV",
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
+			var storeData = [];
+			storeData.push({"value" : "value1"});
+			storeData.push({"value" : "value2"});
+			storeData.push({"value" : "value3"});
+			
+			indexedDatabase.addRecords({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"storeData" : storeData,
+				"callback" : function( runtime ){
+	_vars.logMsg = "_addRecords(), db: "+ dbName +", store: "+ storeName +", runtime: " + runtime;
+	_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+	//console.log( _vars.logMsg );
 				}
+			});
 
+		}//end event
+
+	//----------------------------------
+		var btn_numRecords = _getById("btn-num-records");
+		btn_numRecords.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		};
-*/
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
 
-/*
-//SELECT * FROM simple_spr where nomer="182" and kod_main is null		
-		var queryObj = {
-			"action" : "select",
-			"tableName": storeName,
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
-			"where" : [
-				{"key" : "NOMER", "value" : "182", "compare": "="},
-				{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="}
- 			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
+			indexedDatabase.numRecords({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"callback" : function( num ){
+	_vars.logMsg = "_numRecords(), store: <b>" + storeName + "</b>, " + num + " records.";
+	_alert( _vars.logMsg, "info" );
+	//console.log( _vars.logMsg );
 				}
+			});
 
+		}//end event
+
+
+	//----------------------------------
+		var btn_getRecords = _getById("btn-get-records");
+		btn_getRecords.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		};
-*/
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
 
-/*
-(
-	( 
-		(	(LVL_2_KOD :AR_VT_PP_KOD AND  LVL_2_KOD<>'100003003' ) or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
-			and 
-			(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL) 	
-	) 
-	or 
-	(	
-		(	(LVL_2_KOD :AR_VT_PP_KOD and  LVL_2_KOD='100003003') or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
-		and 
-		(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL)
-	)
-)
-// order by ord_lov
-
-*/
-
-//select count(KOD), * from AR_ADR_LVL_4 where 
-//lvl_2_kod='100003011' and lvl_2_kod<>'100003003'
-//order by ORD_LOV
-		var queryObj = {
-			"action" : "select",
-			"tableName": "AR_ADR_LVL_4",
-			"targetFields" : [
-"KOD",
-"TXT",
-"LVL_1_KOD",
-"LVL_2_KOD",
-"LVL_3_KOD",
-"ORD_LOV",
-"ARCHIVE_STAT"
-],
-			"orderBy" : "ORD_LOV",
-			"where" : [
-				{"logic": "", "key" : "LVL_2_KOD", "value" : "100003011", "compare": "="},
-				{"logic": "AND", "key" : "LVL_2_KOD", "value" : "100003003", "compare": "<>"}
- 			],
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
-
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
+			indexedDatabase.getRecords({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"callback" : function( data, runtime ){
+	_vars.logMsg = "_getRecords(), db: <b>"+ dbName +"</b>, data store: <b>"+ storeName + "</b>, " +runtime + " sec, num records: " + data.length;
+	_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+	//console.log( _vars.logMsg );
+	console.log(data );
 				}
+			});
 
+		}//end event
+
+	//----------------------------------
+		var btn_getRecordsObj = _getById("btn-get-records-obj");
+		btn_getRecordsObj.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		};
-
-/*
-		var queryObj = {
-			"action" : "select",
-			"tableName": "SIMPLE_SPR",
-			"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
-			"where" : [
-				{"logic": "", "key" : "NOMER", "value" : "779", "compare": "="},
-				{"logic": "OR", "key" : "NOMER", "value" : "984", "compare": "="},
-				{"logic": "AND", "key" : "KOD", "value" : "14", "compare": "="}//,
-				//{"logic": "AND", "key" : "KOD", "value" : "01", "compare": "!="}
- 			],
 			
-			"callback" : function( opt ){
-console.log( "- end query");
-//console.log( opt["data"] );
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
 
-				//Run query, end process
-				if( typeof opt["callback"] == "function"){
-					opt["callback"]( opt["data"] );
+			indexedDatabase.getRecords({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"action" : "get_records_obj",
+				"callback" : function( data, runtime ){
+	_vars.logMsg = "_getRecords(), get storeData as object, db: <b>"+ dbName +"</b>, store:<b>"+ storeName + "</b>, " +runtime + " sec...";
+	_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+	//console.log( _vars.logMsg );
+	console.log(data );
 				}
+			});
 
+		}//end event
+
+	//----------------------------------
+		var btn_getRecord = _getById("btn-get-record");
+		btn_getRecord.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-		};
-*/
-		_runQuery({
-			"dbName" : dbName,
-			"storeName" : storeName,//"_SIMPLE_SPR",//"SL_KLASS_PERM"
-			"queryObj" : queryObj,
-			"callback" : function( data ){
-_vars.logMsg = "_runQuery(), - end process queries, num records: " + data.length;
-_alert( _vars.logMsg, "info" );
-console.log( data );
-			}
-		});
-
-	}//end event
-}
-
-
-//==================================== LOCAL STORAGE buttons
-	var btn_clearLocalStorage = _getById("btn-clear-localstorage");
-	btn_clearLocalStorage.onclick = function(){
-		
-		if( !_vars["localStorageSupport"] ){
-			return false;
-		}
-		
-		if( localStorage.length > 0){ 
-			localStorage.clear();
-_vars.logMsg =  "local storage.is clear.. ";
-_alert( _vars.logMsg, "success");
-		} else {
-_vars.logMsg =  "no action, empty local storage.... ";
-_alert( _vars.logMsg, "warning");
-		}
-		
-console.log(window.localStorage);
-	}//end event
-	
-	var btn_setLocalStorage = _getById("btn-set-localstorage");
-	btn_setLocalStorage.onclick = function(){
-		
-		if( !_vars["localStorageSupport"] ){
-			return false;
-		}
-		
-		var recordKey = recordKeyField.value;
-		if( !recordKey || recordKey.length===0 ){
-_vars.logMsg="input field <b>record key</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var recordValue = recordValueField.value;
-		if( !recordValue || recordValue.length===0 ){
-_vars.logMsg="input field <b>record value</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		try {
-			//localStorage.setItem("a", 1);
-			//localStorage.setItem("b", 2);
-			//localStorage["c"] = 3;
-			localStorage.setItem( recordKey, recordValue);
 			
-_vars.logMsg =  "local storage set item.... ";
-_alert( _vars.logMsg, "success");
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
 			
-		} catch (e) {
-console.log(e);
-			if (e.description == 'QUOTA_EXCEEDED_ERR') {
-				_alert("localStorage: QUOTA_EXCEEDED_ERR", "error");
-			} else {
-				_alert("localStorage: undefined error", "error");
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
 			}
-		}
-			
-console.log(window.localStorage);
-	}//end event
-	
 
-
-	var btn_removeLocalStorage = _getById("btn-remove-localstorage");
-	btn_removeLocalStorage.onclick = function(){
-		
-		if( !_vars["localStorageSupport"] ){
-			return false;
-		}
-		
-		var recordKey = recordKeyField.value;
-		if( !recordKey || recordKey.length===0 ){
-_vars.logMsg="input field <b>record key</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		try {
-			localStorage.removeItem( recordKey);
-_vars.logMsg =  "local storage remove item <b> " +recordKey+"</b>";
-_alert( _vars.logMsg, "success");
-		} catch (e) {
-console.log(e);
-		}
-			
-console.log(window.localStorage);
-	}//end event
-	
-	
-	
-	
-	var btn_listLocalStorage = _getById("btn-list-localstorage");
-	btn_listLocalStorage.onclick = function(e){
-//console.log(e);
-		
-		if( !_vars["localStorageSupport"] ){
-			return false;
-		}
-		
-		if( localStorage.remainingSpace ){
-			_vars.logMsg =  "storage remainingSpace= " + localStorage.remainingSpace + " bytes ";
-		} else {
-			_vars.logMsg =  "storage max size: (1024 * 1024 * 5) bytes ";
-		}
-		_alert( _vars.logMsg, "info");
-		
-		_vars.logMsg =  "data length = " + localStorage.length + "";
-		_alert( _vars.logMsg, "info");
-		
-		if( localStorage.length > 0){ 
-			var listHtml = "";
-			for(var item in localStorage){
-				if( typeof localStorage[item] === "function"){
-					continue;
-				}
-				listHtml += "<li>";
-				listHtml += item + " : " + localStorage[item] +", type: " +typeof localStorage[item];
-				listHtml += "</li>";
+			var recordKey = recordKeyField.value;
+			if( !recordKey || recordKey.length===0 ){
+	_vars.logMsg="input field <b>record key</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
 			}
-			var html = "<ul>"+listHtml+"</ul>";
-			_log( html );
-		} else {
-		_vars.logMsg =  "empty local storage.... ";
-		_alert( _vars.logMsg, "warning");
-		}
-console.log(window.localStorage);
-		
-	}//end event
-
-//==================================== WebSQL buttons
-/*
-	var btn_webSqlConnect = _getById("btn-websql-connect");
-	btn_webSqlConnect.onclick = function(){
-		
-		if( !_vars["webSQLsupport"] ){
-			return false;
-		}
-		
-		var dbName = dbNameField.value;
-//console.log(dbName);
-		if( !dbName || dbName.length===0 ){
-_vars.logMsg="<b>input field DB name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		
-		var version = "1.0";
-		var displayName = "Web SQL Demo Database";
-		var maxSize = 1*1024*1024; // = 1MB
-		db = openDatabase( dbName, version, displayName, maxSize );
-		if( !db ){
-			_var.logMsg ="Failed to connect to database " + dbName;
-			_alert( _vars.logMsg, "error" );
-		} else {
-				db.transaction(function(t){ 
-					t.executeSql ("CREATE TABLE IF NOT EXISTS table1 (food_name TEXT PRIMARY KEY, calories REAL, servings TEXT)");
-					}
-				);
-		}
-	}//end event
-*/
-
-	var btn_webSqlList = _getById("btn-websql-list");
-	btn_webSqlList.onclick = function(e){
-console.log(e);		
-		if( !_vars["webSQLsupport"] ){
-			return false;
-		}
-		getAllTablesFromDB();
-	}//end event
-	
-	var btn_webSqlInsert = _getById("btn-websql-insert");
-	btn_webSqlInsert.onclick = function(){
-		if( !_vars["webSQLsupport"] ){
-			return false;
-		}
-/*		
-			var shortName = 'db_a';
-			var version = '1.0';
-			var displayName = 'User Settings Database';
-			var maxSize = 3*1024*1024; // = 3MB
-			db = openDatabase( shortName, version, displayName, maxSize );   
-			if(!db)
-			{
-console.log("Failed to connect to database " + shortName);
-			}
-			else
-			{
-				var food_name = "pizza";
-				var amount_of_calories = 320;
-				var serving_size = "one slice";
-				db.transaction(
-				function(t){ 
-					t.executeSql("INSERT INTO table1 VALUES (?, ?, ?)", [food_name, amount_of_calories, serving_size]);
-					}
-				);
-
-			}
-*/
-/*
-		var tableName = document.getElementById("tablename").value;
-		
-//var sql = "insert into "+ tableName +" (name, shirt) VALUES ('Joe', 'Green');";
-//	var sql = "insert into people (name, shirt) VALUES ('Mark', 'Blue');";
-//	var sql = "insert into people (name, shirt) VALUES ('Phil', 'Orange');";
-//	var sql = "insert into people (name, shirt) VALUES ('jdoe', 'Purple');";
-
-		var db = connectDB();
-		//var sql = "insert into {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
-		var sql = "insert into {{table_name}} VALUES ( {{values}} );";
-		sql = sql.replace("{{table_name}}", tableName);
-		
-//for( var n1 = 0; n1 < 100000; n1++ ){
-		//var fields = "";
-		var values = "";
-		for( var n = 0; n < db_info["tables"][tableName]["fields"].length; n++){
-			//var fieldName = db_info["tables"][tableName]["fields"][n];
-			if(n > 0){
-				//fields += ", ";
-				values += ", ";
-			}
-			//fields += fieldName;
-			values += "'Test!'";
-		}
-		//sql = sql.replace("{{fields}}", fields);
-		sql = sql.replace("{{values}}", values);
-//console.log( sql );
-		runTransaction( sql, db, postFunc, true );
-//}//next		
-		
-		function postFunc( result ){
-console.log("INSERT record into "+ tableName, result);
-		}
-*/
-	}//end event
-	
-
-	var btn_webSqlSelect = _getById("btn-websql-select");
-	btn_webSqlSelect.onclick = function(){
-
-		if( !_vars["webSQLsupport"] ){
-			return false;
-		}
-/*		
-			var shortName = 'db_a';
-			var version = '1.0';
-			var displayName = 'User Settings Database';
-			var maxSize = 3*1024*1024; // = 3MB
-			db = openDatabase( shortName, version, displayName, maxSize );   
-			if(!db)
-			{
-console.log("Failed to connect to database " + shortName);
-			}
-			else
-			{
-var list = document.getElementById("list");
-db.transaction(
-function(tx) {
-	tx.executeSql("SELECT * FROM table1", [], function(tx, result)	{
-//console.log(result, result.rows.length);
-		for(var n = 0; n < result.rows.length; n++)
-		{
-			list.innerHTML += "<ul>";
-			for(var item in result.rows.item(n) )
-			{
-				list.innerHTML += "<li>item: " + result.rows.item(n)[item] + "</li>";
-			}
-			list.innerHTML += "</ul>";
-		}
-	}, 
-	function(t,e) {alert(e.message);}
-	);
-}
-);
-
-			}
-*/
-
-/*
-		var tableName = document.getElementById("tablename").value;
-		//var sql = "SELECT * FROM "+ tableName + " LIMIT 2117,1";
-		var sql = "SELECT * FROM "+ tableName;
-		var db = connectDB();
-		var timeStart = new Date();
-		runTransaction( sql, db, postFunc, true );
-		
-		function postFunc( result ){
-//console.log( sql, result);
-			var timeEnd = new Date();
-			var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-			_log("");
-			var msg = "- " + sql + ", runtime: " + runtime +" sec";
-			var listHtml = "";
-if( result.rows){
-			msg += ", read " + result.rows.length + " records.";
-			
-
-			//read first record
-			var _list = "<ol>{{list}}</ol>";
-			var _items = "";
-			_items += "First record:";
-			for(var item in result.rows.item(0) ){
-				_items += "<li><b>"+ item +"</b> : " + result.rows.item(0)[item] + "</li>";
-			}
-			listHtml += _list.replace("{{list}}", _items);
-			
-			//read last record
-			var _list = "<ol>{{list}}</ol>";
-			var _items = "";
-			var len = result.rows.length - 1;
-			_items += "Last record:";
-			for(var item in result.rows.item( len ) ){
-				_items += "<li><b>"+ item +"</b> : " + result.rows.item( len )[item] + "</li>";
-			}
-			listHtml += _list.replace("{{list}}", _items);
-
-			// for(var n = 0; n < result.rows.length; n++){
-				// var _list = "<ol>{{list}}</ol>";
-				// var _items = "";
-				// for(var item in result.rows.item(n) ){
-					// _items += "<li>"+ item +" : " + result.rows.item(n)[item] + "</li>";
-				// }
-				// listHtml += _list.replace("{{list}}", _items);
+	//console.log(recordKey);
+			// recordKey = parseInt( recordKeyField.value );
+			// if( isNaN( recordKey ) ){
+				// recordKey = recordKeyField.value;
 			// }
 
-}
-			_log( msg );
-			_log( listHtml );
-		}
+			indexedDatabase.getRecord({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				//"action" : "get_record",//?
+				"recordKey" : recordKey,
+				"callback" : function( data, runtime ){
+	_vars.logMsg = "_getRecord(), db: "+ dbName +", store:"+ storeName + ", " +runtime + " sec, num records: " + data.length;
+	_vars.logMsg += ", success get record with key " + recordKey;
+	_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+	console.log(data);
 
-*/
-	}//end event
-	
-	
-	var btn_webSqlDrop = _getById("btn-websql-drop");
-	btn_webSqlDrop.onclick = function(){
+					if(data){
+						_log(data );
+					} else {
+						_log(typeof data );
+					}
+					
+				}
+			});
 
-		if( !_vars["webSQLsupport"] ){
-			return false;
-		}
-/*		
-			var shortName = 'db_a';
-			var version = '1.0';
-			var displayName = 'User Settings Database';
-			var maxSize = 3*1024*1024; // = 3MB
-			db = openDatabase( shortName, version, displayName, maxSize );   
-			if(!db)
-			{
-console.log("Failed to connect to database " + shortName);
+		}//end event
+
+
+	//----------------------------------
+		var btn_deleteRecord = _getById("btn-delete-record");
+		btn_deleteRecord.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
 			}
-			else
-			{
-				db.transaction(function (t) {
-					 t.executeSql("DROP TABLE table1",[], 
-						 function(t,results){
-							 console.error("table1 dropped");
-						 },
-						 function(t,error){
-							 console.error("Error: " + error.message);
-						 }
-					 )
-				});	
-
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
 			}
-*/			
-		var tableName = tableNameField_websql.value;
-//console.log(tableName);
-		if( !tableName || tableName.length===0 ){
-_vars.logMsg="input field <b>table name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-
-/*
-		var showLog = true;
-		dropTable( tableName, showLog );
-*/
-	}//end event
-
-	var btn_webSqlDropTables = _getById("btn-websql-drop-tables");
-	btn_webSqlDropTables.onclick = function(){
-		if( !_vars["webSQLsupport"] ){
-			return false;
-		}
-		/*
-		getAllTables(function( list ){
-//console.log(list);
-			for( var n = 0; n < list.length; n++ ){
-				dropTable( list[n], true );				
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
 			}
-			getAllTablesFromDB();			
-		});
-		*/
-	}//end event
+
+			var recordKey = recordKeyField.value;
+			if( !recordKey || recordKey.length===0 ){
+	_vars.logMsg="input field <b>record key</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+	//console.log(recordKey);
+			// recordKey = parseInt( recordKeyField.value );
+			// if( isNaN( recordKey ) ){
+				// recordKey = recordKeyField.value;
+			// }
+
+			indexedDatabase.deleteRecord({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				//"action" : "delete_record",//?
+				"recordKey" : recordKey,
+				"callback" : function( log ){
+	_vars.logMsg = "_deleteRecord(), "+ log;
+	_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+	//_alert( _vars.logMsg, "warning" );
+				}
+			});
+
+		}//end event
 
 
-	var btn_webSqlCreateTable = _getById("btn-websql-create");
-	btn_webSqlCreateTable.onclick = function(){
+	//----------------------------------
+		var btn_clearStore = _getById("btn-clear-store");
+		btn_clearStore.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
+			}
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+
+			indexedDatabase.clearStore({
+				"dbName" : dbName,
+				"storeName" : storeName,
+				"callback" : function( log, runtime ){
+	_vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
+	_vars.logMsg = _wrapLogMsg( _vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+	_log( _vars.logMsg );
+				}
+			});
+
+		}//end event
+
+
+	//----------------------------------	
+	/*
+		if( _getById("btn-load") ){
+			_getById("btn-load").onclick = function(){
+				_loadSpr({
+					"url" : _getById("input_file").value,
+					"callback" : function( res ){
+	console.log("after load...", res.length);				
+							// var _dbName = _getById("dbname").value;
+							// var _storeName = _getById("storename").value;
+							// if( _storeName.length === 0 ){
+								// var _url = _getById("input_file").value;
+								// var pos_last_dot = _url.lastIndexOf(".");
+								// //var pos_last = _url.length;
+								// //var type = _url.substring( pos_last_dot + 1, pos_last );
+								// var pos_last_slash = _url.lastIndexOf("/");
+								// _storeName = _url.substring( pos_last_slash+1, pos_last_dot ).toUpperCase();
+							// }
+
+							// var _storeDataJson = __parseCSVTable( res, _storeName );
+		// //console.log(_storeDataJson, _storeDataJson.length);					
+							// if( _storeDataJson && _storeDataJson.length > 0){
+								// _saveRecords({
+									// "dbName" : _dbName,
+									// "storeName" : _storeName,
+									// "json" : _storeDataJson,
+									// "callback" : function(){
+		// var msg = "Saved records to " + _dbName + "." + _storeName;								
+		// console.log(msg);
+		// _log(msg);								
+									// }
+								// });
+							// }
+					}
+				});
+				
+			}//end event
+		}
+	*/
+
+	//----------------------------------
+	if( _getById("btn-run-query") ){
+		var btn_runQuery = _getById("btn-run-query");
+		btn_runQuery.onclick = function(e){
+			if( !_vars["indexedDBsupport"] ){
+				return false;
+			}
+			
+			var dbName = dbNameField.value;
+	//console.log(dbName);
+			if( !dbName || dbName.length===0 ){
+	_vars.logMsg="<b>input field DB name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var storeName = storeNameField.value;
+	//console.log(storeName);
+			if( !storeName || storeName.length===0 ){
+	_vars.logMsg="input field <b>store name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+
+	/*		
+			//SELECT KOD, TXT, KOD_MAIN FROM SIMPLE_SPR WHERE KOD_MAIN IN (1,5) AND NOMER=170
+			var queryObj = {
+				"action" : "select",
+				"tableName": storeName,
+				"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
+				"where" : [
+					{"key" : "KOD_MAIN", "value" : [1, 5], "compare": "IN"},
+					{"logic": "AND", "key" : "NOMER", "value" : "170", "compare": "="},
+					{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
+				],
+				"callback" : function( opt ){
+	console.log( "- end query");
+	//console.log( opt["data"] );
+
+					//Run query, end process
+					if( typeof opt["callback"] == "function"){
+						opt["callback"]( opt["data"] );
+					}
+
+				}
+			};
+	*/
+
+	/*
+	// select distinct txt text,kod kod,kod_main kod_main,null km from SIMPLE_SPR where 
+	// nomer = 175 and 
+	// kod_main is null  and 
+	// kod in(select kod from sl_klass_perm where perm_name='CPR_175' and nomer=175)
+			var queryObj = {
+				"action" : "select",
+				"distinct"	: true,
+				"tableName": storeName, //"SIMPLE_SPR",
+				"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "TEXT2", "ORDER_BY", "ARCHIVE_STAT"],
+				"where" : [
+					{"key" : "NOMER", "value" : "175", "compare": "="},
+					{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="},
+					{"logic": "AND", "key" : "KOD", "value" : {
+						"action" : "select",
+						"tableName": "SL_KLASS_PERM",
+						"targetFields" : ["KOD", "ZAPRET"],
+						"where" : [
+							{"key" : "PERM_NAME", "value" : "CPR_175", "compare": "="},
+							{"logic": "AND", "key" : "NOMER", "value" : "175", "compare": "="},
+						],
+						"callback" : function(){}
+						
+					}, "compare": "IN"}
+				],
+				"callback" : function( opt ){
+	console.log( "- end query");
+	//console.log( opt["data"] );
+
+					//Run query, end process
+					if( typeof opt["callback"] == "function"){
+						opt["callback"]( opt["data"] );
+					}
+
+				}
+			};
+	*/
+
+	/*
+	// select distinct txt text,kod kod,null kod_main,null km from PMLP_ADR_LVL_4 where 
+	// LVL_1_KOD = "-980200" AND -- VENTSPILS NOVADS
+	// LVL_2_KOD = "-980213" AND -- PILTENE
+	// (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
+	// order by ord_lov
+			
+	// select * from PMLP_ADR_LVL_4 
+	// WHERE LVL_1_KOD = "-980200" -- VENTSPILS NOVADS
+	// AND LVL_2_KOD = "-980213" -- PILTENE
+	// AND ARCHIVE_STAT !=1
+	// -- AND  (LVL_3_KOD IS NULL OR (LVL_1_KOD IS NULL AND LVL_3_KOD IS NULL)) 
+	// order by ord_lov
+
+	// select * from PMLP_ADR_LVL_4 
+	// WHERE LVL_1_KOD = "-980200"
+	// AND LVL_2_KOD = "-980213"
+	// OR LVL_1_KOD = "-660200"
+	// AND ARCHIVE_STAT !=1
+	// order by ord_lov
+
+			var queryObj = {
+				"action" : "select",
+				//"distinct" : true,
+				"tableName": storeName,
+				"targetFields" : ["KOD", "TXT", "ORD_LOV", "ARCHIVE_STAT" ],
+				"where" : [
+					{"key" : "LVL_1_KOD", "value" : "-980200", "compare": "="},
+					{"logic": "AND", "key" : "LVL_2_KOD", "value" : "-980213", "compare": "="},
+					{"logic": "OR", "key" : "LVL_1_KOD", "value" : "-660200", "compare": "="},
+					{"logic": "AND", "key" : "ARCHIVE_STAT", "value" : "1", "compare": "!="}
+					
+					//{"key" : "LVL_2_KOD", "value" : "-980213", "compare": "<>"}
+				],
+				"orderBy" : "ORD_LOV",
+				"callback" : function( opt ){
+	console.log( "- end query");
+	//console.log( opt["data"] );
+
+					//Run query, end process
+					if( typeof opt["callback"] == "function"){
+						opt["callback"]( opt["data"] );
+					}
+
+				}
+			};
+	*/
+
+	/*
+	//SELECT * FROM simple_spr where nomer="182" and kod_main is null		
+			var queryObj = {
+				"action" : "select",
+				"tableName": storeName,
+				"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
+				"where" : [
+					{"key" : "NOMER", "value" : "182", "compare": "="},
+					{"logic": "AND", "key" : "KOD_MAIN", "value" : "NULL", "compare": "="}
+				],
+				"callback" : function( opt ){
+	console.log( "- end query");
+	//console.log( opt["data"] );
+
+					//Run query, end process
+					if( typeof opt["callback"] == "function"){
+						opt["callback"]( opt["data"] );
+					}
+
+				}
+			};
+	*/
+
+	/*
+	(
+		( 
+			(	(LVL_2_KOD :AR_VT_PP_KOD AND  LVL_2_KOD<>'100003003' ) or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
+				and 
+				(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL) 	
+		) 
+		or 
+		(	
+			(	(LVL_2_KOD :AR_VT_PP_KOD and  LVL_2_KOD='100003003') or 	(LVL_2_KOD is null and LVL_2_KOD :AR_VT_PP_KOD) 	) 
+			and 
+			(LVL_3_KOD :AR_VT_CM_KOD OR LVL_3_KOD IS NULL)
+		)
+	)
+	// order by ord_lov
+
+	*/
+
+	//select count(KOD), * from AR_ADR_LVL_4 where 
+	//lvl_2_kod='100003011' and lvl_2_kod<>'100003003'
+	//order by ORD_LOV
+			var queryObj = {
+				"action" : "select",
+				"tableName": "AR_ADR_LVL_4",
+				"targetFields" : [
+	"KOD",
+	"TXT",
+	"LVL_1_KOD",
+	"LVL_2_KOD",
+	"LVL_3_KOD",
+	"ORD_LOV",
+	"ARCHIVE_STAT"
+	],
+				"orderBy" : "ORD_LOV",
+				"where" : [
+					{"logic": "", "key" : "LVL_2_KOD", "value" : "100003011", "compare": "="},
+					{"logic": "AND", "key" : "LVL_2_KOD", "value" : "100003003", "compare": "<>"}
+				],
+				"callback" : function( opt ){
+	console.log( "- end query");
+	//console.log( opt["data"] );
+
+					//Run query, end process
+					if( typeof opt["callback"] == "function"){
+						opt["callback"]( opt["data"] );
+					}
+
+				}
+			};
+
+	/*
+			var queryObj = {
+				"action" : "select",
+				"tableName": "SIMPLE_SPR",
+				"targetFields" : ["NOMER", "KOD", "TXT", "KOD_MAIN", "ARCHIVE_STAT"],
+				"where" : [
+					{"logic": "", "key" : "NOMER", "value" : "779", "compare": "="},
+					{"logic": "OR", "key" : "NOMER", "value" : "984", "compare": "="},
+					{"logic": "AND", "key" : "KOD", "value" : "14", "compare": "="}//,
+					//{"logic": "AND", "key" : "KOD", "value" : "01", "compare": "!="}
+				],
+				
+				"callback" : function( opt ){
+	console.log( "- end query");
+	//console.log( opt["data"] );
+
+					//Run query, end process
+					if( typeof opt["callback"] == "function"){
+						opt["callback"]( opt["data"] );
+					}
+
+				}
+			};
+	*/
+			_runQuery({
+				"dbName" : dbName,
+				"storeName" : storeName,//"_SIMPLE_SPR",//"SL_KLASS_PERM"
+				"queryObj" : queryObj,
+				"callback" : function( data ){
+	_vars.logMsg = "_runQuery(), - end process queries, num records: " + data.length;
+	_alert( _vars.logMsg, "info" );
+	console.log( data );
+				}
+			});
+
+		}//end event
+	}
+	}//end __indexedDBEvents()
+
+//==================================== LOCAL STORAGE buttons
+	function __localStorageEvents(){
+		var btn_clearLocalStorage = _getById("btn-clear-localstorage");
+		btn_clearLocalStorage.onclick = function(){
+			
+			if( !_vars["localStorageSupport"] ){
+				return false;
+			}
+			
+			if( localStorage.length > 0){ 
+				localStorage.clear();
+	_vars.logMsg =  "local storage.is clear.. ";
+	_alert( _vars.logMsg, "success");
+			} else {
+	_vars.logMsg =  "no action, empty local storage.... ";
+	_alert( _vars.logMsg, "warning");
+			}
+			
+	console.log(window.localStorage);
+		}//end event
 		
-		if( !_vars["webSQLsupport"] ){
-			return false;
-		}
+		var btn_setLocalStorage = _getById("btn-set-localstorage");
+		btn_setLocalStorage.onclick = function(){
+			
+			if( !_vars["localStorageSupport"] ){
+				return false;
+			}
+			
+			var recordKey = recordKeyField.value;
+			if( !recordKey || recordKey.length===0 ){
+	_vars.logMsg="input field <b>record key</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var recordValue = recordValueField.value;
+			if( !recordValue || recordValue.length===0 ){
+	_vars.logMsg="input field <b>record value</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			try {
+				//localStorage.setItem("a", 1);
+				//localStorage.setItem("b", 2);
+				//localStorage["c"] = 3;
+				localStorage.setItem( recordKey, recordValue);
+				
+	_vars.logMsg =  "local storage set item.... ";
+	_alert( _vars.logMsg, "success");
+				
+			} catch (e) {
+	console.log(e);
+				if (e.description == 'QUOTA_EXCEEDED_ERR') {
+					_alert("localStorage: QUOTA_EXCEEDED_ERR", "error");
+				} else {
+					_alert("localStorage: undefined error", "error");
+				}
+			}
+				
+	console.log(window.localStorage);
+		}//end event
 		
-		var tableName = tableNameField_websql.value;
-//console.log(tableName);
-		if( !tableName || tableName.length===0 ){
-_vars.logMsg="input field <b>table name</b> is empty....";
-_alert( _vars.logMsg, "warning" );
-			return false;
-		}
-		/*
-		createTable({
-			"tableName" : tableName, 
-			"fieldsInfo" : db_info["tables"][ tableName ]["fields"],
-			"executeQuery" : true,
-			"displayLog" : true
-		});
-		*/
-	}//end event
+		
+		var btn_removeLocalStorage = _getById("btn-remove-localstorage");
+		btn_removeLocalStorage.onclick = function(){
+			
+			if( !_vars["localStorageSupport"] ){
+				return false;
+			}
+			
+			var recordKey = recordKeyField.value;
+			if( !recordKey || recordKey.length===0 ){
+	_vars.logMsg="input field <b>record key</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			try {
+				localStorage.removeItem( recordKey);
+	_vars.logMsg =  "local storage remove item <b> " +recordKey+"</b>";
+	_alert( _vars.logMsg, "success");
+			} catch (e) {
+	console.log(e);
+			}
+				
+	console.log(window.localStorage);
+		}//end event
+		
+		
+		
+		
+		var btn_listLocalStorage = _getById("btn-list-localstorage");
+		btn_listLocalStorage.onclick = function(e){
+	//console.log(e);
+			
+			if( !_vars["localStorageSupport"] ){
+				return false;
+			}
+			
+			if( localStorage.remainingSpace ){
+				_vars.logMsg =  "storage remainingSpace= " + localStorage.remainingSpace + " bytes ";
+			} else {
+				_vars.logMsg =  "storage max size: (1024 * 1024 * 5) bytes ";
+			}
+			_alert( _vars.logMsg, "info");
+			
+			_vars.logMsg =  "data length = " + localStorage.length + "";
+			_alert( _vars.logMsg, "info");
+			
+			if( localStorage.length > 0){ 
+				var listHtml = "";
+				for(var item in localStorage){
+					if( typeof localStorage[item] === "function"){
+						continue;
+					}
+					listHtml += "<li>";
+					listHtml += item + " : " + localStorage[item] +", type: " +typeof localStorage[item];
+					listHtml += "</li>";
+				}
+				var html = "<ul>"+listHtml+"</ul>";
+				_log( html );
+			} else {
+			_vars.logMsg =  "empty local storage.... ";
+			_alert( _vars.logMsg, "warning");
+			}
+	console.log(window.localStorage);
+			
+		}//end event
+		
+	}//__localStorageEvents()
 
+//==================================== WebSQL buttons
+	function __webSQLevents(){
+		
+		var btn_webSqlList = _getById("btn-websql-list");
+		btn_webSqlList.onclick = function(e){
+	//console.log(e);		
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+			getAllTablesFromDB();
+		}//end event
+		
+		var btn_webSqlCreateTable = _getById("btn-websql-create");
+		btn_webSqlCreateTable.onclick = function(){
+			
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+			
+			var tableName = _vars["tableNameField_websql"].value;
+//console.log(tableName);
+			if( !tableName || tableName.length===0 ){
+	_vars.logMsg="input field <b>table name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var fieldsInfo = "";
+			if( _vars["webSql"]["tables"][ tableName ] ){
+				fieldsInfo = _vars["webSql"]["tables"][ tableName ]["fields"];
+			}
+			createTable({
+				"tableName" : tableName, 
+				"fieldsInfo" : fieldsInfo
+			});
+			
+		}//end event
+
+		
+		var btn_webSqlInsert = _getById("btn-websql-insert");
+		btn_webSqlInsert.onclick = function(){
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+	/*		
+				var shortName = 'db_a';
+				var version = '1.0';
+				var displayName = 'User Settings Database';
+				var maxSize = 3*1024*1024; // = 3MB
+				db = openDatabase( shortName, version, displayName, maxSize );   
+				if(!db)
+				{
+	console.log("Failed to connect to database " + shortName);
+				}
+				else
+				{
+					var food_name = "pizza";
+					var amount_of_calories = 320;
+					var serving_size = "one slice";
+					db.transaction(
+					function(t){ 
+						t.executeSql("INSERT INTO table1 VALUES (?, ?, ?)", [food_name, amount_of_calories, serving_size]);
+						}
+					);
+
+				}
+	*/
+	/*
+			var tableName = document.getElementById("tablename").value;
+			
+	//var sql = "insert into "+ tableName +" (name, shirt) VALUES ('Joe', 'Green');";
+	//	var sql = "insert into people (name, shirt) VALUES ('Mark', 'Blue');";
+	//	var sql = "insert into people (name, shirt) VALUES ('Phil', 'Orange');";
+	//	var sql = "insert into people (name, shirt) VALUES ('jdoe', 'Purple');";
+
+			var db = connectDB();
+			//var sql = "insert into {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
+			var sql = "insert into {{table_name}} VALUES ( {{values}} );";
+			sql = sql.replace("{{table_name}}", tableName);
+			
+	//for( var n1 = 0; n1 < 100000; n1++ ){
+			//var fields = "";
+			var values = "";
+			for( var n = 0; n < db_info["tables"][tableName]["fields"].length; n++){
+				//var fieldName = db_info["tables"][tableName]["fields"][n];
+				if(n > 0){
+					//fields += ", ";
+					values += ", ";
+				}
+				//fields += fieldName;
+				values += "'Test!'";
+			}
+			//sql = sql.replace("{{fields}}", fields);
+			sql = sql.replace("{{values}}", values);
+	//console.log( sql );
+			runTransaction( sql, db, postFunc, true );
+	//}//next		
+			
+			function postFunc( result ){
+	console.log("INSERT record into "+ tableName, result);
+			}
+	*/
+		}//end event
+		
+
+		var btn_webSqlSelect = _getById("btn-websql-select");
+		btn_webSqlSelect.onclick = function(){
+
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+	/*		
+				var shortName = 'db_a';
+				var version = '1.0';
+				var displayName = 'User Settings Database';
+				var maxSize = 3*1024*1024; // = 3MB
+				db = openDatabase( shortName, version, displayName, maxSize );   
+				if(!db)
+				{
+	console.log("Failed to connect to database " + shortName);
+				}
+				else
+				{
+	var list = document.getElementById("list");
+	db.transaction(
+	function(tx) {
+		tx.executeSql("SELECT * FROM table1", [], function(tx, result)	{
+	//console.log(result, result.rows.length);
+			for(var n = 0; n < result.rows.length; n++)
+			{
+				list.innerHTML += "<ul>";
+				for(var item in result.rows.item(n) )
+				{
+					list.innerHTML += "<li>item: " + result.rows.item(n)[item] + "</li>";
+				}
+				list.innerHTML += "</ul>";
+			}
+		}, 
+		function(t,e) {alert(e.message);}
+		);
+	}
+	);
+
+				}
+	*/
+
+	/*
+			var tableName = document.getElementById("tablename").value;
+			//var sql = "SELECT * FROM "+ tableName + " LIMIT 2117,1";
+			var sql = "SELECT * FROM "+ tableName;
+			var db = connectDB();
+			var timeStart = new Date();
+			runTransaction( sql, db, postFunc, true );
+			
+			function postFunc( result ){
+	//console.log( sql, result);
+				var timeEnd = new Date();
+				var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+				_log("");
+				var msg = "- " + sql + ", runtime: " + runtime +" sec";
+				var listHtml = "";
+	if( result.rows){
+				msg += ", read " + result.rows.length + " records.";
+				
+
+				//read first record
+				var _list = "<ol>{{list}}</ol>";
+				var _items = "";
+				_items += "First record:";
+				for(var item in result.rows.item(0) ){
+					_items += "<li><b>"+ item +"</b> : " + result.rows.item(0)[item] + "</li>";
+				}
+				listHtml += _list.replace("{{list}}", _items);
+				
+				//read last record
+				var _list = "<ol>{{list}}</ol>";
+				var _items = "";
+				var len = result.rows.length - 1;
+				_items += "Last record:";
+				for(var item in result.rows.item( len ) ){
+					_items += "<li><b>"+ item +"</b> : " + result.rows.item( len )[item] + "</li>";
+				}
+				listHtml += _list.replace("{{list}}", _items);
+
+				// for(var n = 0; n < result.rows.length; n++){
+					// var _list = "<ol>{{list}}</ol>";
+					// var _items = "";
+					// for(var item in result.rows.item(n) ){
+						// _items += "<li>"+ item +" : " + result.rows.item(n)[item] + "</li>";
+					// }
+					// listHtml += _list.replace("{{list}}", _items);
+				// }
+
+	}
+				_log( msg );
+				_log( listHtml );
+			}
+
+	*/
+		}//end event
+		
+		
+		var btn_webSqlDrop = _getById("btn-websql-drop");
+		btn_webSqlDrop.onclick = function(){
+
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+	/*		
+				var shortName = 'db_a';
+				var version = '1.0';
+				var displayName = 'User Settings Database';
+				var maxSize = 3*1024*1024; // = 3MB
+				db = openDatabase( shortName, version, displayName, maxSize );   
+				if(!db)
+				{
+	console.log("Failed to connect to database " + shortName);
+				}
+				else
+				{
+					db.transaction(function (t) {
+						 t.executeSql("DROP TABLE table1",[], 
+							 function(t,results){
+								 console.error("table1 dropped");
+							 },
+							 function(t,error){
+								 console.error("Error: " + error.message);
+							 }
+						 )
+					});	
+
+				}
+	*/			
+			var tableName = tableNameField_websql.value;
+	//console.log(tableName);
+			if( !tableName || tableName.length===0 ){
+	_vars.logMsg="input field <b>table name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+
+	/*
+			var showLog = true;
+			dropTable( tableName, showLog );
+	*/
+		}//end event
+
+		var btn_webSqlDropTables = _getById("btn-websql-drop-tables");
+		btn_webSqlDropTables.onclick = function(){
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+			/*
+			getAllTables(function( list ){
+	//console.log(list);
+				for( var n = 0; n < list.length; n++ ){
+					dropTable( list[n], true );				
+				}
+				getAllTablesFromDB();			
+			});
+			*/
+		}//end event
+		
+	}//end __webSQLevents
 
 
 }//end defineEvents()
@@ -2393,48 +2385,59 @@ _alert("Error code: "+e.code+", " + e.message, "error");
 	}//end try
 }//end connectDB()
 
-function createTable( opts ){
-//console.log("createTable(), ", opts);	
+function createTable( opt ){
+//console.log(arguments);
+	var p = {
+		"tableName": "",
+		"fieldsInfo": "",
+		"displayLog": true,
+		"executeQuery" : true
+	};
+	//extend p object
+	for(var key in opt ){
+		p[key] = opt[key];
+	}
+//console.log(p);	
 
 	//var sql = "CREATE TABLE IF NOT EXISTS " + tableName+ " (food_name TEXT PRIMARY KEY, calories REAL, servings TEXT)";
 	//var sql = "CREATE TABLE IF NOT EXISTS " + tableName+ "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL DEFAULT 'John Doe', shirt TEXT NOT NULL DEFAULT 'Purple')";
 	
-	var tableName = opts["tableName"];
-	var fieldsInfo = opts["fieldsInfo"];
-	var displayLog = opts["displayLog"];
-	var executeQuery = opts["executeQuery"] || false;
+	var executeQuery = p["executeQuery"] || false;
 
 	var sql = "CREATE TABLE IF NOT EXISTS {{table_name}} ( {{fields_info}} );";
-	sql = sql.replace("{{table_name}}", tableName);
+	sql = sql.replace("{{table_name}}", p["tableName"]);
 
-	var sfieldsInfo = "";
-	var fieldParam = "TEXT";// add !!!!!!!!!!!!!!!!!!!!!!!!!!!, 
-	for( var n = 0; n < fieldsInfo.length; n++ ){
-		var fieldName = fieldsInfo[n];
-		if(n > 0){
-			sfieldsInfo += ", ";
-		}
-		sfieldsInfo += fieldName +" "+ fieldParam;
+	if( p["fieldsInfo"] !== ""){
+		var sfieldsInfo = "";
+		var n = 0;
+		for( var fieldName in p["fieldsInfo"] ){
+			if(n > 0){
+				sfieldsInfo += ", ";
+			}
+			sfieldsInfo += fieldName +" "+ p["fieldsInfo"][fieldName];
+			n++;
+		}//next
+		sql = sql.replace("{{fields_info}}", sfieldsInfo);
+	} else {
+		sql = sql.replace(" {{fields_info}} ", "test TEXT");
 	}
-	sql = sql.replace("{{fields_info}}", sfieldsInfo);
-//console.log( sql );
+	
+console.log( sql );
 
 	if( executeQuery ){
-		
-		if( opts["db"] ){
-			var db = opts["db"];
-		} else {
+		// if( p["db"] ){
+			// var db = p["db"];
+		// } else {
 			var db = connectDB();
-		}
-		runTransaction( sql, db, postFunc, displayLog );
-		
+		//}
+		runTransaction( sql, db, postFunc, p["displayLog"] );
 	} else {
 		return sql;
 	}
 	
 	function postFunc( result ){
-//console.log("postFunc()!!!", result);
-console.log("table " +tableName+ " was created!");
+console.log("postFunc()!!!", result);
+_alert("table " + p["tableName"]+ " was created...", "info");
 		getAllTablesFromDB();
 	}
 
@@ -2458,27 +2461,25 @@ function getAllTablesFromDB(){
 	
 	var sql = 'SELECT tbl_name from sqlite_master WHERE type = "table"';
 	var db = connectDB();
-/*	
+
 	runTransaction( sql, db, postFunc, false );
 		
 	function postFunc( result ){
 //console.log("postFunc()!!!", result, result.rows.length);
-		//_log("");
-		var _list = "<ol>{{list}}</ol>";
+
 		var _items = "";
 		for(var n = 0; n < result.rows.length; n++){
 			for(var item in result.rows.item(n) ){
 				_items += "<li>"+ item +" : " + result.rows.item(n)[item] + "</li>";
 			}
 		}
-		log.innerHTML += _list.replace("{{list}}", _items);
+		var _listHtml = "<ol>"+_items+"</ol>";
+		_log ( _listHtml );
 	}
-*/
+
 }//end getAllTablesFromDB()
 
 function runTransaction( sql, db, callBack, log ){
-	
-	
 	if( typeof sql === "string"){
 		
 		//var timeStart = new Date();
@@ -2500,22 +2501,20 @@ function runTransaction( sql, db, callBack, log ){
 	}
 
 	function errorCB(e) {
-var msg = "- errorCB(e), end transaction, error processing SQL";		
-_log(msg);
-console.log(msg, e);
+_vars.logMsg = "- end transaction, error processing SQL";		
+_alert(_vars.logMsg, "error");
+console.log(_vars.logMsg, e);
 	}
 
 	function successCB() {
-var msg = "- successCB(), end transaction, success...";
-//_log(msg);
-console.log(msg, arguments);
+_vars.logMsg = "- end transaction, success...";
+//_alert(_vars.logMsg, "success");
+console.log(_vars.logMsg, arguments);
 	}
 	
 	function onSuccess(t, result) {
 //console.log("onSuccess()", result, result.rows.length);
-		if(log){
-_log("onSuccess(): <b>" + sql +"</b>");
-		}
+_alert("success execute SQL: <b>" + sql +"</b>", "success");
 		
 		//var timeEnd = new Date();
 		//var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
@@ -2531,25 +2530,23 @@ _log("onSuccess(): <b>" + sql +"</b>");
 	
 	function onError(t, e) {
 console.log("onError()", e.code, e.message, sql);
-		if(log){
-var msg = "<p>onError(), "+sql+", code: "+e.code+", <b class='text-danger'>" + e.message + "</b></p>";
-_log(msg);
-		}
+_vars.logMsg = "error execute SQL: "+sql+", code: "+e.code+", <b>" + e.message + "</b>";
+_alert(_vars.logMsg, "error");
 	}//end onError
 	
 //----------------- callbacks for many executeSql
 	function _errorCB(e) {
-var msg = "- _errorCB(e), end transaction, error processing SQL:";		
-_log(msg);
-console.log(msg, e);
+_vars.logMsg = "- end transaction, error processing SQL:";		
+_log(_vars.logMsg);
+console.log(_vars.logMsg, e);
 		if( typeof callBack === "function"){
 			callBack();
 		}
 	}
 	function _successCB() {
-var msg = "- _successCB(), end transaction, success...";
-_log(msg);
-console.log(msg, arguments);
+_vars.logMsg = "- end transaction, success...";
+_log(_vars.logMsg);
+console.log(_vars.logMsg, arguments);
 		if( typeof callBack === "function"){
 			callBack();
 		}
