@@ -29,6 +29,11 @@ if( window.openDatabase ){
 "id" : "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT",
 "firstname" : "TEXT NOT NULL DEFAULT 'Jack' ",
 "lastname" : "TEXT"
+					},
+				"values" : {
+"id" : "NULL",
+"firstname" : "'Laptev'",
+"lastname" : "'Roman'"
 					}
 				}
 			}
@@ -103,14 +108,14 @@ function init(){
 
 
 
-	var dbNameField = _getById("dbname");
-	var storeNameField = _getById("storename");
-	var recordKeyField = _getById("record-key");
-	var recordValueField = _getById("record-value");
+	_vars["dbNameField"] = _getById("dbname");
+	_vars["storeNameField"] = _getById("storename");
+	_vars["recordKeyField"] = _getById("record-key");
+	_vars["recordValueField"] = _getById("record-value");
 
-	var dbNameField_websql = _getById("db-name");
-	var dbVersionField_websql = _getById("db-version");
-	var dbDescField_websql = _getById("db-desc");
+	_vars["dbNameField_websql"] = _getById("db-name");
+	_vars["dbVersionField_websql"] = _getById("db-version");
+	_vars["dbDescField_websql"] = _getById("db-desc");
 	_vars["tableNameField_websql"] = _getById("table-name");
 
 	defineEvents();
@@ -173,7 +178,7 @@ function defineEvents(){
 			if( !_vars["indexedDBsupport"] ){
 				return false;
 			}
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -200,7 +205,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -208,7 +213,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -239,7 +244,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -247,7 +252,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -279,7 +284,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -287,7 +292,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -295,19 +300,19 @@ function defineEvents(){
 				return false;
 			}
 
-			var recordKey = recordKeyField.value;
+			var recordKey = _vars["recordKeyField"].value;
 			if( !recordKey || recordKey.length===0 ){
 	_vars.logMsg="input field <b>record key</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
 				return false;
 			}
-			// recordKey = parseInt( recordKeyField.value );
+			// recordKey = parseInt( _vars["recordKeyField"].value );
 	// console.log(recordKey);
 			// if( isNaN( recordKey ) ){
-				// recordKey = recordKeyField.value;
+				// recordKey = _vars["recordKeyField"].value;
 			// }
 			
-			var recordValue = recordValueField.value;
+			var recordValue = _vars["recordValueField"].value;
 			if( !recordValue || recordValue.length===0 ){
 	_vars.logMsg="input field <b>record value</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
@@ -340,7 +345,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -348,7 +353,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -382,7 +387,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -390,7 +395,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -418,7 +423,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -426,7 +431,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -455,7 +460,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -463,7 +468,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -493,7 +498,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -501,7 +506,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -509,16 +514,16 @@ function defineEvents(){
 				return false;
 			}
 
-			var recordKey = recordKeyField.value;
+			var recordKey = _vars["recordKeyField"].value;
 			if( !recordKey || recordKey.length===0 ){
 	_vars.logMsg="input field <b>record key</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
 				return false;
 			}
 	//console.log(recordKey);
-			// recordKey = parseInt( recordKeyField.value );
+			// recordKey = parseInt( _vars["recordKeyField"].value );
 			// if( isNaN( recordKey ) ){
-				// recordKey = recordKeyField.value;
+				// recordKey = _vars["recordKeyField"].value;
 			// }
 
 			indexedDatabase.getRecord({
@@ -552,7 +557,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -560,7 +565,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -568,16 +573,16 @@ function defineEvents(){
 				return false;
 			}
 
-			var recordKey = recordKeyField.value;
+			var recordKey = _vars["recordKeyField"].value;
 			if( !recordKey || recordKey.length===0 ){
 	_vars.logMsg="input field <b>record key</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
 				return false;
 			}
 	//console.log(recordKey);
-			// recordKey = parseInt( recordKeyField.value );
+			// recordKey = parseInt( _vars["recordKeyField"].value );
 			// if( isNaN( recordKey ) ){
-				// recordKey = recordKeyField.value;
+				// recordKey = _vars["recordKeyField"].value;
 			// }
 
 			indexedDatabase.deleteRecord({
@@ -603,7 +608,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -611,7 +616,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -680,7 +685,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var dbName = dbNameField.value;
+			var dbName = _vars["dbNameField"].value;
 	//console.log(dbName);
 			if( !dbName || dbName.length===0 ){
 	_vars.logMsg="<b>input field DB name</b> is empty....";
@@ -688,7 +693,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var storeName = storeNameField.value;
+			var storeName = _vars["storeNameField"].value;
 	//console.log(storeName);
 			if( !storeName || storeName.length===0 ){
 	_vars.logMsg="input field <b>store name</b> is empty....";
@@ -946,14 +951,14 @@ function defineEvents(){
 				return false;
 			}
 			
-			var recordKey = recordKeyField.value;
+			var recordKey = _vars["recordKeyField"].value;
 			if( !recordKey || recordKey.length===0 ){
 	_vars.logMsg="input field <b>record key</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
 				return false;
 			}
 			
-			var recordValue = recordValueField.value;
+			var recordValue = _vars["recordValueField"].value;
 			if( !recordValue || recordValue.length===0 ){
 	_vars.logMsg="input field <b>record value</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
@@ -989,7 +994,7 @@ function defineEvents(){
 				return false;
 			}
 			
-			var recordKey = recordKeyField.value;
+			var recordKey = _vars["recordKeyField"].value;
 			if( !recordKey || recordKey.length===0 ){
 	_vars.logMsg="input field <b>record key</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
@@ -1061,7 +1066,8 @@ function defineEvents(){
 			}
 			getAllTablesFromDB();
 		}//end event
-		
+
+//-----------------------------
 		var btn_webSqlCreateTable = _getById("btn-websql-create");
 		btn_webSqlCreateTable.onclick = function(){
 			
@@ -1088,214 +1094,71 @@ function defineEvents(){
 			
 		}//end event
 
-		
-		var btn_webSqlInsert = _getById("btn-websql-insert");
-		btn_webSqlInsert.onclick = function(){
-			if( !_vars["webSQLsupport"] ){
-				return false;
-			}
-	/*		
-				var shortName = 'db_a';
-				var version = '1.0';
-				var displayName = 'User Settings Database';
-				var maxSize = 3*1024*1024; // = 3MB
-				db = openDatabase( shortName, version, displayName, maxSize );   
-				if(!db)
-				{
-	console.log("Failed to connect to database " + shortName);
-				}
-				else
-				{
-					var food_name = "pizza";
-					var amount_of_calories = 320;
-					var serving_size = "one slice";
-					db.transaction(
-					function(t){ 
-						t.executeSql("INSERT INTO table1 VALUES (?, ?, ?)", [food_name, amount_of_calories, serving_size]);
-						}
-					);
-
-				}
-	*/
-	/*
-			var tableName = document.getElementById("tablename").value;
-			
-	//var sql = "insert into "+ tableName +" (name, shirt) VALUES ('Joe', 'Green');";
-	//	var sql = "insert into people (name, shirt) VALUES ('Mark', 'Blue');";
-	//	var sql = "insert into people (name, shirt) VALUES ('Phil', 'Orange');";
-	//	var sql = "insert into people (name, shirt) VALUES ('jdoe', 'Purple');";
-
-			var db = connectDB();
-			//var sql = "insert into {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
-			var sql = "insert into {{table_name}} VALUES ( {{values}} );";
-			sql = sql.replace("{{table_name}}", tableName);
-			
-	//for( var n1 = 0; n1 < 100000; n1++ ){
-			//var fields = "";
-			var values = "";
-			for( var n = 0; n < db_info["tables"][tableName]["fields"].length; n++){
-				//var fieldName = db_info["tables"][tableName]["fields"][n];
-				if(n > 0){
-					//fields += ", ";
-					values += ", ";
-				}
-				//fields += fieldName;
-				values += "'Test!'";
-			}
-			//sql = sql.replace("{{fields}}", fields);
-			sql = sql.replace("{{values}}", values);
-	//console.log( sql );
-			runTransaction( sql, db, postFunc, true );
-	//}//next		
-			
-			function postFunc( result ){
-	console.log("INSERT record into "+ tableName, result);
-			}
-	*/
-		}//end event
-		
-
-		var btn_webSqlSelect = _getById("btn-websql-select");
-		btn_webSqlSelect.onclick = function(){
-
-			if( !_vars["webSQLsupport"] ){
-				return false;
-			}
-	/*		
-				var shortName = 'db_a';
-				var version = '1.0';
-				var displayName = 'User Settings Database';
-				var maxSize = 3*1024*1024; // = 3MB
-				db = openDatabase( shortName, version, displayName, maxSize );   
-				if(!db)
-				{
-	console.log("Failed to connect to database " + shortName);
-				}
-				else
-				{
-	var list = document.getElementById("list");
-	db.transaction(
-	function(tx) {
-		tx.executeSql("SELECT * FROM table1", [], function(tx, result)	{
-	//console.log(result, result.rows.length);
-			for(var n = 0; n < result.rows.length; n++)
-			{
-				list.innerHTML += "<ul>";
-				for(var item in result.rows.item(n) )
-				{
-					list.innerHTML += "<li>item: " + result.rows.item(n)[item] + "</li>";
-				}
-				list.innerHTML += "</ul>";
-			}
-		}, 
-		function(t,e) {alert(e.message);}
-		);
-	}
-	);
-
-				}
-	*/
-
-	/*
-			var tableName = document.getElementById("tablename").value;
-			//var sql = "SELECT * FROM "+ tableName + " LIMIT 2117,1";
-			var sql = "SELECT * FROM "+ tableName;
-			var db = connectDB();
-			var timeStart = new Date();
-			runTransaction( sql, db, postFunc, true );
-			
-			function postFunc( result ){
-	//console.log( sql, result);
-				var timeEnd = new Date();
-				var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-				_log("");
-				var msg = "- " + sql + ", runtime: " + runtime +" sec";
-				var listHtml = "";
-	if( result.rows){
-				msg += ", read " + result.rows.length + " records.";
-				
-
-				//read first record
-				var _list = "<ol>{{list}}</ol>";
-				var _items = "";
-				_items += "First record:";
-				for(var item in result.rows.item(0) ){
-					_items += "<li><b>"+ item +"</b> : " + result.rows.item(0)[item] + "</li>";
-				}
-				listHtml += _list.replace("{{list}}", _items);
-				
-				//read last record
-				var _list = "<ol>{{list}}</ol>";
-				var _items = "";
-				var len = result.rows.length - 1;
-				_items += "Last record:";
-				for(var item in result.rows.item( len ) ){
-					_items += "<li><b>"+ item +"</b> : " + result.rows.item( len )[item] + "</li>";
-				}
-				listHtml += _list.replace("{{list}}", _items);
-
-				// for(var n = 0; n < result.rows.length; n++){
-					// var _list = "<ol>{{list}}</ol>";
-					// var _items = "";
-					// for(var item in result.rows.item(n) ){
-						// _items += "<li>"+ item +" : " + result.rows.item(n)[item] + "</li>";
-					// }
-					// listHtml += _list.replace("{{list}}", _items);
-				// }
-
-	}
-				_log( msg );
-				_log( listHtml );
-			}
-
-	*/
-		}//end event
-		
-		
+//---------------------------------
 		var btn_webSqlDrop = _getById("btn-websql-drop");
 		btn_webSqlDrop.onclick = function(){
 
 			if( !_vars["webSQLsupport"] ){
 				return false;
 			}
-	/*		
-				var shortName = 'db_a';
-				var version = '1.0';
-				var displayName = 'User Settings Database';
-				var maxSize = 3*1024*1024; // = 3MB
-				db = openDatabase( shortName, version, displayName, maxSize );   
-				if(!db)
-				{
-	console.log("Failed to connect to database " + shortName);
-				}
-				else
-				{
-					db.transaction(function (t) {
-						 t.executeSql("DROP TABLE table1",[], 
-							 function(t,results){
-								 console.error("table1 dropped");
-							 },
-							 function(t,error){
-								 console.error("Error: " + error.message);
-							 }
-						 )
-					});	
-
-				}
-	*/			
-			var tableName = tableNameField_websql.value;
-	//console.log(tableName);
+	
+			var tableName = _vars["tableNameField_websql"].value;
+//console.log(tableName);
 			if( !tableName || tableName.length===0 ){
 	_vars.logMsg="input field <b>table name</b> is empty....";
 	_alert( _vars.logMsg, "warning" );
 				return false;
 			}
-
-	/*
-			var showLog = true;
-			dropTable( tableName, showLog );
-	*/
+			dropTable( tableName );
 		}//end event
+
+//--------------------------------
+		var btn_webSqlInsert = _getById("btn-websql-insert");
+		btn_webSqlInsert.onclick = function(){
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+			
+			var tableName = _vars["tableNameField_websql"].value;
+//console.log(tableName);
+			if( !tableName || tableName.length===0 ){
+	_vars.logMsg="input field <b>table name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			var valuesInfo = "";
+			if( _vars["webSql"]["tables"][ tableName ] ){
+				valuesInfo = _vars["webSql"]["tables"][ tableName ]["values"];
+			}
+			insertRecord({
+				"tableName" : tableName, 
+				"valuesInfo" : valuesInfo
+			});
+	
+		}//end event
+		
+//-----------------------------------
+		var btn_webSqlSelect = _getById("btn-websql-select");
+		btn_webSqlSelect.onclick = function(){
+
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+			var tableName = _vars["tableNameField_websql"].value;
+//console.log(tableName);
+			if( !tableName || tableName.length===0 ){
+	_vars.logMsg="input field <b>table name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			selectQuery({
+				"tableName" : tableName
+			});
+		}//end event
+		
+
 
 		var btn_webSqlDropTables = _getById("btn-websql-drop-tables");
 		btn_webSqlDropTables.onclick = function(){
@@ -2385,12 +2248,13 @@ _alert("Error code: "+e.code+", " + e.message, "error");
 	}//end try
 }//end connectDB()
 
+
+
 function createTable( opt ){
 //console.log(arguments);
 	var p = {
 		"tableName": "",
 		"fieldsInfo": "",
-		"displayLog": true,
 		"executeQuery" : true
 	};
 	//extend p object
@@ -2430,39 +2294,156 @@ console.log( sql );
 		// } else {
 			var db = connectDB();
 		//}
-		runTransaction( sql, db, postFunc, p["displayLog"] );
+		runTransaction( sql, db, postFunc );
 	} else {
 		return sql;
 	}
 	
 	function postFunc( result ){
-console.log("postFunc()!!!", result);
+//console.log("postFunc()!!!", result);
 _alert("table " + p["tableName"]+ " was created...", "info");
 		getAllTablesFromDB();
 	}
 
 }//end createTables
 
-function dropTable( name, showLog ) {
+
+function dropTable( name ) {
 	
 	var sql = "DROP TABLE " + name;
 	var db = connectDB();
-	runTransaction( sql, db, postFunc, showLog );
+	runTransaction( sql, db, postFunc );
 	
 	function postFunc( result ){
 //console.log("postFunc()!!!", result, typeof result);
-console.log("table " +name+ " dropped.");
-		//getAllTablesFromDB();
+_alert("table " + name + " was dropped...", "info");
+		getAllTablesFromDB();
 	}
 
 }//end dropTable()
+
+
+function insertRecord( opt ){
+//console.log(arguments);
+	var p = {
+		"tableName": "",
+		"valuesInfo": ""
+	};
+	//extend p object
+	for(var key in opt ){
+		p[key] = opt[key];
+	}
+//console.log(p);	
+
+	/*		
+				var shortName = 'db_a';
+				var version = '1.0';
+				var displayName = 'User Settings Database';
+				var maxSize = 3*1024*1024; // = 3MB
+				db = openDatabase( shortName, version, displayName, maxSize );   
+				if(!db)
+				{
+	console.log("Failed to connect to database " + shortName);
+				}
+				else
+				{
+					var food_name = "pizza";
+					var amount_of_calories = 320;
+					var serving_size = "one slice";
+					db.transaction(
+					function(t){ 
+						t.executeSql("INSERT INTO table1 VALUES (?, ?, ?)", [food_name, amount_of_calories, serving_size]);
+						}
+					);
+
+				}
+	*/
+
+	//var sql = "insert into "+ tableName +" (name, shirt) VALUES ('Joe', 'Green');";
+	//	var sql = "insert into people (name, shirt) VALUES ('Mark', 'Blue');";
+	//	var sql = "insert into people (name, shirt) VALUES ('Phil', 'Orange');";
+	//	var sql = "insert into people (name, shirt) VALUES ('jdoe', 'Purple');";
+
+	//var sql = "insert into {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
+	var sql = "insert into {{table_name}} VALUES ( {{values}} );";
+	sql = sql.replace("{{table_name}}", p["tableName"] );
+	
+	if( p["valuesInfo"] !== ""){
+		var sValues = "";
+		var n = 0;
+		for( var fieldName in p["valuesInfo"] ){
+			if(n > 0){
+				sValues += ", ";
+			}
+			sValues += p["valuesInfo"][fieldName];
+			n++;
+		}//next
+		sql = sql.replace("{{values}}", sValues);
+		
+	} else {
+		return false;
+	}
+	
+//console.log( sql );
+
+	var db = connectDB();
+	runTransaction( sql, db, postFunc );
+	
+	function postFunc( result ){
+//console.log("INSERT record into "+ p["tableName"], result);
+	}
+
+}//end insertRecord()
+
+function selectQuery( opt ){
+//console.log(arguments);
+	var p = {
+		"tableName": ""
+	};
+	//extend p object
+	for(var key in opt ){
+		p[key] = opt[key];
+	}
+//console.log(p);	
+	
+	//var sql = "SELECT * FROM "+ tableName + " LIMIT 2117,1";
+	var sql = "SELECT * FROM "+ p["tableName"];
+	
+	var db = connectDB();
+	var timeStart = new Date();
+	runTransaction( sql, db, postFunc);
+		
+	function postFunc( result ){
+console.log( sql, result);
+		var timeEnd = new Date();
+		var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+		_vars.logMsg = "- " + sql + ", runtime: " + runtime +" sec";
+		_alert( _vars.logMsg, "info");
+		var listHtml = "";
+		if( result.rows ){
+_vars.logMsg = "Number of records: " + result.rows.length;
+_alert( _vars.logMsg, "info");
+			for(var n = 0; n < result.rows.length; n++){
+				var _list = "<ol>{{list}}</ol>";
+				var _items = "";
+				 for(var item in result.rows.item(n) ){
+					_items += "<li>"+ item +" : " + result.rows.item(n)[item] + "</li>";
+				 }
+				listHtml += _list.replace("{{list}}", _items);
+			}//next
+		}
+		_log( listHtml );
+	}
+	
+}//end selectQuery()
+
 
 function getAllTablesFromDB(){
 	
 	var sql = 'SELECT tbl_name from sqlite_master WHERE type = "table"';
 	var db = connectDB();
 
-	runTransaction( sql, db, postFunc, false );
+	runTransaction( sql, db, postFunc );
 		
 	function postFunc( result ){
 //console.log("postFunc()!!!", result, result.rows.length);
@@ -2479,7 +2460,10 @@ function getAllTablesFromDB(){
 
 }//end getAllTablesFromDB()
 
-function runTransaction( sql, db, callBack, log ){
+
+
+
+function runTransaction( sql, db, callBack ){
 	if( typeof sql === "string"){
 		
 		//var timeStart = new Date();
@@ -2554,17 +2538,12 @@ console.log(_vars.logMsg, arguments);
 
 	function _onSuccess(t, result) {
 //console.log("_onSuccess()", result, result.rows.length );
-		if(log){
 _log("_onSuccess(), <b>" + sql +"</b>");
-		}
 	}//end _onSuccess
 	
 	function _onError(t, e) {
 console.log("_onError()", e.code, e.message);
-
-		if(log){
 _log("<p>_onError(), code: "+e.code+", <b class='text-danger'>" + e.message + "</b></p>");
-		}
 	}//end _onError
 	
 }//end runTransaction()
