@@ -1,6 +1,3 @@
-var indexedDatabase = iDBmodule();
-console.log("indexedDatabase module:", indexedDatabase);
-
 var webApp = {
 	"vars" : {
 		"app_title" : "Bookmarks",
@@ -14,6 +11,7 @@ var webApp = {
 			"dataType" : "json",//xml, csv
 			"dbName": "localcache",
 			"dataStoreName" : "bookmarks.json",
+			"dataTableName" : "bookmarks_json",
 			"cacheUpdate": false
 		},
 		
@@ -118,6 +116,8 @@ function _app( opt ){
 	
 	var _init = function( opt ){
 //console.log("init app!");
+
+		storage.init();// _init_cache
 		defineEvents();
 	};//end _init()
 	
@@ -1034,6 +1034,10 @@ function _detectDataStore(){
 	if( window.indexedDB ? true : false ){
 		dataStoreType = "indexedDB";
 	}
+	
+//for test
+dataStoreType = "webSQL";
+
 	return dataStoreType;
 }//end _detectDataStore()
 

@@ -3,6 +3,7 @@ var indexedDatabase = iDBmodule();
 console.log("indexedDatabase module:", indexedDatabase);
 */
 var iDBmodule =  function(){
+//console.log("init iDBmodule.....");
 	
 	// private variables and functions
 	_vars = {

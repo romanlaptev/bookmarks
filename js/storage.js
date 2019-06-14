@@ -1,8 +1,36 @@
+var indexedDatabase = null;
+var webSqlDb = null;
+
 //================================ STORAGE methods
 var storage = {
-	// "init": function(){
-		// return _init_cache();
-	// },
+	
+	"init": function(){
+//console.log("init storage");
+
+		// var test = window.openDatabase  ? true : false;
+		// var status = window.openDatabase  ? "success" : "error";
+		// webApp.logMsg = "webSQL support: " + test;
+	// _alert( webApp.logMsg, status );
+		
+		// test = window["localStorage"]  ? true : false;
+		// status = window["localStorage"]  ? "success" : "error";
+		// webApp.logMsg = "localStorage support: " + test;
+	// _alert( webApp.logMsg, status );
+
+		// test = window.indexedDB ? true : false;
+		// status = window.indexedDB  ? "success" : "error";
+		// webApp.logMsg = "indexedDB support: " + test;
+	// _alert( webApp.logMsg, status );
+
+		if( webApp.vars["support"]["indexedDBsupport"]){
+			indexedDatabase = iDBmodule();
+console.log("indexedDatabase module:", indexedDatabase);
+		}
+		if( webApp.vars["support"]["webSQLsupport"]){
+			webSqlDb = webSQLmodule();
+console.log("webSQLmodule:", webSqlDb);
+		}
+	},
 	
 	//"checkAppData": function(opt){
 		//return _checkAppData( opt );
@@ -143,6 +171,13 @@ console.log("function _saveAppData()", opt);
 				break;
 				
 				case "webSQL":
+				
+webSqlDb.createTable({
+	"tableName" : webApp.vars["cache"]["dataTableName"], 
+	"fieldsInfo" : {"jsonStr": "TEXT"}
+});
+//webSqlDb.dropTable( webApp.vars["cache"]["dataTableName"] );
+
 				break;
 				
 				case "localStorage":
@@ -213,6 +248,9 @@ _alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
 			break;
 			
 			case "webSQL":
+				if(typeof p["callback"] === "function"){
+					p["callback"]( false );
+				}
 			break;
 			
 			case "localStorage":

@@ -2288,7 +2288,7 @@ _alert("table " + p["tableName"]+ " was created...", "info");
 		showTables();
 	}
 
-}//end createTables
+}//end createTable
 
 
 function dropTable( name ) {
