@@ -64,7 +64,7 @@ function _detectDataStore(){
 		dataStoreType = "indexedDB";
 	}
 //for test
-dataStoreType = "webSQL";
+//dataStoreType = "webSQL";
 
 	return dataStoreType;
 }//end _detectDataStore()
@@ -1064,7 +1064,7 @@ function defineEvents(){
 			if( !_vars["webSQLsupport"] ){
 				return false;
 			}
-			getAllTablesFromDB();
+			showTables();
 		}//end event
 
 //-----------------------------
@@ -1159,21 +1159,40 @@ function defineEvents(){
 		}//end event
 		
 
-
+//---------------------------------
 		var btn_webSqlDropTables = _getById("btn-websql-drop-tables");
 		btn_webSqlDropTables.onclick = function(){
+			
 			if( !_vars["webSQLsupport"] ){
 				return false;
 			}
-			/*
+			
 			getAllTables(function( list ){
-	//console.log(list);
+console.log(list);
 				for( var n = 0; n < list.length; n++ ){
-					dropTable( list[n], true );				
+					dropTable( list[n] );
 				}
-				getAllTablesFromDB();			
 			});
-			*/
+			
+		}//end event
+
+//---------------------------------
+		var btn_webSqlClearTable = _getById("btn-websql-clear");
+		btn_webSqlClearTable.onclick = function(){
+			
+			if( !_vars["webSQLsupport"] ){
+				return false;
+			}
+			
+			var tableName = _vars["tableNameField_websql"].value;
+//console.log(tableName);
+			if( !tableName || tableName.length===0 ){
+	_vars.logMsg="input field <b>table name</b> is empty....";
+	_alert( _vars.logMsg, "warning" );
+				return false;
+			}
+			
+			clearTable( tableName );
 		}//end event
 		
 	}//end __webSQLevents
@@ -2212,44 +2231,6 @@ console.log(opt["baseQuery"]);
 
 
 //====================================== WebSQL methods
-function connectDB(){
-	
-	if( _vars["webSql"]["dbLink"] ){
-		return _vars["webSql"]["dbLink"];
-	}
-	
-	try {
-		db = openDatabase( 
-			_vars["webSql"]["dbName"], 
-			_vars["webSql"]["version"], 
-			_vars["webSql"]["displayName"], 
-			_vars["webSql"]["initSize"],
-			function( database ){
-_alert( "Connect to database " +_vars["webSql"]["dbName"]+"...", "success");
-console.log( database );		
-			}
-		);
-//console.log(db);
-		_vars["webSql"]["dbLink"] = db;
-		return db;
-		
-	} catch(e) {
-console.log(e);
-_alert("Failed to connect to database " + _vars["webSql"]["dbName"], "error");
-_alert("Error code: "+e.code+", " + e.message, "error");
-/*
-		if (e == 2) {
-			// Version number mismatch.
-			alert("Invalid database version.");
-		} else {
-			alert("Unknown error "+e+".");
-		}
-*/
-	}//end try
-}//end connectDB()
-
-
-
 function createTable( opt ){
 //console.log(arguments);
 	var p = {
@@ -2265,7 +2246,9 @@ function createTable( opt ){
 
 	//var sql = "CREATE TABLE IF NOT EXISTS " + tableName+ " (food_name TEXT PRIMARY KEY, calories REAL, servings TEXT)";
 	//var sql = "CREATE TABLE IF NOT EXISTS " + tableName+ "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL DEFAULT 'John Doe', shirt TEXT NOT NULL DEFAULT 'Purple')";
-	
+//insertDay DATETIME	
+//price INTEGER,
+
 	var executeQuery = p["executeQuery"] || false;
 
 	var sql = "CREATE TABLE IF NOT EXISTS {{table_name}} ( {{fields_info}} );";
@@ -2302,7 +2285,7 @@ console.log( sql );
 	function postFunc( result ){
 //console.log("postFunc()!!!", result);
 _alert("table " + p["tableName"]+ " was created...", "info");
-		getAllTablesFromDB();
+		showTables();
 	}
 
 }//end createTables
@@ -2317,10 +2300,22 @@ function dropTable( name ) {
 	function postFunc( result ){
 //console.log("postFunc()!!!", result, typeof result);
 _alert("table " + name + " was dropped...", "info");
-		getAllTablesFromDB();
+		showTables();
 	}
 
 }//end dropTable()
+
+function clearTable( tableName ) {
+	var sql = "DELETE FROM " + tableName;
+	var db = connectDB();
+	runTransaction( sql, db, postFunc );
+	
+	function postFunc( result ){
+console.log( result );
+_alert("table " + name + " was cleared...", "info");
+		//showTables();
+	}
+}//end clearTable()
 
 
 function insertRecord( opt ){
@@ -2414,15 +2409,17 @@ function selectQuery( opt ){
 	runTransaction( sql, db, postFunc);
 		
 	function postFunc( result ){
-console.log( sql, result);
+//console.log( sql, result);
+
 		var timeEnd = new Date();
 		var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-		_vars.logMsg = "- " + sql + ", runtime: " + runtime +" sec";
-		_alert( _vars.logMsg, "info");
-		var listHtml = "";
-		if( result.rows ){
-_vars.logMsg = "Number of records: " + result.rows.length;
+		
+_vars.logMsg = "Table: "+p["tableName"]+", number of records: " + result.rows.length;
+_vars.logMsg += ", " + sql + ", runtime: " + runtime +" sec";
 _alert( _vars.logMsg, "info");
+
+		if( result.rows.length > 0){
+			var listHtml = "";
 			for(var n = 0; n < result.rows.length; n++){
 				var _list = "<ol>{{list}}</ol>";
 				var _items = "";
@@ -2431,36 +2428,95 @@ _alert( _vars.logMsg, "info");
 				 }
 				listHtml += _list.replace("{{list}}", _items);
 			}//next
+			_log( listHtml );
 		}
-		_log( listHtml );
-	}
-	
+
+	}//end postFunc
 }//end selectQuery()
 
 
-function getAllTablesFromDB(){
-	
+function showTables(){
+
+	getAllTables(function( list ){
+console.log(list);
+
+_vars.logMsg = "Database: "+_vars["webSql"]["dbName"]+", number of tables: " + list.length;
+_alert( _vars.logMsg, "info");
+
+		if( list.length > 0){
+			var _listHtml = "";
+			for(var n = 0; n < list.length; n++){
+				_listHtml += "<li>" + list[n] + "</li>";
+			}
+			var _html = "<ol>"+_listHtml +"</ol>";
+			_log ( _html );
+		}
+		
+	});
+
+}//end showTables()
+
+
+function getAllTables( callBack ){
 	var sql = 'SELECT tbl_name from sqlite_master WHERE type = "table"';
 	var db = connectDB();
-
-	runTransaction( sql, db, postFunc );
+	runTransaction( sql, db, postFunc);
 		
 	function postFunc( result ){
+		var list = [];
 //console.log("postFunc()!!!", result, result.rows.length);
 
-		var _items = "";
 		for(var n = 0; n < result.rows.length; n++){
-			for(var item in result.rows.item(n) ){
-				_items += "<li>"+ item +" : " + result.rows.item(n)[item] + "</li>";
+			var tblName = result.rows.item(n)["tbl_name"];
+			if( tblName === "__WebKitDatabaseInfoTable__" ||
+					tblName === "sqlite_sequence"){
+				continue;
 			}
+			list.push( tblName );
+		}//next
+		
+		if( typeof callBack === "function"){
+			callBack( list );
 		}
-		var _listHtml = "<ol>"+_items+"</ol>";
-		_log ( _listHtml );
+	}//end postFunc()
+	
+}//end getAllTables()
+
+function connectDB(){
+	
+	if( _vars["webSql"]["dbLink"] ){
+		return _vars["webSql"]["dbLink"];
 	}
-
-}//end getAllTablesFromDB()
-
-
+	
+	try {
+		db = openDatabase( 
+			_vars["webSql"]["dbName"], 
+			_vars["webSql"]["version"], 
+			_vars["webSql"]["displayName"], 
+			_vars["webSql"]["initSize"],
+			function( database ){
+_alert( "Connect to database " +_vars["webSql"]["dbName"]+"...", "success");
+console.log( database );		
+			}
+		);
+//console.log(db);
+		_vars["webSql"]["dbLink"] = db;
+		return db;
+		
+	} catch(e) {
+console.log(e);
+_alert("Failed to connect to database " + _vars["webSql"]["dbName"], "error");
+_alert("Error code: "+e.code+", " + e.message, "error");
+/*
+		if (e == 2) {
+			// Version number mismatch.
+			alert("Invalid database version.");
+		} else {
+			alert("Unknown error "+e+".");
+		}
+*/
+	}//end try
+}//end connectDB()
 
 
 function runTransaction( sql, db, callBack ){
@@ -2647,6 +2703,8 @@ function _log( msg, id){
 }//end _log()
 
 function _alert( message, level ){
+//console.log(arguments);
+	
 	switch (level) {
 		case "info":
 			message = "<p class='alert alert-info'>" + message + "</p>";
