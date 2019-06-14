@@ -11,14 +11,14 @@ _vars = {
 	"localStorageSupport" : window['localStorage']  ? true : false,
 	"dataStoreType" : _detectDataStore(),
 	
-	"dbName" : "bookmarks"
+	"dbName" : "localcache"//"bookmarks"
 	
 }//end vars{}
 
 if( window.openDatabase ){
 	
 	_vars["webSql"] = {
-		"dbName" : "bookmarks",
+		"dbName" : "localcache",//"bookmarks",
 		"version": "1.0",
 		"displayName": "Web SQL Database....",
 		"initSize" : 1*1024*1024,
@@ -100,7 +100,7 @@ function init(){
 		//_listStories();
 	}
 	
-	if( _vars["dataStoreType"] === "webSQL"){
+	if( window.openDatabase ){
 		_getById("db-name").value = _vars["webSql"]["dbName"];
 		_getById("db-version").value = _vars["webSql"]["version"];
 		_getById("db-desc").value = _vars["webSql"]["displayName"];

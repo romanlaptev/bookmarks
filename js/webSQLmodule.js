@@ -53,7 +53,10 @@ var webSQLmodule =  function(){
 		}//end try
 	}//end _connectDB()
 
+
 	function _runTransaction( sql, db, callBack ){
+		var response = {};
+		
 		if( typeof sql === "string"){
 			
 			//var timeStart = new Date();
@@ -63,6 +66,7 @@ var webSQLmodule =  function(){
 				t.executeSql( sql, [], onSuccess, onError );
 			}, errorCB, successCB );//end transaction
 		} else {
+/*			
 	//console.log(sql);
 			if( sql.length > 0){
 				//var timeStart = new Date();
@@ -72,42 +76,41 @@ var webSQLmodule =  function(){
 						}//next
 					}, _errorCB, _successCB );//end transaction
 			}
+*/			
 		}
 
 		function errorCB(e) {
-	_vars.logMsg = "- end transaction, error processing SQL";		
-	console.log(_vars.logMsg, "error");
-	console.log(_vars.logMsg, e);
+_vars.logMsg = "- end transaction, error..";		
+console.log(_vars.logMsg, e);
+			response["error"] = e;
+			response["end_transaction"] = false;
+			if( typeof callBack === "function"){
+				callBack(response);
+			}
 		}
 
 		function successCB() {
-	_vars.logMsg = "- end transaction, success...";
-	//console.log(_vars.logMsg, "success");
-	console.log(_vars.logMsg, arguments);
+//_vars.logMsg = "- end transaction, success...";
+//console.log(_vars.logMsg, arguments);
+			response["end_transaction"] = true;
+			if( typeof callBack === "function"){
+				callBack(response);
+			}
 		}
 		
-		function onSuccess(t, result) {
-	//console.log("onSuccess()", result, result.rows.length);
-	console.log("success execute SQL: <b>" + sql +"</b>", "success");
-			
-			//var timeEnd = new Date();
-			//var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
-	//console.log("onSuccess()", sql, timeStart, timeEnd, runtime );
-			//var total = _get_timer( _timer["total"] );
-	//console.log("onSuccess()", sql, total );
-			
-			if( typeof callBack === "function"){
-				callBack( result, sql );
-			}
-			
+		function onSuccess( _SQLTransaction, _SQLResultSet) {
+//console.log( arguments );
+//console.log("success execute SQL: <b>" + sql +"</b>", "success");
+			response["executeSql"] = true;
 		}//end onSuccess
 		
-		function onError(t, e) {
-console.log("onError()", e.code, e.message, sql);
-_vars.logMsg = "error execute SQL: "+sql+", code: "+e.code+", <b>" + e.message + "</b>";
-console.log(_vars.logMsg, "error");
+		function onError( _SQLTransaction, e) {
+console.log("onError()", _SQLTransaction);
+			response["executeSql"] = false;
+			response["errorSql"] = e;
 		}//end onError
 		
+/*		
 	//----------------- callbacks for many executeSql
 		function _errorCB(e) {
 _vars.logMsg = "- end transaction, error processing SQL:";		
@@ -131,16 +134,17 @@ console.log("_onSuccess()", result, result.rows.length );
 		function _onError(t, e) {
 	console.log("_onError()", e.code, e.message);
 		}//end _onError
+*/
 		
 	}//end _runTransaction()
-
 
 
 	function _createTable( opt ){
 //console.log(arguments);
 		var p = {
 			"tableName": "",
-			"fieldsInfo": ""
+			"fieldsInfo": "",
+			"callback": null
 		};
 		//extend p object
 		for(var key in opt ){
@@ -172,15 +176,16 @@ console.log("_onSuccess()", result, result.rows.length );
 			sql = sql.replace(" {{fields_info}} ", "test TEXT");
 		}
 		
-console.log( sql );
+//console.log( sql );
 
 		var db = _connectDB();
 		_runTransaction( sql, db, postFunc );
 
-		function postFunc( result ){
-console.log("table " + p["tableName"]+ " was created...", result);
-		}
-
+		function postFunc( response ){
+			if( typeof p["callback"] == "function"){
+				p["callback"]( response );
+			}
+		}//end
 	}//end _createTable()
 
 
@@ -195,6 +200,7 @@ console.log( result, typeof result);
 
 	}//end _dropTable()
 
+
 	function _clearTable( tableName ) {
 		var sql = "DELETE FROM " + tableName;
 		var db = _connectDB();
@@ -204,6 +210,59 @@ console.log( result, typeof result);
 console.log("table " + name + " was cleared...", result);
 		}
 	}//end _clearTable()
+
+	function _insertRecord( opt ){
+//console.log(arguments);
+		var p = {
+			"tableName": "",
+			"values": "",
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+//console.log(p);
+
+/*
+var str  = '{   "items":[     {     "order": 1,     "item_id": 123123,     "quantity": 10,     "price": 1526896,     "total": 15268960   },   {     "order": 2,     "item_id": 113124,     "quantity": 10,     "price": 1526896,     "total": 15268960   },   {     "order": 3,     "item_id": 163125,     "quantity": 10,     "price": 1626896,     "total": 16268960   },   {     "order": 4,     "item_id": 1723165,     "quantity": 10,     "price": 1726896,     "total": 17268960   },   {     "order": 5,     "item_id": 183190,     "quantity": 10,     "price": 1826896,     "total": 18268960   } ],  "other":[           {         "order": 1,         "item": 123123,         "price": 10              },      {         "order": 2,         "item": 123123,         "price": 10              }      ,{         "order": 3,         "item": 123123,         "price": 10      }      ] }';
+
+tx.executeSql('INSERT INTO TA (id, name) VALUES (?,?)',[94,str]);
+*/
+
+		//var sql = "insert into {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
+		var sql = "insert into {{table_name}} VALUES ( {{values}} );";
+		sql = sql.replace("{{table_name}}", p["tableName"] );
+		
+		if( p["values"] !== ""){
+			var sValues = "";
+			var n = 0;
+			for( var fieldName in p["values"] ){
+				if(n > 0){
+					sValues += ", ";
+				}
+				sValues += p["values"][fieldName];
+				n++;
+			}//next
+			sql = sql.replace("{{values}}", sValues);
+			
+		} else {
+			return false;
+		}
+		
+//console.log( sql );
+
+		var db = _connectDB();
+		_runTransaction( sql, db, postFunc );
+		
+		function postFunc( response ){
+//console.log("INSERT record into "+ p["tableName"], response);
+			if( typeof p["callback"] == "function"){
+				p["callback"]( response );
+			}
+		}
+
+	}//end _insertRecord()
 
 
 	// public interfaces
@@ -216,8 +275,8 @@ console.log("table " + name + " was cleared...", result);
 		// getRecords: _getRecords,
 		// getRecord: _getRecord,
 		clearTable: _clearTable,
-		// addRecords: _addRecords,
-		// addRecord: _addRecord,
+		// insertRecords: _insertRecords,
+		insertRecord: _insertRecord,
 		// deleteRecord: _deleteRecord,
 		dbInfo: _vars
 	};

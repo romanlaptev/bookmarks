@@ -172,10 +172,33 @@ console.log("function _saveAppData()", opt);
 				
 				case "webSQL":
 				
-webSqlDb.createTable({
-	"tableName" : webApp.vars["cache"]["dataTableName"], 
-	"fieldsInfo" : {"jsonStr": "TEXT"}
-});
+					webSqlDb.createTable({
+						"tableName" : webApp.vars["cache"]["dataTableName"], 
+						"fieldsInfo" : {"jsonStr": "TEXT"},
+						"callback": function(  response  ){
+//console.log("Response: ", response);
+
+							if( !response["executeSql"]){
+webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+_alert( webApp.logMsg, "error");
+							} else {
+								
+								webSqlDb.insertRecord({
+									"tableName" : webApp.vars["cache"]["dataTableName"], 
+									"values" : { "jsonStr": "123" },
+									"callback": function( response ){
+//console.log("Response: ", response);
+										if( !response["executeSql"]){
+	webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+	_alert( webApp.logMsg, "error");
+										}
+										
+									}
+								});
+							}
+
+						}
+					});
 //webSqlDb.dropTable( webApp.vars["cache"]["dataTableName"] );
 
 				break;
