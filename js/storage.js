@@ -174,18 +174,22 @@ function _saveAppData( opt ){
 try{
 					webSqlDb.createTable({
 						"tableName" : webApp.vars["cache"]["dataTableName"], 
-						"fieldsInfo" : {"jsonStr": "TEXT"},
+						"fieldsInfo" : webApp.vars["cache"]["dataTableFieldsInfo_webSQL"],
 						"callback": function(  response  ){
-//console.log("Response: ", response);
+console.log("Response: ", response);
 
 							if( !response["executeSql"]){
 webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
 _alert( webApp.logMsg, "error");
 							} else {
 								
+								var _record = {
+									"jsonStr" : p["data"]
+								};
+								
 								webSqlDb.insertRecord({
 									"tableName" : webApp.vars["cache"]["dataTableName"], 
-									"values" : { "jsonStr": "123" },
+									"values" : _record,
 									"callback": function( response ){
 //console.log("Response: ", response);
 										if( !response["executeSql"]){

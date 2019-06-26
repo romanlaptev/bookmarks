@@ -1,7 +1,47 @@
 /*
+Usage: 
+
 var webSqlDb = webSQLmodule();
 console.log("webSQLmodule:", webSqlDb);
+
+//---------------------------------------------
+	webSqlDb.insertRecord({
+		"tableName" : "table1", 
+		"values" : { "field1" : "123", "field2" : "789" },
+		"callback": function( response ){
+//console.log("Response: ", response);
+			if( !response["executeSql"]){
+var logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+console.log( logMsg );
+			}
+			
+		}
+	});
+	
+
+//---------------------------------------------
+	var _fieldsInfo = {
+		"id" : "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT",
+		"name" : "TEXT NOT NULL DEFAULT 'John Doe'",
+		"calories": "REAL",
+		"insertDay": "DATETIME"
+	};
+	webSqlDb.createTable({
+		"tableName" : webApp.vars["cache"]["dataTableName"], 
+		"fieldsInfo" : _fieldsInfo,
+		"callback": function(  response  ){
+console.log("Response: ", response);
+
+			if( !response["executeSql"]){
+var logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+console.log( logMsg );
+			} 
+			
+		}
+	});
+
 */
+
 var webSQLmodule =  function(){
 	
 //console.log("init webSQLmodule.....");
@@ -54,21 +94,34 @@ var webSQLmodule =  function(){
 	}//end _connectDB()
 
 
-	function _runTransaction( sql, db, callBack ){
+	//function _runTransaction( sql, db, callBack ){
+	function _runTransaction( opt ){
+//console.log(arguments);
+		var p = {
+			"sql": "",
+			"callback": null,
+			"values": []
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+console.log(p);
+		
+		var db = _connectDB();
+		var callBack = p["callback"];
+//console.log( db, callBack);
+		
 		var response = {};
 		
-		if( typeof sql === "string"){
-			
-			//var timeStart = new Date();
-			//_timer["total"] = _set_timer();		
-			
+		if( typeof p["sql"] === "string"){
 			db.transaction( function(t){
-				t.executeSql( sql, [], onSuccess, onError );
-			}, errorCB, successCB );//end transaction
+				t.executeSql( p["sql"], p["values"], onSuccess, onError );
+			}, errorCB, successCB );
 		} else {
 /*			
-	//console.log(sql);
-			if( sql.length > 0){
+	//console.log( p["sql"] );
+			if( p["sql"].length > 0){
 				//var timeStart = new Date();
 				db.transaction( function(t){
 						for( n = 0; n < sql.length; n++ ){
@@ -177,9 +230,10 @@ console.log("_onSuccess()", result, result.rows.length );
 		}
 		
 //console.log( sql );
-
-		var db = _connectDB();
-		_runTransaction( sql, db, postFunc );
+		_runTransaction({ 
+			"sql" : sql, 
+			"callback" : postFunc 
+		});
 
 		function postFunc( response ){
 			if( typeof p["callback"] == "function"){
@@ -191,8 +245,12 @@ console.log("_onSuccess()", result, result.rows.length );
 
 	function _dropTable( tableName ) {
 		var sql = "DROP TABLE " + tableName;
-		var db = _connectDB();
-		_runTransaction( sql, db, postFunc );
+		//var db = _connectDB();
+		//_runTransaction( sql, db, postFunc );
+		_runTransaction({ 
+			"sql" : sql, 
+			"callback" : postFunc 
+		});
 		
 		function postFunc( result ){
 console.log( result, typeof result);
@@ -203,8 +261,12 @@ console.log( result, typeof result);
 
 	function _clearTable( tableName ) {
 		var sql = "DELETE FROM " + tableName;
-		var db = _connectDB();
-		_runTransaction( sql, db, postFunc );
+		//var db = _connectDB();
+		//_runTransaction( sql, db, postFunc );
+		_runTransaction({ 
+			"sql" : sql, 
+			"callback" : postFunc 
+		});
 		
 		function postFunc( result ){
 console.log("table " + name + " was cleared...", result);
@@ -222,7 +284,7 @@ console.log("table " + name + " was cleared...", result);
 		for(var key in opt ){
 			p[key] = opt[key];
 		}
-//console.log(p);
+console.log(p);
 
 /*
 var str  = '{   "items":[     {     "order": 1,     "item_id": 123123,     "quantity": 10,     "price": 1526896,     "total": 15268960   },   {     "order": 2,     "item_id": 113124,     "quantity": 10,     "price": 1526896,     "total": 15268960   },   {     "order": 3,     "item_id": 163125,     "quantity": 10,     "price": 1626896,     "total": 16268960   },   {     "order": 4,     "item_id": 1723165,     "quantity": 10,     "price": 1726896,     "total": 17268960   },   {     "order": 5,     "item_id": 183190,     "quantity": 10,     "price": 1826896,     "total": 18268960   } ],  "other":[           {         "order": 1,         "item": 123123,         "price": 10              },      {         "order": 2,         "item": 123123,         "price": 10              }      ,{         "order": 3,         "item": 123123,         "price": 10      }      ] }';
@@ -230,30 +292,40 @@ var str  = '{   "items":[     {     "order": 1,     "item_id": 123123,     "quan
 tx.executeSql('INSERT INTO TA (id, name) VALUES (?,?)',[94,str]);
 */
 
-		//var sql = "insert into {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
-		var sql = "insert into {{table_name}} VALUES ( {{values}} );";
+		var sql = "INSERT INTO {{table_name}} ( {{fields}} ) VALUES ( {{values}} );";
+		//var sql = "insert into {{table_name}} VALUES ( {{values}} );";
 		sql = sql.replace("{{table_name}}", p["tableName"] );
 		
-		if( p["values"] !== ""){
-			var sValues = "";
-			var n = 0;
-			for( var fieldName in p["values"] ){
-				if(n > 0){
-					sValues += ", ";
-				}
-				sValues += p["values"][fieldName];
-				n++;
-			}//next
-			sql = sql.replace("{{values}}", sValues);
-			
-		} else {
+		if( p["values"] === ""){
 			return false;
 		}
 		
-//console.log( sql );
+		var sFieldNames = sValues = "";
+		var _values = [];
+		
+		var n = 0;
+		for( var fieldName in p["values"] ){
+			if(n > 0){
+				sFieldNames += ", ";
+				sValues += ", ";
+			}
+			sFieldNames += fieldName;
+			
+			sValues += "?";
+			_values.push( p["values"][fieldName] );
+			
+			n++;
+		}//next
+		
+		sql = sql.replace("{{values}}", sValues).replace("{{fields}}", sFieldNames);
+console.log( sql );
 
-		var db = _connectDB();
-		_runTransaction( sql, db, postFunc );
+		_runTransaction({ 
+			"sql" : sql, 
+			"values" : _values,
+			"callback" : postFunc 
+		});
+
 		
 		function postFunc( response ){
 //console.log("INSERT record into "+ p["tableName"], response);

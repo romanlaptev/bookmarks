@@ -12,7 +12,8 @@ var webApp = {
 			"dbName": "localcache",
 			"dataStoreName" : "bookmarks.json",
 			"dataTableName" : "bookmarks_json",
-			"cacheUpdate": false
+			"cacheUpdate": false,
+			"dataTableFieldsInfo_webSQL": {"jsonStr" : "TEXT"}
 		},
 		
 		"userDataUrl" : getById("user-data-url"),
