@@ -64,7 +64,9 @@ var webApp = {
 			"indexedDBsupport" : window.indexedDB ? true : false,
 			"webSQLsupport" : window.openDatabase  ? true : false,
 			"localStorageSupport" : window['localStorage']  ? true : false,
-			"dataStoreType" : _detectDataStore()
+//for test
+			//"dataStoreType" : _detectDataStore()
+			"dataStoreType" : "webSQL"
 		},
 		
 		"timers": {
@@ -1035,9 +1037,6 @@ function _detectDataStore(){
 		dataStoreType = "indexedDB";
 	}
 	
-//for test
-dataStoreType = "webSQL";
-
 	return dataStoreType;
 }//end _detectDataStore()
 

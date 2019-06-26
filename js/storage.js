@@ -112,7 +112,7 @@ indexedDatabase.getRecord({
 */
 
 function _saveAppData( opt ){
-console.log("function _saveAppData()", opt);
+//console.log("function _saveAppData()", opt);
 	var p = {
 		"dataStoreType": null,
 		"data": null,
@@ -171,7 +171,7 @@ console.log("function _saveAppData()", opt);
 				break;
 				
 				case "webSQL":
-				
+try{
 					webSqlDb.createTable({
 						"tableName" : webApp.vars["cache"]["dataTableName"], 
 						"fieldsInfo" : {"jsonStr": "TEXT"},
@@ -200,7 +200,12 @@ _alert( webApp.logMsg, "error");
 						}
 					});
 //webSqlDb.dropTable( webApp.vars["cache"]["dataTableName"] );
-
+	
+} catch(e){
+console.log(e);
+	webApp.logMsg = "error, message: <b>" + e.message + "</b>";
+	_alert( webApp.logMsg, "error");
+}				
 				break;
 				
 				case "localStorage":
