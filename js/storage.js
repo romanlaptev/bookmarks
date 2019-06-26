@@ -172,44 +172,28 @@ function _saveAppData( opt ){
 				
 				case "webSQL":
 try{
-					webSqlDb.createTable({
+					//webSqlDb.dropTable( webApp.vars["cache"]["dataTableName"] );
+					webSqlDb.clearTable({
 						"tableName" : webApp.vars["cache"]["dataTableName"], 
-						"fieldsInfo" : webApp.vars["cache"]["dataTableFieldsInfo_webSQL"],
-						"callback": function(  response  ){
+						"callback": function( response ){
 console.log("Response: ", response);
-
 							if( !response["executeSql"]){
 webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
 _alert( webApp.logMsg, "error");
+								__createAndSave( p["data"] );
 							} else {
-								
-								var _record = {
-									"jsonStr" : p["data"]
-								};
-								
-								webSqlDb.insertRecord({
-									"tableName" : webApp.vars["cache"]["dataTableName"], 
-									"values" : _record,
-									"callback": function( response ){
-//console.log("Response: ", response);
-										if( !response["executeSql"]){
-	webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
-	_alert( webApp.logMsg, "error");
-										}
-										
-									}
-								});
+								__save( p["data"]);
 							}
-
+							
 						}
 					});
-//webSqlDb.dropTable( webApp.vars["cache"]["dataTableName"] );
-	
+
 } catch(e){
 console.log(e);
 	webApp.logMsg = "error, message: <b>" + e.message + "</b>";
 	_alert( webApp.logMsg, "error");
-}				
+}
+				
 				break;
 				
 				case "localStorage":
@@ -233,6 +217,44 @@ _alert( webApp.vars.logMsg, runStatus );
 	if(typeof p["callback"] === "function"){
 		p["callback"]();
 	}
+	
+	function __createAndSave( data){
+		webSqlDb.createTable({
+			"tableName" : webApp.vars["cache"]["dataTableName"], 
+			"fieldsInfo" : webApp.vars["cache"]["dataTableFieldsInfo_webSQL"],
+			"callback": function(  response  ){
+		//console.log("Response: ", response);
+
+				if( !response["executeSql"]){
+		webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+		_alert( webApp.logMsg, "error");
+				} else {
+					__save( data );
+				}
+
+			}
+		});
+	}//end _createAndSave()
+
+	function __save( data ){
+		var _record = {
+			"jsonStr" : data
+		};
+
+		webSqlDb.insertRecord({
+			"tableName" : webApp.vars["cache"]["dataTableName"], 
+			"values" : _record,
+			"callback": function( response ){
+		//console.log("Response: ", response);
+				if( !response["executeSql"]){
+		webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+		_alert( webApp.logMsg, "error");
+				}
+				
+			}
+		});
+	}//end _save()
+	
 }//end _saveAppData()
 
 

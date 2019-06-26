@@ -66,8 +66,8 @@ var webApp = {
 			"webSQLsupport" : window.openDatabase  ? true : false,
 			"localStorageSupport" : window['localStorage']  ? true : false,
 //for test
-			//"dataStoreType" : _detectDataStore()
-			"dataStoreType" : "webSQL"
+			"dataStoreType" : _detectDataStore()
+//"dataStoreType" : "webSQL"
 		},
 		
 		"timers": {

@@ -40,6 +40,10 @@ console.log( logMsg );
 		}
 	});
 
+//---------------------------------------
+	webSqlDb.clearTable( "table1" );
+
+
 */
 
 var webSQLmodule =  function(){
@@ -106,7 +110,7 @@ var webSQLmodule =  function(){
 		for(var key in opt ){
 			p[key] = opt[key];
 		}
-console.log(p);
+//console.log(p);
 		
 		var db = _connectDB();
 		var callBack = p["callback"];
@@ -259,18 +263,30 @@ console.log( result, typeof result);
 	}//end _dropTable()
 
 
-	function _clearTable( tableName ) {
-		var sql = "DELETE FROM " + tableName;
-		//var db = _connectDB();
-		//_runTransaction( sql, db, postFunc );
+	function _clearTable( opt ) {
+//console.log(arguments);
+		var p = {
+			"tableName": "",
+			"callback": null
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+console.log(p);		
+
 		_runTransaction({ 
-			"sql" : sql, 
+			"sql" : "DELETE FROM " + p["tableName"], 
 			"callback" : postFunc 
 		});
 		
-		function postFunc( result ){
-console.log("table " + name + " was cleared...", result);
+		function postFunc( response ){
+console.log("table " + name + " was cleared...");
+			if( typeof p["callback"] == "function"){
+				p["callback"]( response );
+			}
 		}
+		
 	}//end _clearTable()
 
 	function _insertRecord( opt ){
