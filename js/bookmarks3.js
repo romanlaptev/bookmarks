@@ -65,8 +65,8 @@ var webApp = {
 			"indexedDBsupport" : window.indexedDB ? true : false,
 			"webSQLsupport" : window.openDatabase  ? true : false,
 			"localStorageSupport" : window['localStorage']  ? true : false,
+			//"dataStoreType" : _detectDataStore()
 //for test
-			"dataStoreType" : _detectDataStore()
 //"dataStoreType" : "webSQL"
 		},
 		
@@ -354,6 +354,7 @@ function _loadData( postFunc ){
 								postFunc(data);
 							}
 						}
+
 					}
 				});
 /*			

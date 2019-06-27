@@ -4,7 +4,7 @@ Usage:
 var webSqlDb = webSQLmodule();
 console.log("webSQLmodule:", webSqlDb);
 
-//---------------------------------------------
+//--------------------------------------------- INSERT
 	webSqlDb.insertRecord({
 		"tableName" : "table1", 
 		"values" : { "field1" : "123", "field2" : "789" },
@@ -19,7 +19,7 @@ console.log( logMsg );
 	});
 	
 
-//---------------------------------------------
+//--------------------------------------------- CREATE
 	var _fieldsInfo = {
 		"id" : "INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT",
 		"name" : "TEXT NOT NULL DEFAULT 'John Doe'",
@@ -27,7 +27,7 @@ console.log( logMsg );
 		"insertDay": "DATETIME"
 	};
 	webSqlDb.createTable({
-		"tableName" : webApp.vars["cache"]["dataTableName"], 
+		"tableName" : "table1", 
 		"fieldsInfo" : _fieldsInfo,
 		"callback": function(  response  ){
 console.log("Response: ", response);
@@ -40,8 +40,28 @@ console.log( logMsg );
 		}
 	});
 
-//---------------------------------------
+//--------------------------------------- CLEAR
 	webSqlDb.clearTable( "table1" );
+
+//--------------------------------------- SELECT
+	var _fieldsInfo = {
+		"id" : "",
+		"name" : "",
+		"calories": "",
+		"insertDay": ""
+	};
+	webSqlDb.selectRecords({
+		"tableName" :"table1",
+		"fields" : _fieldsInfo,
+		"operators": "LIMIT 0,10",
+		"callback": function( response ){
+console.log("Response: ", response);
+			if( !response["executeSql"]){
+var logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+console.log( logMsg );
+			}
+		}
+	});
 
 
 */
@@ -158,6 +178,8 @@ console.log(_vars.logMsg, e);
 		function onSuccess( _SQLTransaction, _SQLResultSet) {
 //console.log( arguments );
 //console.log("success execute SQL: <b>" + sql +"</b>", "success");
+			response["SQLTransaction"] = _SQLTransaction;
+			response["SQLResultSet"] = _SQLResultSet;
 			response["executeSql"] = true;
 		}//end onSuccess
 		
@@ -353,6 +375,61 @@ console.log( sql );
 	}//end _insertRecord()
 
 
+	function _selectRecords( opt ){
+//console.log(arguments);
+		var p = {
+			"tableName": "",
+			"fields": "",
+			"operators": ""
+		};
+		//extend p object
+		for(var key in opt ){
+			p[key] = opt[key];
+		}
+//console.log(p);	
+		
+		//var sql = "SELECT * FROM "+ tableName + " LIMIT 2117,1";
+		var sql = "SELECT {{fields}} FROM {{table_name}} {{operators}} ";
+		sql = sql
+		.replace("{{table_name}}", p["tableName"] )
+		.replace("{{operators}}", p["operators"] );
+		
+		if( p["fields"] === ""){
+			return false;
+		}
+
+		var sFieldNames = "";
+		
+		var n = 0;
+		for( var fieldName in p["fields"] ){
+			if(n > 0){
+				sFieldNames += ", ";
+			}
+			sFieldNames += fieldName;
+			n++;
+		}//next
+		
+		sql = sql.replace("{{fields}}", sFieldNames);
+console.log( sql );
+		
+		//var timeStart = new Date();
+		_runTransaction({ 
+			"sql" : sql, 
+			"callback" : postFunc 
+		});
+			
+		function postFunc( response ){
+console.log( response );
+			//var timeEnd = new Date();
+			//var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+			if( typeof p["callback"] == "function"){
+				p["callback"]( response );
+			}
+		}//end postFunc
+		
+	}//end _selectRecords()
+	
+
 	// public interfaces
 	return{
 		createTable: _createTable,
@@ -360,8 +437,7 @@ console.log( sql );
 		// deleteStore: _deleteStore,
 		// getListStores: _getListStores,
 		// numRecords: _numRecords,
-		// getRecords: _getRecords,
-		// getRecord: _getRecord,
+		selectRecords: _selectRecords,
 		clearTable: _clearTable,
 		// insertRecords: _insertRecords,
 		insertRecord: _insertRecord,

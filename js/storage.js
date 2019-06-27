@@ -127,90 +127,92 @@ function _saveAppData( opt ){
 //for test
 //p["dataStoreType"] = "localStorage";
 
-	if( p["data"] ){
+	if( !p["data"] ){
+console.log("warning!!!");
+		return false;
+	}
 
-		if( p["dataStoreType"] && p["dataStoreType"].length > 0){
-			switch ( p["dataStoreType"] ) {
+	if( p["dataStoreType"] && p["dataStoreType"].length > 0){
+		switch ( p["dataStoreType"] ) {
+		
+			case "indexedDB":
+indexedDatabase.clearStore({
+	"dbName" : webApp.vars["cache"]["dbName"],
+	"storeName" : webApp.vars["cache"]["dataStoreName"],
+	"callback" : function( log, runtime ){
+//console.log( arguments );
+// webApp.vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
+		// if( indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error" ){
+// webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["iDBparams"]["reason"];
+// //webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["errorDescription"];
+		// }
+// _alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+//console.log( webApp.vars.logMsg );
+//console.log( indexedDatabase.dbInfo );
+
+		var storeData = [];
+		//storeData.push( {"key": "lastModified", "value" : webApp.vars["cache"]["serverDate"]} );
+		storeData.push( {"key": "jsonString", "value" : p["data"]} );
+
+		indexedDatabase.addRecords({
+				"dbName" : webApp.vars["cache"]["dbName"],
+				"storeName" : webApp.vars["cache"]["dataStoreName"],
+				"storeData" : storeData,
+				"callback" : function( runtime ){
+webApp.vars.logMsg = "Save data to cache, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
+, store: <b>"+ webApp.vars["cache"]["dataStoreName"] +"</b>, runtime: " + runtime;
+if( indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error" ){
+webApp.vars.logMsg = indexedDatabase.dbInfo["errorDescription"];
+}						
+_alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+console.log( webApp.vars.logMsg );
+			}
+		});//end addRecords
+
+	}
+});//end clearStore
+			break;
 			
-				case "indexedDB":
-	indexedDatabase.clearStore({
-		"dbName" : webApp.vars["cache"]["dbName"],
-		"storeName" : webApp.vars["cache"]["dataStoreName"],
-		"callback" : function( log, runtime ){
-	//console.log( arguments );
-	// webApp.vars.logMsg = "_clearStore(), "+ log + ", " +runtime + " sec";
-			// if( indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error" ){
-	// webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["iDBparams"]["reason"];
-	// //webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["errorDescription"];
-			// }
-	// _alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-	//console.log( webApp.vars.logMsg );
-	//console.log( indexedDatabase.dbInfo );
-
-			var storeData = [];
-			//storeData.push( {"key": "lastModified", "value" : webApp.vars["cache"]["serverDate"]} );
-			storeData.push( {"key": "jsonString", "value" : p["data"]} );
-
-			indexedDatabase.addRecords({
-					"dbName" : webApp.vars["cache"]["dbName"],
-					"storeName" : webApp.vars["cache"]["dataStoreName"],
-					"storeData" : storeData,
-					"callback" : function( runtime ){
-	webApp.vars.logMsg = "Save data to cache, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
-	, store: <b>"+ webApp.vars["cache"]["dataStoreName"] +"</b>, runtime: " + runtime;
-	if( indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error" ){
-	webApp.vars.logMsg = indexedDatabase.dbInfo["errorDescription"];
-	}						
-	_alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
-	console.log( webApp.vars.logMsg );
-				}
-			});//end addRecords
-
-		}
-	});//end clearStore
-				break;
-				
-				case "webSQL":
+			case "webSQL":
 try{
-					//webSqlDb.dropTable( webApp.vars["cache"]["dataTableName"] );
-					webSqlDb.clearTable({
-						"tableName" : webApp.vars["cache"]["dataTableName"], 
-						"callback": function( response ){
+				//webSqlDb.dropTable( webApp.vars["cache"]["dataTableName"] );
+				webSqlDb.clearTable({
+					"tableName" : webApp.vars["cache"]["dataTableName"], 
+					"callback": function( response ){
 console.log("Response: ", response);
-							if( !response["executeSql"]){
+						if( !response["executeSql"]){
 webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
 _alert( webApp.logMsg, "error");
-								__createAndSave( p["data"] );
-							} else {
-								__save( p["data"]);
-							}
-							
+							__createAndSave( p["data"] );
+						} else {
+							__save( p["data"]);
 						}
-					});
+						
+					}
+				});
 
 } catch(e){
 console.log(e);
-	webApp.logMsg = "error, message: <b>" + e.message + "</b>";
-	_alert( webApp.logMsg, "error");
+webApp.logMsg = "error, message: <b>" + e.message + "</b>";
+_alert( webApp.logMsg, "error");
 }
-				
-				break;
-				
-				case "localStorage":
-					var dataStoreName = webApp.vars["cache"]["dataStoreName"];
-					window.localStorage.removeItem( dataStoreName );
-					window.localStorage.setItem( dataStoreName, p["data"] );
+			
+			break;
+			
+			case "localStorage":
+				var dataStoreName = webApp.vars["cache"]["dataStoreName"];
+				window.localStorage.removeItem( dataStoreName );
+				window.localStorage.setItem( dataStoreName, p["data"] );
 webApp.vars.logMsg = "Save data to localStorage, data key: <b>"+ dataStoreName + "</b>";
 runStatus = "success";
 _alert( webApp.vars.logMsg, runStatus );
-					
-				break;
+				
+			break;
 
-				default:
-				break;
-			}//end switch
-			
-		}
+			default:
+			break;
+		}//end switch
+		
 	}
 
 			
@@ -302,9 +304,39 @@ _alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
 			break;
 			
 			case "webSQL":
-				if(typeof p["callback"] === "function"){
-					p["callback"]( false );
+				var data = false;
+				try{
+					
+						webSqlDb.selectRecords({
+							"tableName" : webApp.vars["cache"]["dataTableName"],
+							"fields" : webApp.vars["cache"]["dataTableFieldsInfo_webSQL"],
+							"callback": function( response ){
+//console.log("Response: ", response);
+								if( !response["executeSql"]){
+webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
+_alert( webApp.logMsg, "error");
+								} else {
+//console.log("Response: ", response["SQLResultSet"].rows.length );
+									data = response["SQLResultSet"].rows[0]["jsonStr"];
+								}
+								
+								if(typeof p["callback"] === "function"){
+									p["callback"]( data );
+								}
+								
+							}
+						});
+
+				} catch(e){
+console.log(e);
+webApp.logMsg = "error, message: <b>" + e.message + "</b>";
+_alert( webApp.logMsg, "error");
+					if(typeof p["callback"] === "function"){
+						p["callback"]( data );
+					}
 				}
+			
+				
 			break;
 			
 			case "localStorage":
