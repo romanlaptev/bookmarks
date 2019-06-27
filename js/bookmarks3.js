@@ -65,7 +65,7 @@ var webApp = {
 			"indexedDBsupport" : window.indexedDB ? true : false,
 			"webSQLsupport" : window.openDatabase  ? true : false,
 			"localStorageSupport" : window['localStorage']  ? true : false,
-			//"dataStoreType" : _detectDataStore()
+			"dataStoreType" : _detectDataStore()
 //for test
 //"dataStoreType" : "webSQL"
 		},

@@ -322,7 +322,7 @@ console.log("table " + name + " was cleared...");
 		for(var key in opt ){
 			p[key] = opt[key];
 		}
-console.log(p);
+//console.log(p);
 
 /*
 var str  = '{   "items":[     {     "order": 1,     "item_id": 123123,     "quantity": 10,     "price": 1526896,     "total": 15268960   },   {     "order": 2,     "item_id": 113124,     "quantity": 10,     "price": 1526896,     "total": 15268960   },   {     "order": 3,     "item_id": 163125,     "quantity": 10,     "price": 1626896,     "total": 16268960   },   {     "order": 4,     "item_id": 1723165,     "quantity": 10,     "price": 1726896,     "total": 17268960   },   {     "order": 5,     "item_id": 183190,     "quantity": 10,     "price": 1826896,     "total": 18268960   } ],  "other":[           {         "order": 1,         "item": 123123,         "price": 10              },      {         "order": 2,         "item": 123123,         "price": 10              }      ,{         "order": 3,         "item": 123123,         "price": 10      }      ] }';
@@ -356,7 +356,7 @@ tx.executeSql('INSERT INTO TA (id, name) VALUES (?,?)',[94,str]);
 		}//next
 		
 		sql = sql.replace("{{values}}", sValues).replace("{{fields}}", sFieldNames);
-console.log( sql );
+//console.log( sql );
 
 		_runTransaction({ 
 			"sql" : sql, 
@@ -412,7 +412,8 @@ console.log( sql );
 		sql = sql.replace("{{fields}}", sFieldNames);
 console.log( sql );
 		
-		//var timeStart = new Date();
+		var timeStart = new Date();
+		
 		_runTransaction({ 
 			"sql" : sql, 
 			"callback" : postFunc 
@@ -420,8 +421,10 @@ console.log( sql );
 			
 		function postFunc( response ){
 console.log( response );
-			//var timeEnd = new Date();
-			//var runtime = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+
+			var timeEnd = new Date();
+			response["runtime"] = (timeEnd.getTime() - timeStart.getTime()) / 1000;
+			
 			if( typeof p["callback"] == "function"){
 				p["callback"]( response );
 			}

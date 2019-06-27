@@ -179,7 +179,7 @@ try{
 				webSqlDb.clearTable({
 					"tableName" : webApp.vars["cache"]["dataTableName"], 
 					"callback": function( response ){
-console.log("Response: ", response);
+//console.log("Response: ", response);
 						if( !response["executeSql"]){
 webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
 _alert( webApp.logMsg, "error");
@@ -317,7 +317,10 @@ webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["er
 _alert( webApp.logMsg, "error");
 								} else {
 //console.log("Response: ", response["SQLResultSet"].rows.length );
-									data = response["SQLResultSet"].rows[0]["jsonStr"];
+									data = response["SQLResultSet"].rows.item(0)["jsonStr"];
+webApp.vars.logMsg = "Get data from webSQL, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
+, table: <b>"+ webApp.vars["cache"]["dataTableName"] +"</b>, runtime: " + response["runtime"];
+_alert( webApp.vars.logMsg, "success" );
 								}
 								
 								if(typeof p["callback"] === "function"){

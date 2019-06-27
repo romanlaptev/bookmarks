@@ -2465,6 +2465,7 @@ function getAllTables( callBack ){
 	function postFunc( result ){
 		var list = [];
 //console.log("postFunc()!!!", result, result.rows.length);
+//_log ( "postFunc()!!!: " + result.rows.item(0)["tbl_name"] );
 
 		for(var n = 0; n < result.rows.length; n++){
 			var tblName = result.rows.item(n)["tbl_name"];
