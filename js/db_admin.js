@@ -1036,14 +1036,25 @@ function defineEvents(){
 			if( localStorage.length > 0){ 
 				var listHtml = "";
 
-				for(var n = 0; n < localStorage.length; n++){
+				//for(var n = 0; n < localStorage.length; n++){
+					//listHtml += "<li>";
+					//listHtml += "storage object: <b>" + localStorage[n] +"</b>, type: " +typeof localStorage[n];
+					//listHtml += "</li>";
+				//}//next
+//+++localStorage instanceof Array
+
+				for(var item in localStorage){
+					if( typeof localStorage[item] === "function"){
+						continue;
+					}
 					listHtml += "<li>";
-					listHtml += "storage object: <b>" + localStorage[n] +"</b>, type: " +typeof localStorage[n];
+					listHtml += "storage object : <b>" + item +"</b>, type: " +typeof localStorage[item];
 					listHtml += "</li>";
-				}//next
+				}
 				
 				var html = "<ul>"+listHtml+"</ul>";
 				_log( html );
+				
 			} else {
 			_vars.logMsg =  "empty local storage.... ";
 			_alert( _vars.logMsg, "warning");
