@@ -106,7 +106,7 @@ function init(){
 		_getById("db-desc").value = _vars["webSql"]["displayName"];
 	}
 
-
+	_vars["log"] = _getById("log");
 
 	_vars["dbNameField"] = _getById("dbname");
 	_vars["storeNameField"] = _getById("storename");
@@ -130,14 +130,14 @@ function _changeValue( fid, value ){
 
 function defineEvents(){
 
-	window.addEventListener("offline", function(e) {
-		_vars.logMsg = "navigator.onLine: " + navigator.onLine;
-		_alert(_vars.logMsg, "danger");
-	});
-	window.addEventListener("online", function(e) {
-		_vars.logMsg = "navigator.onLine: " + navigator.onLine;
-		_alert(_vars.logMsg, "success");
-	});
+	// window.addEventListener("offline", function(e) {
+		// _vars.logMsg = "navigator.onLine: " + navigator.onLine;
+		// _alert(_vars.logMsg, "danger");
+	// });
+	// window.addEventListener("online", function(e) {
+		// _vars.logMsg = "navigator.onLine: " + navigator.onLine;
+		// _alert(_vars.logMsg, "success");
+	// });
 
 // if( _vars["localStorageSupport"] ){
 	// if ( window.addEventListener ) {
@@ -153,7 +153,7 @@ function defineEvents(){
 
 	var btn_clear_log = _getById("btn-clear-log");
 	btn_clear_log.onclick = function(){
-		log.innerHTML = "";
+		_vars["log"].innerHTML = "";
 	};
 
 	__indexedDBEvents();
@@ -1035,21 +1035,20 @@ function defineEvents(){
 			
 			if( localStorage.length > 0){ 
 				var listHtml = "";
-				for(var item in localStorage){
-					if( typeof localStorage[item] === "function"){
-						continue;
-					}
+
+				for(var n = 0; n < localStorage.length; n++){
 					listHtml += "<li>";
-					listHtml += item + " : " + localStorage[item] +", type: " +typeof localStorage[item];
+					listHtml += "storage object: <b>" + localStorage[n] +"</b>, type: " +typeof localStorage[n];
 					listHtml += "</li>";
-				}
+				}//next
+				
 				var html = "<ul>"+listHtml+"</ul>";
 				_log( html );
 			} else {
 			_vars.logMsg =  "empty local storage.... ";
 			_alert( _vars.logMsg, "warning");
 			}
-	console.log(window.localStorage);
+//console.log(window.localStorage);
 			
 		}//end event
 		
