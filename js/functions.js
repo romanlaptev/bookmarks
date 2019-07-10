@@ -358,13 +358,14 @@ function runAjax( opt ){
 		"callback" : null,
 		"onProgress" : null,
 		"onError" : null,
-		"onLoadEnd" : null
+		"onLoadEnd" : null,
+		"noCache" : false
 	};
 	//extend options object
 	for(var key in opt ){
 		p[key] = opt[key];
 	}
-//console.log(p);
+console.log(p);
 
 	var requestMethod = p["requestMethod"]; 
 	var url = p["url"]; 
@@ -388,6 +389,14 @@ function runAjax( opt ){
 			//url += "&noCache=" + (new Date().getTime()) + Math.random(); //no cache
 		} else {
 			//url += "?noCache=" + (new Date().getTime()) + Math.random(); //no cache
+		}
+
+		if( p["noCache"] ){
+			if( url.indexOf("?") !== -1 ){
+				url += "&noCache=" + (new Date().getTime()) + Math.random(); //no cache
+			} else {
+				url += "?noCache=" + (new Date().getTime()) + Math.random(); //no cache
+			}
 		}
 		
 	//}
