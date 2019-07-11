@@ -494,7 +494,7 @@ _alert( webApp.vars["logMsg"], "error");
 		runAjax( {
 			"requestMethod" : "GET", 
 			"url" : webApp.vars["dataUrl"], 
-			"noCache" : true,
+			//"noCache" : true,
 			
 			"onProgress" : function( e ){
 				var percentComplete = 0;
