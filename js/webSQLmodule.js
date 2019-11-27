@@ -76,7 +76,8 @@ var webSQLmodule =  function(){
 "dbName" : webApp.vars["cache"]["dbName"],//"localcache"
 "version": "1.0",
 "displayName": "Web SQL Database....",
-"initSize" : 1*1024*1024,
+//"initSize" : 1*1024*1024,
+"initSize" : 2*1024,
 "dbLink" : null
 	}//end vars{}
 //console.log( _vars );
@@ -158,7 +159,14 @@ var webSQLmodule =  function(){
 
 		function errorCB(e) {
 _vars.logMsg = "- end transaction, error..";		
-console.log(_vars.logMsg, e);
+console.log(_vars.logMsg, e, typeof e);
+
+_vars.logMsg = "<ul>SQLError";
+_vars.logMsg += "<li><b>code:</b>" + e.code +"</li>";
+_vars.logMsg += "<li><b>message:</b>" + e.message +"</li>";
+_vars.logMsg += "</ul>";
+_alert(  _vars.logMsg, "error");
+
 			response["error"] = e;
 			response["end_transaction"] = false;
 			if( typeof callBack === "function"){
@@ -303,7 +311,10 @@ console.log(p);
 		});
 		
 		function postFunc( response ){
-console.log("table " + name + " was cleared...");
+_vars.logMsg = "table " + name + " was cleared...";
+console.log(_vars.logMsg);
+_alert( _vars.logMsg, "warning");
+
 			if( typeof p["callback"] == "function"){
 				p["callback"]( response );
 			}
