@@ -165,7 +165,7 @@ _vars.logMsg = "<ul>SQLError";
 _vars.logMsg += "<li><b>code:</b>" + e.code +"</li>";
 _vars.logMsg += "<li><b>message:</b>" + e.message +"</li>";
 _vars.logMsg += "</ul>";
-_alert(  _vars.logMsg, "error");
+func.logAlert(  _vars.logMsg, "error");
 
 			response["error"] = e;
 			response["end_transaction"] = false;
@@ -310,16 +310,17 @@ console.log(p);
 			"callback" : postFunc 
 		});
 		
+		
 		function postFunc( response ){
 _vars.logMsg = "table " + name + " was cleared...";
 console.log(_vars.logMsg);
-_alert( _vars.logMsg, "warning");
+func.logAlert( _vars.logMsg, "warning");
 
 			if( typeof p["callback"] == "function"){
 				p["callback"]( response );
 			}
 		}
-		
+
 	}//end _clearTable()
 
 	function _insertRecord( opt ){
