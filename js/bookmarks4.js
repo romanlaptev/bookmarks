@@ -996,7 +996,7 @@ console.log( "reader, onload" );
 				webApp.logMsg = "Load file " + file.name;
 				webApp.logMsg += ", size: " + file.size;
 				webApp.logMsg += ", type: " + file.type;
-				webApp.logMsg += ", date: " + file.lastModifiedDate;
+				webApp.logMsg += ", date: " + file.lastModified;
 	
 //need new func!!!!!!!!!!!!!	
 				var timestamp = file.lastModified;
