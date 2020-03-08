@@ -10,25 +10,25 @@ var storage = {
 		// var test = window.openDatabase  ? true : false;
 		// var status = window.openDatabase  ? "success" : "error";
 		// webApp.logMsg = "webSQL support: " + test;
-	// _alert( webApp.logMsg, status );
+	// func.logAlert( webApp.logMsg, status );
 		
 		// test = window["localStorage"]  ? true : false;
 		// status = window["localStorage"]  ? "success" : "error";
 		// webApp.logMsg = "localStorage support: " + test;
-	// _alert( webApp.logMsg, status );
+	// func.logAlert( webApp.logMsg, status );
 
 		// test = window.indexedDB ? true : false;
 		// status = window.indexedDB  ? "success" : "error";
 		// webApp.logMsg = "indexedDB support: " + test;
-	// _alert( webApp.logMsg, status );
+	// func.logAlert( webApp.logMsg, status );
 
 		if( webApp.vars["support"]["indexedDBsupport"]){
 			indexedDatabase = iDBmodule();
-console.log("indexedDatabase module:", indexedDatabase);
+//console.log("indexedDatabase module:", indexedDatabase);
 		}
 		if( webApp.vars["support"]["webSQLsupport"]){
 			webSqlDb = webSQLmodule();
-console.log("webSQLmodule:", webSqlDb);
+//console.log("webSQLmodule:", webSqlDb);
 		}
 	},
 	
@@ -146,7 +146,7 @@ indexedDatabase.clearStore({
 // webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["iDBparams"]["reason"];
 // //webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["errorDescription"];
 		// }
-// _alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+// func.logAlert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
 //console.log( webApp.vars.logMsg );
 //console.log( indexedDatabase.dbInfo );
 
@@ -164,7 +164,7 @@ webApp.vars.logMsg = "Save data to cache, db: <b>"+ webApp.vars["cache"]["dbName
 if( indexedDatabase.dbInfo["iDBparams"]["runStatus"] === "error" ){
 webApp.vars.logMsg = indexedDatabase.dbInfo["errorDescription"];
 }						
-_alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+func.logAlert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
 console.log( webApp.vars.logMsg );
 			}
 		});//end addRecords
@@ -182,7 +182,7 @@ try{
 //console.log("Response: ", response);
 						if( !response["executeSql"]){
 webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
-_alert( webApp.logMsg, "error");
+func.logAlert( webApp.logMsg, "error");
 							__createAndSave( p["data"] );
 						} else {
 							__save( p["data"]);
@@ -194,7 +194,7 @@ _alert( webApp.logMsg, "error");
 } catch(e){
 console.log(e);
 webApp.logMsg = "error, message: <b>" + e.message + "</b>";
-_alert( webApp.logMsg, "error");
+func.logAlert( webApp.logMsg, "error");
 }
 			
 			break;
@@ -205,7 +205,7 @@ _alert( webApp.logMsg, "error");
 				window.localStorage.setItem( dataStoreName, p["data"] );
 webApp.vars.logMsg = "Save data to localStorage, data key: <b>"+ dataStoreName + "</b>";
 runStatus = "success";
-_alert( webApp.vars.logMsg, runStatus );
+func.logAlert( webApp.vars.logMsg, runStatus );
 				
 			break;
 
@@ -229,7 +229,7 @@ _alert( webApp.vars.logMsg, runStatus );
 
 				if( !response["executeSql"]){
 		webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
-		_alert( webApp.logMsg, "error");
+		func.logAlert( webApp.logMsg, "error");
 				} else {
 					__save( data );
 				}
@@ -250,7 +250,7 @@ _alert( webApp.vars.logMsg, runStatus );
 		//console.log("Response: ", response);
 				if( !response["executeSql"]){
 		webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
-		_alert( webApp.logMsg, "error");
+		func.logAlert( webApp.logMsg, "error");
 				}
 				
 			}
@@ -290,7 +290,7 @@ webApp.vars.logMsg = "Get data from indexedDB, db: <b>"+ webApp.vars["cache"]["d
 webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["iDBparams"]["reason"];
 webApp.vars.logMsg += "<br>"+ indexedDatabase.dbInfo["errorDescription"];
 			}
-_alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
+func.logAlert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
 //console.log( webApp.vars.logMsg );
 //console.log( indexedDatabase.dbInfo );
 //console.log( data );
@@ -314,7 +314,7 @@ _alert( webApp.vars.logMsg, indexedDatabase.dbInfo["iDBparams"]["runStatus"] );
 //console.log("Response: ", response);
 								if( !response["executeSql"]){
 webApp.logMsg = "SQL error, code:" +response["errorSql"].code+ ", "+response["errorSql"].message;
-_alert( webApp.logMsg, "error");
+func.logAlert( webApp.logMsg, "error");
 								} else {
 //console.log("Response: ", response );
 console.log("Response.rows.length: ", response["SQLResultSet"].rows.length );
@@ -323,12 +323,12 @@ console.log("Response.rows.length: ", response["SQLResultSet"].rows.length );
 											data = response["SQLResultSet"].rows.item(0)["jsonStr"];
 webApp.vars.logMsg = "Get data from webSQL, db: <b>"+ webApp.vars["cache"]["dbName"] + "</b>\
 , table: <b>"+ webApp.vars["cache"]["dataTableName"] +"</b>, runtime: " + response["runtime"];
-_alert( webApp.vars.logMsg, "success" );
+func.logAlert( webApp.vars.logMsg, "success" );
 									} catch(e){
 console.log(e);
 
 webApp.logMsg = "error, webSqlDb.selectRecords(), SELECT jsonStr FROM bookmarks_json, Response.rows.length:" + response["SQLResultSet"].rows.length;
-_alert( webApp.logMsg, "error");
+func.logAlert( webApp.logMsg, "error");
 
 webApp.logMsg = "<ul>DOMException";
 webApp.logMsg += "<li><b>code: </b>" + e.code +"</li>";
@@ -337,7 +337,8 @@ webApp.logMsg += "<li><b>message: </b>" + e.message +"</li>";
 webApp.logMsg += "<li><b>name: </b>" + e.name +"</li>";
 webApp.logMsg += "<li><b>sourceURL: </b>" + e.sourceURL +"</li>";
 webApp.logMsg += "</ul>";
-_alert( webApp.logMsg, "error");
+func.logAlert( webApp.logMsg, "error");
+
 									}
 
 								}
@@ -352,7 +353,7 @@ _alert( webApp.logMsg, "error");
 				} catch(e){
 console.log(e);
 webApp.logMsg = "error, message: <b>" + e.message + "</b>";
-_alert( webApp.logMsg, "error");
+func.logAlert( webApp.logMsg, "error");
 					if(typeof p["callback"] === "function"){
 						p["callback"]( data );
 					}
@@ -371,7 +372,7 @@ var runStatus = "error";
 if( jsonStr && jsonStr.length > 0){
 	runStatus = "success";
 }
-_alert( webApp.vars.logMsg, runStatus );
+func.logAlert( webApp.vars.logMsg, runStatus );
 
 				if(typeof p["callback"] === "function"){
 					p["callback"]( jsonStr );

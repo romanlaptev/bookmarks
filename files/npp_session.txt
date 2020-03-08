@@ -1,0 +1,6 @@
+<NotepadPlus>
+    <Session activeView="1">
+        <mainView activeIndex="4" />
+        <subView activeIndex="3" />
+    </Session>
+</NotepadPlus>
