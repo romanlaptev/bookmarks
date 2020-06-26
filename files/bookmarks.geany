@@ -23,8 +23,11 @@ long_line_column=72
 
 [files]
 current_page=1
-FILE_NAME_0=3803;HTML;0;EUTF-8;1;1;0;%2Fmnt%2Fd2%2Fwww%2Fsites%2Fromanlaptev.github.io%2Fwebapps%2Fbookmarks%2Findex2.html;0;4
-FILE_NAME_1=1538;Javascript;0;EUTF-8;1;1;0;%2Fmnt%2Fd2%2Fwww%2Fsites%2Fromanlaptev.github.io%2Fwebapps%2Fbookmarks%2Fjs%2Fbookmarks4.js;0;4
+FILE_NAME_0=4987;HTML;0;EUTF-8;1;1;0;%2Fmnt%2Fd2%2Fwww%2Fsites%2Fromanlaptev.github.io%2Fwebapps%2Fbookmarks%2Findex2.html;0;4
+FILE_NAME_1=16374;Javascript;0;EUTF-8;1;1;0;%2Fmnt%2Fd2%2Fwww%2Fsites%2Fromanlaptev.github.io%2Fwebapps%2Fbookmarks%2Fjs%2Fbookmarks4.js;0;4
+FILE_NAME_2=0;CSS;0;EUTF-8;1;1;0;%2Fmnt%2Fd2%2Fwww%2Fsites%2Fromanlaptev.github.io%2Fwebapps%2Fbookmarks%2Ffonts%2Ffonts.css;0;4
+FILE_NAME_3=0;CSS;0;EUTF-8;1;1;0;%2Fmnt%2Fd2%2Fwww%2Fsites%2Fromanlaptev.github.io%2Fwebapps%2Fbookmarks%2Fcss%2Fcustom.css;0;4
+FILE_NAME_4=547;CSS;0;EUTF-8;1;1;0;%2Fmnt%2Fd2%2Fwww%2Fsites%2Fromanlaptev.github.io%2Fwebapps%2Fbookmarks%2Fcss%2Fload.css;0;4
 
 [VTE]
 last_dir=/mnt/d2/www/sites/romanlaptev.github.io
