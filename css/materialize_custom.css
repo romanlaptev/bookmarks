@@ -41,9 +41,12 @@ font-feature-settings: 'liga';
 
 
 body{
-background-color:#faf9f8;
+/*background-color:#faf9f8;*/
+	/*background-color: #f7f7f7;*/
+	background-color: #f3f3f3;
 }
-
+body {
+}
 nav a.sidenav-trigger {
 	display: block;
 	outline:none;
