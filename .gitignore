@@ -1,2 +1,16 @@
 *.*~
-arc
+*~lock*
+*.bak
+*.swp
+*.log.txt
+*.log
+
+files_ignore/
+node_modules/
+
+*/wp-content/uploads/*
+*/nbproject/*
+
+.vscode
+
+
